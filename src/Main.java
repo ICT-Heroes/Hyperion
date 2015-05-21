@@ -1,5 +1,9 @@
-public class Main {
-	public static void main(String[] args) {
-		System.out.println("Hello World");
+import titan.gui.TitanWindow;
+
+public class Main{
+	public static void main(String[] args){
+		TitanWindow wnd = new TitanWindow();
+		wnd.pack();
+		wnd.setVisible(true);
 	}
 }
