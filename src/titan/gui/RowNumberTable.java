@@ -1,21 +1,29 @@
 package titan.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
+import java.awt.Component;
+import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /*
  *	Use a JTable as a renderer for row numbers of a given main table.
  *  This table must be added to the row header of the scrollpane that
  *  contains the main table.
  */
-public class RowNumberTable extends JTable
-	implements ChangeListener, PropertyChangeListener, TableModelListener
-{
+public class RowNumberTable extends JTable 	implements ChangeListener, PropertyChangeListener, TableModelListener{
+	private static final long serialVersionUID = 1L;
 	private JTable main;
 
 	public RowNumberTable(JTable table)
@@ -149,6 +157,8 @@ public class RowNumberTable extends JTable
 	 */
 	private static class RowNumberRenderer extends DefaultTableCellRenderer
 	{
+		private static final long serialVersionUID = 1L;
+
 		public RowNumberRenderer()
 		{
 			setHorizontalAlignment(JLabel.CENTER);

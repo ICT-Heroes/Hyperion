@@ -69,16 +69,29 @@ public class TitanWindow implements ActionListener{
 		initMenuBar();
 		initToolBar();
 	}
+	/*
+	 * 윈도우에 메뉴바 부착
+	 */
+	public void attachMenuBar(){
+		frame.setJMenuBar(mnuBar);
+	}
 	
 	/*
-	 * 윈도우에 툴바 추가
+	 * 윈도우에 메뉴바 분리
+	 */
+	public void detachMenuBar(){
+		frame.setJMenuBar(null);
+	}
+	
+	/*
+	 * 윈도우에 툴바 부착
 	 */
 	public void attachToolBar(){
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
 	}
 	
 	/*
-	 * 윈도우에 툴바 제거
+	 * 윈도우에 툴바 분리
 	 */
 	public void detachToolBar(){
 		frame.getContentPane().remove(toolBar);
@@ -172,8 +185,6 @@ public class TitanWindow implements ActionListener{
 		
 		mntmTmp = TitanUtil.buildMenuItem("About", this);
 		mnuTmp.add(mntmTmp);
-		
-		frame.setJMenuBar(mnuBar);
 	}
 	
 	/*
@@ -497,11 +508,15 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	public TitanTreeContainer getTitanTreeContainer(){
-		return null;
+		return view.getTreeContainer();
 	}
 	
 	public TitanTableContainer getTitanTableContainer(){
-		return null;
+		return view.getTableContainer();
+	}
+	
+	public void setTitle(String title){
+		frame.setTitle(title);
 	}
 	
 	public void setVisible(boolean isVisible){

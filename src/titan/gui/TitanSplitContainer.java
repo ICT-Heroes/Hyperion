@@ -9,8 +9,6 @@ public final class TitanSplitContainer{
 	private TitanTreeContainer		treeContainer;
 	private TitanTableContainer		tblContainer;
 	private JSplitPane				spltPane;
-	private ActionListener				evtListener;
-	
 	//초기화
 	{
 		init();
@@ -40,5 +38,13 @@ public final class TitanSplitContainer{
 	
 	JSplitPane getContainer(){
 		return spltPane;
+	}
+	
+	TitanTreeContainer getTreeContainer(){
+		return treeContainer;
+	}
+	
+	TitanTableContainer getTableContainer(){
+		return tblContainer;
 	}
 }
