@@ -1,9 +1,10 @@
 <cluster xmlns="http://rise.cs.drexel.edu/minos/clsx">
-<group name="root">
+<groups name="root">
 <group name="L0">
 <group name="edu.drexel.cs.rise.titan.util.IconFactory">
 <item name="edu.drexel.cs.rise.titan.util.IconFactory" />
 </group>
+<item name="Minsoo's Test Item"/>
 <group name="edu.drexel.cs.rise.titan.Project">
 <group name="edu.drexel.cs.rise.titan.Project">
 <item name="edu.drexel.cs.rise.titan.ProjectListener" />
@@ -85,5 +86,5 @@
 <group name="M0">
 <item name="edu.drexel.cs.rise.titan.Viewer" />
 </group>
-</group>
+</groups>
 </cluster>

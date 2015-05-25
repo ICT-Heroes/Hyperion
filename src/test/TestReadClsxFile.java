@@ -1,7 +1,9 @@
-package model;
+package test;
 
 import java.io.File;
 
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -10,9 +12,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ReadClsxFile {
+public class TestReadClsxFile {
 	private static int groupSequence;
-	private static int itemSequence;
 
 	public static void main(String argv[]) {
 		{
@@ -33,11 +34,27 @@ public class ReadClsxFile {
 
 				// TagName이 Group인 것들을 List에 전부 집어 넣는다. (순서는 있는데, 상속 관계가 표현이
 				// 안된다.)
-				NodeList grouplist = doc.getElementsByTagName("group");
+				// item도 전부 들어간다.
+				NodeList grouplist = doc.getElementsByTagName("*");
+
+				for (int i = 0; i < grouplist.getLength(); i++) {
+					Node groupNode = grouplist.item(i);
+					String groupName = groupNode.getAttributes().item(0)
+							.getTextContent();
+					if (groupNode == groupNode.getParentNode()) {
+						System.out.println(groupNode.getParentNode()
+								.getNodeName()
+								+ " : "
+								+ groupNode.getNodeName() + " : " + groupName);
+					} else {
+						System.out.println("이건 바로 직속 node가 아닙니다.");
+					}
+				}
+
 				// group의 총 갯수만큼 반복한다.
 				for (int i = 0; i < grouplist.getLength(); i++) {
 					// group으로 들어가서 해당 attribute의 첫번째 item 즉 name을 가져온다. (한마디로
-					// group name)
+					// // group name)
 					Node groupNode = grouplist.item(i);
 
 					String groupName = groupNode.getAttributes().item(0)
@@ -51,10 +68,15 @@ public class ReadClsxFile {
 						Element groupElmnt = (Element) groupNode;
 						if (checkHasGroupList(groupElmnt)) {
 							// groupList가 있다는 것은 Group이라는 것
-							System.out.println("Item을 가지고 있지 않습니다");
-							System.out.println();
-						} else {
-							// groupList가 없다는것은 Item이라는 것
+							if (groupNode.hasChildNodes() == false) {
+								// item의 경우 childnodes가 없기 때문에 true가야한다.
+								System.out.println("Item을 가지고 있지 않습니다");
+								System.out.println();
+							} else {
+								System.out.println("Item입니다");
+							}
+
+						} else { // groupList가 없다는것은 Item이라는 것
 							NodeList itemList = groupElmnt
 									.getElementsByTagName("item");
 							for (int j = 0; j < itemList.getLength(); j++) {
@@ -100,6 +122,22 @@ public class ReadClsxFile {
 		System.out.println();
 		groupSequence++;
 
+	}
+
+	public JTree build(String pathToXml) throws Exception {
+		SAXReader reader = new SAXReader();
+		Document doc = reader.read(pathToXml);
+		return new JTree(build(doc.getRootElement()));
+	}
+
+	public DefaultMutableTreeNode build(Element e) {
+		DefaultMutableTreeNode result = new DefaultMutableTreeNode(e.getText());
+		for (Object o : e.elements()) {
+			Element child = (Element) o;
+			result.add(build(child));
+		}
+
+		return result;
 	}
 
 }
