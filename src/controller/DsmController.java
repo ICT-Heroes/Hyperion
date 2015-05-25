@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.File;
+<<<<<<< HEAD
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -83,4 +84,10 @@ public class DsmController {
 		}
 	}
 
+=======
+
+public class DsmController{
+
+	DsmController(File f){}
+>>>>>>> eead541... #3 Controller
 }
