@@ -2,10 +2,10 @@ package test;
 
 import java.io.File;
 
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import model.Clsx;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,16 +19,36 @@ public class TestReadClsxFile {
 		{
 			try {
 				// clsx파일을 읽어온다.
-				File file = new File("src/res/titan_DRH+ACDC.clsx");
+				File file = new File("src/res/test.clsx");
 				DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
 						.newInstance();
 				DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
 				Document doc = docBuild.parse(file);
 				doc.getDocumentElement().normalize();
 
+				NodeList firstNodelist = doc.getFirstChild().getChildNodes();
+				for (int i = 1; i <= firstNodelist.getLength() / 3; i++) {
+					System.out.println("My Test :"
+							+ firstNodelist.item(3 * i - 2).getAttributes()
+									.item(0).getTextContent());
+
+				}
+
+				// clsx 객체를 만든다.
+				Clsx clsxTree = new Clsx();
+
+				// 함수를 통해 트리 구조를 만든다. 처음은 cluster 임으로 root에서부터 시작한다.
+				// rootNode
+				Node node = doc.getFirstChild().getChildNodes().item(1);
+
+				makeNode(clsxTree, node);
+
 				/*
-				 * XPath xpath = XPathFactory.newInstance().newXPath(); Node
-				 * node = (Node) xpath.evaluate("//group/group/item", file,
+				 * clsxTree.setName(firstNodelist.item(3 * i - 2)
+				 * .getAttributes().item(0).getTextContent()); clsxTree.item =
+				 * new Clsx[firstNodelist.getLength() / 3]; XPath xpath =
+				 * XPathFactory.newInstance().newXPath(); Node node = (Node)
+				 * xpath.evaluate("//group/group/item", file,
 				 * XPathConstants.NODE);
 				 */
 
@@ -39,15 +59,17 @@ public class TestReadClsxFile {
 
 				for (int i = 0; i < grouplist.getLength(); i++) {
 					Node groupNode = grouplist.item(i);
+
 					String groupName = groupNode.getAttributes().item(0)
 							.getTextContent();
+
 					if (groupNode == groupNode.getParentNode()) {
 						System.out.println(groupNode.getParentNode()
 								.getNodeName()
 								+ " : "
 								+ groupNode.getNodeName() + " : " + groupName);
 					} else {
-						System.out.println("이건 바로 직속 node가 아닙니다.");
+
 					}
 				}
 
@@ -72,6 +94,7 @@ public class TestReadClsxFile {
 								// item의 경우 childnodes가 없기 때문에 true가야한다.
 								System.out.println("Item을 가지고 있지 않습니다");
 								System.out.println();
+								doc.getFirstChild();
 							} else {
 								System.out.println("Item입니다");
 							}
@@ -98,8 +121,29 @@ public class TestReadClsxFile {
 				}
 
 			} catch (Exception e) {
+				System.out.println("파일을 읽을 수가 없습니다");
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private static void makeNode(Clsx clsx, Node node) {
+		// node의 이름과 item의 크기를 할당
+		clsx.setName(node.getAttributes().item(0).getTextContent());
+		System.out.println("MyLastTest clsx's node Name : " + clsx.getName());
+		for (int i = 0; i < node.getChildNodes().getLength() / 2; i++) {
+			makeNextNode(clsx, node.getChildNodes());
+		}
+	}
+
+	private static void makeNextNode(Clsx clsx, NodeList nodeList) {
+		clsx.item = new Clsx[nodeList.getLength() / 2];
+		for (int k = 0; k < nodeList.getLength() / 2; k++) {
+			clsx.item[k] = new Clsx();
+		}
+		System.out.println("My LastTest" + "item's Length " + clsx.item.length);
+		for (int i = 0; i < nodeList.getLength() / 2; i++) {
+			makeNode(clsx.item[i], nodeList.item(2 * i + 1));
 		}
 	}
 
@@ -122,22 +166,6 @@ public class TestReadClsxFile {
 		System.out.println();
 		groupSequence++;
 
-	}
-
-	public JTree build(String pathToXml) throws Exception {
-		SAXReader reader = new SAXReader();
-		Document doc = reader.read(pathToXml);
-		return new JTree(build(doc.getRootElement()));
-	}
-
-	public DefaultMutableTreeNode build(Element e) {
-		DefaultMutableTreeNode result = new DefaultMutableTreeNode(e.getText());
-		for (Object o : e.elements()) {
-			Element child = (Element) o;
-			result.add(build(child));
-		}
-
-		return result;
 	}
 
 }

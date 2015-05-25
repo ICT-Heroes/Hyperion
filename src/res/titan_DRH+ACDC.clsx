@@ -1,5 +1,5 @@
 <cluster xmlns="http://rise.cs.drexel.edu/minos/clsx">
-<groups name="root">
+<group name="root">
 <group name="L0">
 <group name="edu.drexel.cs.rise.titan.util.IconFactory">
 <item name="edu.drexel.cs.rise.titan.util.IconFactory" />
@@ -86,5 +86,5 @@
 <group name="M0">
 <item name="edu.drexel.cs.rise.titan.Viewer" />
 </group>
-</groups>
+</group>
 </cluster>

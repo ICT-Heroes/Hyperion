@@ -1,3 +1,4 @@
+package main;
 import titan.gui.TitanTreeContainer;
 import titan.gui.TitanWindow;
 
