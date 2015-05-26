@@ -10,23 +10,20 @@ import org.junit.Test;
 import controller.DsmController;
 
 public class DsmTest {
-	Dsm dsm;
 	DsmController controller;
 	File file;
 	
 	@Before
 	public void setup() {
-		dsm = new Dsm();
-		controller = new DsmController(dsm);
-		
+		controller = new DsmController();
 		file = new File("src/res/titan.dsm");
-		
 	}
 	
 	@Test
 	public void readFileTest() {
 		controller.readFile(file);
 		controller.printDependency();
+		controller.printModels();
 	}
 
 }
