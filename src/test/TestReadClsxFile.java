@@ -19,7 +19,7 @@ public class TestReadClsxFile {
 		{
 			try {
 				// clsx파일을 읽어온다.
-				File file = new File("src/res/test.clsx");
+				File file = new File("src/res/titan_DRH+ACDC.clsx");
 				DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
 						.newInstance();
 				DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
@@ -43,6 +43,9 @@ public class TestReadClsxFile {
 
 				makeNode(clsxTree, node);
 
+				for(int i=0; i< clsxTree.item[0].item.length; i++){
+					System.out.println("clsxTree가 잘 만들어졌나요?  :  "  +clsxTree.item[0].item[i].getName());
+				}
 				/*
 				 * clsxTree.setName(firstNodelist.item(3 * i - 2)
 				 * .getAttributes().item(0).getTextContent()); clsxTree.item =
@@ -55,6 +58,7 @@ public class TestReadClsxFile {
 				// TagName이 Group인 것들을 List에 전부 집어 넣는다. (순서는 있는데, 상속 관계가 표현이
 				// 안된다.)
 				// item도 전부 들어간다.
+				/*
 				NodeList grouplist = doc.getElementsByTagName("*");
 
 				for (int i = 0; i < grouplist.getLength(); i++) {
@@ -72,7 +76,6 @@ public class TestReadClsxFile {
 
 					}
 				}
-
 				// group의 총 갯수만큼 반복한다.
 				for (int i = 0; i < grouplist.getLength(); i++) {
 					// group으로 들어가서 해당 attribute의 첫번째 item 즉 name을 가져온다. (한마디로
@@ -119,13 +122,14 @@ public class TestReadClsxFile {
 							.println("---------------------------------------------");
 					System.out.println();
 				}
-
+*/
 			} catch (Exception e) {
 				System.out.println("파일을 읽을 수가 없습니다");
 				e.printStackTrace();
 			}
 		}
 	}
+
 
 	private static void makeNode(Clsx clsx, Node node) {
 		// node의 이름과 item의 크기를 할당
