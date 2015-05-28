@@ -1,8 +1,8 @@
 package controller;
 
 public class DataController {
-	ClsxController clsx;
-	DsmController Dsm;
+	ReadClsxController clsx;
+	ReadDsmController Dsm;
 	
 	//순서바꾸기
 	public void MoveUp(int index){

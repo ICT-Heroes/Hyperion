@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.event.ActionListener;
 

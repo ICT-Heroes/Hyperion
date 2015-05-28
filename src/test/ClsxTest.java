@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class TestReadClsxFile {
+public class ClsxTest {
 	private static int groupSequence;
 
 	public static void main(String argv[]) {

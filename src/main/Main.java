@@ -1,6 +1,6 @@
 package main;
-import titan.gui.TitanTreeContainer;
-import titan.gui.TitanWindow;
+import view.titan.TitanTreeContainer;
+import view.titan.TitanWindow;
 
 public class Main{
 	public static void main(String[] args){

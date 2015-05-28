@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;

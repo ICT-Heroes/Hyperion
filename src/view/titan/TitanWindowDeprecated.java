@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

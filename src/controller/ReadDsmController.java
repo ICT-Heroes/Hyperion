@@ -13,10 +13,10 @@ import java.util.Scanner;
 import model.Dsm;
 
 
-public class DsmController {
+public class ReadDsmController {
 	ArrayList<Dsm> dsms;
 	
-	public DsmController() {
+	public ReadDsmController() {
 		dsms = new ArrayList<Dsm>();
 	}
 	

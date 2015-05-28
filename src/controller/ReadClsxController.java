@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ReadClsxFile {
+public class ReadClsxController {
 	{
 		try {
 			// clsx파일을 읽어온다.
