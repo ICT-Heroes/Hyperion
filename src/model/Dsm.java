@@ -59,4 +59,11 @@ public class Dsm {
 		return result;
 	}
 	
+	public void print() {
+		System.out.println(index + ":" + name + " Dependency");
+		
+		for (Dsm dsm : dependent) {
+			System.out.println(dsm.getIndex() + ":" + dsm.getName());
+		}
+	}
 }

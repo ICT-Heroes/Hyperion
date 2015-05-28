@@ -1,18 +1,39 @@
 package controller;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 
 import model.Dsm;
 
 
 public class DsmController {
-	ArrayList<Dsm> dsm;
+	ArrayList<Dsm> dsms;
 	
 	public DsmController() {
-		dsm = new ArrayList<Dsm>();
+		dsms = new ArrayList<Dsm>();
+	}
+	
+	public int getNumber() {
+		return dsms.size();
+	}
+	
+	public Dsm getDsm(int index) {
+		Optional<Dsm> find = dsms.stream()
+			.filter(dsm -> dsm.getIndex() == index)
+			.findFirst();
+
+		// FIXME
+		if (find.isPresent())
+			return find.get();	// found
+		else
+			return null;		// cannot found
 	}
 	
 	/**
@@ -26,24 +47,30 @@ public class DsmController {
 			
 			// Make DsmModel
 			for (int i = 0; i < number; i++) {
-				dsm.add(new Dsm(i));
+				dsms.add(new Dsm(i));
 			}
 			
+			// Set dependency
 			for (int i = 0; i < number; i++) {
-				Dsm model = dsm.get(i);
+				Dsm model = dsms.get(i);
 				for (int j = 0; j < number; j++) {
 					if (scanner.hasNextInt()) {
 						int val = scanner.nextInt();
 						if (val == 1) {
-							model.addModel(dsm.get(j));
+							model.addModel(dsms.get(j));
 						}
 					}
 				}
 			}
+
+			// FIXME: 실제 데이터에는 공백이 없는데 nextLine에서 하나 나옴. 그래서 그걸 제거.
+			scanner.nextLine();
 			
+			// Set name
 			for (int i=0; i < number; i++) {
 				if (scanner.hasNextLine())
-					dsm.get(i).setName(scanner.nextLine());
+					dsms.get(i).setName(scanner.nextLine());
+				System.out.println(i + "th dsm: " + dsms.get(i).getName());
 			}
 			
 			scanner.close();
@@ -57,7 +84,34 @@ public class DsmController {
 	 * 
 	 */
 	public void writeFile() {
-		
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
+			
+			int number = dsms.size();
+			out.write(number+""); 
+			out.newLine();
+			
+			for (int i = 0; i < number  ; i++) {
+				for (int j = 0; j < number; j++) {
+					if (dsms.get(i).isDependent(j)) 
+						out.write(1 + " ");
+					else
+						out.write(0 + " ");
+				}
+				out.newLine();
+			}
+			
+			for (int i = 0; i < number; i++) {
+				out.write(dsms.get(i).getName());
+				out.newLine();
+			}
+			
+			out.close();
+			
+		} catch (IOException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -66,21 +120,19 @@ public class DsmController {
 	 * @param name
 	 */
 	public void insertItem(int index, String name) {
-		
+		dsms.add(new Dsm(index, name));
 	}
 
 	/**
-	 * This method consists of two parts.
-	 * First is removing from dsm array and 
-	 * second is removing dependency
+	 * 
 	 * @param index
 	 */
 	public void deleteItem(int index) {
 		// remove from dsm array
-		this.dsm.removeIf((Dsm d) -> { return d.getIndex() == index; });
+		this.dsms.removeIf((Dsm d) -> { return d.getIndex() == index; });
 		
 		// remove dependency for Item in each dsm  
-		for (Dsm dsm : dsm) {
+		for (Dsm dsm : dsms) {
 			dsm.removeDependency(index);
 		}
 	}
@@ -91,21 +143,21 @@ public class DsmController {
 	 * @param b
 	 */
 	public void changeDependency(int a, int b) {
-		if (dsm.get(a).isDependent(b)) {
-			dsm.get(a).removeDependency(b);
-			dsm.get(b).removeDependency(a);	
+		if (dsms.get(a).isDependent(b)) {
+			dsms.get(a).removeDependency(b);
+			dsms.get(b).removeDependency(a);	
 		}
 		else {
-			dsm.get(a).addModel(dsm.get(b));
-			dsm.get(b).addModel(dsm.get(a));
+			dsms.get(a).addModel(dsms.get(b));
+			dsms.get(b).addModel(dsms.get(a));
 		}
 	}
 	
 	public void printDependency() {
-		int number = dsm.size();
+		int number = dsms.size();
 		for (int i = 0; i < number; i++) {
 			for (int j = 0; j < number; j++) {
-				if (dsm.get(i).isDependent(j)) {
+				if (dsms.get(i).isDependent(j)) {
 					System.out.print("O ");
 				}
 				else {
@@ -114,14 +166,14 @@ public class DsmController {
 			}
 			System.out.println("");
 			
-			dsm.get(i);
+			dsms.get(i);
 		}
 	}
 
 	public void printModels() {
-		int number = dsm.size();
+		int number = dsms.size();
 		for (int i = 0; i < number; i++) {
-			System.out.println(dsm.get(i).getName());
+			System.out.println(dsms.get(i).getName());
 		}
 	}
 
