@@ -14,7 +14,8 @@ import model.Dsm;
 
 
 public class ReadDsmController {
-	ArrayList<Dsm> dsms;
+	// FIXME public for test
+	public ArrayList<Dsm> dsms;
 	
 	public ReadDsmController() {
 		dsms = new ArrayList<Dsm>();
@@ -34,6 +35,11 @@ public class ReadDsmController {
 			return find.get();	// found
 		else
 			return null;		// cannot found
+	}
+	
+	// FIXME test method
+	public void setDsm(ArrayList<Dsm> dsms) {
+		this.dsms = dsms;
 	}
 	
 	/**

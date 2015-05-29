@@ -3,9 +3,9 @@ package model;
 import java.util.ArrayList;
 
 public class Dsm {
-	int index;
-	String name;
-	ArrayList<Dsm> dependent;
+	private int index;
+	private String name;
+	private ArrayList<Dsm> dependent;
 	
 	public Dsm() {
 		
@@ -42,6 +42,14 @@ public class Dsm {
 		this.name = name;
 	}
 	
+	public ArrayList<Dsm> getDependents() {
+		return dependent;
+	}
+	
+	public Dsm getDependent(int index) {
+		return dependent.get(index);
+	}
+	
 	public void addModel(Dsm model) {
 		this.dependent.add(model);
 	}
@@ -60,10 +68,18 @@ public class Dsm {
 	}
 	
 	public void print() {
-		System.out.println(index + ":" + name + " Dependency");
+		System.out.println("[" + index + ":" + name + "]");
 		
 		for (Dsm dsm : dependent) {
 			System.out.println(dsm.getIndex() + ":" + dsm.getName());
 		}
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Dsm dsm = (Dsm) obj;
+		return (this.index == dsm.getIndex()) && (this.name == dsm.getName());
+	}
+	
+	
 }

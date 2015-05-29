@@ -1,7 +1,8 @@
 package test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
@@ -10,6 +11,7 @@ import model.Dsm;
 import org.junit.Before;
 import org.junit.Test;
 
+import controller.Partitioner;
 import controller.ReadDsmController;
 
 public class DsmTest {
@@ -50,6 +52,21 @@ public class DsmTest {
 		assertThat(newNumber, is(equalTo(newNumber)));
 		assertThat(newDsm.getName(), is(equalTo(dsm.getName())));
 		assertThat(newDsm.getIndex(), is(equalTo(dsm.getIndex())));
+	}
+	
+	@Test
+	public void patrtitionTest() {
+		Partitioner p = new Partitioner();
+		
+		p.setDsm(controller.dsms);
+		
+		//p.partitionByPathSearching();
+		p.preProcessing();
+		
+		controller.setDsm(p.getResultDsm());
+		
+		controller.printDependency();
+		
 	}
 
 }
