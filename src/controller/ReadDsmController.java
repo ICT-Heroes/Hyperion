@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
@@ -13,10 +12,10 @@ import java.util.Scanner;
 import model.Dsm;
 
 
-public class DsmController {
+public class ReadDsmController {
 	ArrayList<Dsm> dsms;
 	
-	public DsmController() {
+	public ReadDsmController() {
 		dsms = new ArrayList<Dsm>();
 	}
 	
@@ -29,17 +28,12 @@ public class DsmController {
 			.filter(dsm -> dsm.getIndex() == index)
 			.findFirst();
 
-		// FIXME
 		if (find.isPresent())
 			return find.get();	// found
 		else
 			return null;		// cannot found
 	}
-	
-	/**
-	 * Read dsm file and make Dsm list
-	 * @param file
-	 */
+
 	public void readFile(File file) {
 		try {
 			Scanner scanner = new Scanner(file);
@@ -63,7 +57,7 @@ public class DsmController {
 				}
 			}
 
-			// FIXME: 실제 데이터에는 공백이 없는데 nextLine에서 하나 나옴. 그래서 그걸 제거.
+			// FIXME: �떎�젣 �뜲�씠�꽣�뿉�뒗 怨듬갚�씠 �뾾�뒗�뜲 nextLine�뿉�꽌 �븯�굹 �굹�샂. 洹몃옒�꽌 洹멸구 �젣嫄�.
 			scanner.nextLine();
 			
 			// Set name
@@ -80,12 +74,11 @@ public class DsmController {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	public void writeFile() {
+	public void writeFile(File file) {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
+			//BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
+			
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
 			
 			int number = dsms.size();
 			out.write(number+""); 
@@ -114,19 +107,10 @@ public class DsmController {
 		}
 	}
 
-	/**
-	 * 
-	 * @param index
-	 * @param name
-	 */
 	public void insertItem(int index, String name) {
 		dsms.add(new Dsm(index, name));
 	}
 
-	/**
-	 * 
-	 * @param index
-	 */
 	public void deleteItem(int index) {
 		// remove from dsm array
 		this.dsms.removeIf((Dsm d) -> { return d.getIndex() == index; });
@@ -137,11 +121,6 @@ public class DsmController {
 		}
 	}
 
-	/**
-	 * 
-	 * @param a
-	 * @param b
-	 */
 	public void changeDependency(int a, int b) {
 		if (dsms.get(a).isDependent(b)) {
 			dsms.get(a).removeDependency(b);
