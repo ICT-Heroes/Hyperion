@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,12 +28,12 @@ import javax.swing.tree.TreePath;
 
 public final class TitanTreeContainer{
 	private JPanel			container;
-	private JPanel			pnlToolbar;		//íˆ´ë°” ì»¨í…Œì´ë„ˆ
-	private JScrollPane	pnlTree;		//íŠ¸ë¦¬ ì»¨í…Œì´ë„ˆ
-	private JToolBar		tbarTree;		//íŠ¸ë¦¬ë¥¼ ì œì–´í•˜ëŠ” ë° ì‚¬ìš©í•  íˆ´ë°”
-	private JTree			treeDSM;		//DSM íŠ¸ë¦¬
-	private JPopupMenu	mnuTree;		//íŠ¸ë¦¬ ë©”ë‰´
-	private EventHandler	evtObj;			//ì´ë²¤íŠ¸ ì²˜ë¦¬ê¸°
+	private JPanel			pnlToolbar;		//Åø¹Ù ÄÁÅ×ÀÌ³Ê
+	private JScrollPane	pnlTree;		//Æ®¸® ÄÁÅ×ÀÌ³Ê
+	private JToolBar		tbarTree;		//Æ®¸®¸¦ Á¦¾îÇÏ´Â µ¥ »ç¿ëÇÒ Åø¹Ù
+	private JTree			treeDSM;		//DSM Æ®¸®
+	private JPopupMenu	mnuTree;		//Æ®¸® ¸Ş´º
+	private EventHandler	evtObj;			//ÀÌº¥Æ® Ã³¸®±â
 	
 	
 	{
@@ -40,16 +41,16 @@ public final class TitanTreeContainer{
 	}
 	
 	private void init(){
-		//ì´ë²¤íŠ¸ ì²˜ë¦¬ê¸° ìƒì„±
+		//ÀÌº¥Æ® Ã³¸®±â »ı¼º
 		evtObj = new EventHandler();
 		
-		//ì»¨í…Œì´ë„ˆ ìƒì„±
+		//ÄÁÅ×ÀÌ³Ê »ı¼º
 		container = new JPanel();
 		
-		//ë ˆì´ì•„ì›ƒ ì„¤ì •(hgap : 5, vgap : 1)
+		//·¹ÀÌ¾Æ¿ô ¼³Á¤(hgap : 5, vgap : 1)
 		container.setLayout(new BorderLayout(5, 1));
 		
-		//íˆ´ë°” ë ˆì´ì•„ì›ƒ ìƒì„±
+		//Åø¹Ù ·¹ÀÌ¾Æ¿ô »ı¼º
 		pnlToolbar = new JPanel(new FlowLayout());
 		pnlToolbar.setBorder(null);
 		
@@ -59,7 +60,7 @@ public final class TitanTreeContainer{
 		flToolbar.setAlignment(FlowLayout.LEFT);
 		container.add(pnlToolbar, BorderLayout.NORTH);
 			
-		//íˆ´ë°” ìƒì„±
+		//Åø¹Ù »ı¼º
 		tbarTree = new JToolBar();
 		tbarTree.setForeground(new Color(255, 255, 255));
 		tbarTree.setFloatable(false);
@@ -128,23 +129,23 @@ public final class TitanTreeContainer{
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/delete.png")));
 		tbarTree.add(btnTmp);
 		
-		//íŠ¸ë¦¬ ë ˆì´ì•„ì›ƒ ìƒì„±
+		//Æ®¸® ·¹ÀÌ¾Æ¿ô »ı¼º
 		pnlTree = new JScrollPane();
 		container.add(pnlTree, BorderLayout.CENTER);
 		
-		//íŠ¸ë¦¬ ìƒì„±
+		//Æ®¸® »ı¼º
 		treeDSM = new JTree();
 		treeDSM.setEditable(true);
 		treeDSM.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Root")));
 		
-		//ë·°í¬íŠ¸ì— íŠ¸ë¦¬ ì¶”ê°€
+		//ºäÆ÷Æ®¿¡ Æ®¸® Ãß°¡
 		pnlTree.setViewportView(treeDSM);
 		
-		//íŠ¸ë¦¬ì— ì—°ê²°ë  íŒì—… ë©”ë‰´ ìƒì„±
+		//Æ®¸®¿¡ ¿¬°áµÉ ÆË¾÷ ¸Ş´º »ı¼º
 		mnuTree = new JPopupMenu();
 		addPopup(treeDSM, mnuTree);
 		
-		//íŒì—… ë©”ë‰´ì— ì•„ì´í…œ ì¶”ê°€
+		//ÆË¾÷ ¸Ş´º¿¡ ¾ÆÀÌÅÛ Ãß°¡
 		JMenuItem mntmTmp = TitanUtil.buildMenuItem("Rename", evtObj);
 		mnuTree.add(mntmTmp);
 		mntmTmp = TitanUtil.buildMenuItem("Duplicate", evtObj);
@@ -156,11 +157,11 @@ public final class TitanTreeContainer{
 	void uiToolbarRename(ActionEvent ae){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
 		
-		//nodeê°€ ë£¨íŠ¸ë¼ë©´ ìì‹ë…¸ë“œë§Œ ì†ŒíŠ¸		
+		//node°¡ ·çÆ®¶ó¸é ÀÚ½Ä³ëµå¸¸ ¼ÒÆ®		
 		if(node == null)
 			return;
 		
-		//ë…¸ë“œë¥¼ í¸ì§‘ê°€ëŠ¥ ìƒíƒœë¡œ ë§Œë“¬
+		//³ëµå¸¦ ÆíÁı°¡´É »óÅÂ·Î ¸¸µë
 		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
 		TreeNode[] nodes = dtm.getPathToRoot(node);
 		TreePath path = new TreePath(nodes);
@@ -168,7 +169,7 @@ public final class TitanTreeContainer{
 	}
 	
 	void uiMnuDuplicate(ActionEvent ae){
-		//ìƒˆë¡œìš´ TitanWindowë¥¼ ìƒì„±
+		//»õ·Î¿î TitanWindow¸¦ »ı¼º
 		TitanWindow dupWnd = new TitanWindow();
 		dupWnd.setTitle("TITAN - Duplicated");
 		//wnd.attachToolBar();
@@ -177,7 +178,7 @@ public final class TitanTreeContainer{
 	}
 
 	void uiMnuFork(ActionEvent ae){
-		//ìƒˆë¡œìš´ TitanWindowë¥¼ ìƒì„±í•˜ë˜ DataSourceë¥¼ ë™ì¼í•œ ê²ƒìœ¼ë¡œ ì œê³µ
+		//»õ·Î¿î TitanWindow¸¦ »ı¼ºÇÏµÇ DataSource¸¦ µ¿ÀÏÇÑ °ÍÀ¸·Î Á¦°ø
 		TitanWindow forkWnd = new TitanWindow();
 		forkWnd.setTitle("TITAN - Fork");
 		forkWnd.pack();
@@ -217,14 +218,14 @@ public final class TitanTreeContainer{
 	}
 	
 	/*
-	 * ì´ë²¤íŠ¸ ì²˜ë¦¬ìš© ë‚´ë¶€ í´ë˜ìŠ¤(ë¶ˆí•„ìš”í•˜ê²Œ ë…¸ì¶œëœ Public ë©”ì„œë“œ ì œê±°)
+	 * ÀÌº¥Æ® Ã³¸®¿ë ³»ºÎ Å¬·¡½º(ºÒÇÊ¿äÇÏ°Ô ³ëÃâµÈ Public ¸Ş¼­µå Á¦°Å)
 	 */
 	class EventHandler implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			switch(ae.getActionCommand()){
 			case "Rename":
-				//íŠ¸ë¦¬ë©”ë‰´ì™€ íˆ´ë°”ì˜ Rename ë™ì‘ ìˆ˜í–‰
+				//Æ®¸®¸Ş´º¿Í Åø¹ÙÀÇ Rename µ¿ÀÛ ¼öÇà
 				uiToolbarRename(ae);
 				break;
 			case "Duplicate":
@@ -238,7 +239,7 @@ public final class TitanTreeContainer{
 	}
 	
 	/////////////////////////////////////
-	//ë¹„ê³µê°œ API
+	//ºñ°ø°³ API
 	/////////////////////////////////////
 	private DefaultMutableTreeNode _findNode(Object o){
 		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
@@ -254,7 +255,7 @@ public final class TitanTreeContainer{
 	}
 	
 	/////////////////////////////////////
-	//ê³µê°œ API
+	//°ø°³ API
 	/////////////////////////////////////
 	public void setRoot(Object o){
 		//get tree model
@@ -291,6 +292,35 @@ public final class TitanTreeContainer{
 		return node == null ? null : node.getUserObject();
 	}
 	
+	public int findNodeIndex(Object item){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		int i = 0;
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(item.equals(node.getUserObject()) == true){
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	public String[] getItemText(){
+		Vector<String> vc = new Vector<String>();
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			
+			if(node.isLeaf()){
+				vc.add(node.getUserObject().toString());
+			}
+		}
+		return vc.toArray(new String[0]);
+	}
 	public void clearTree(){
 		
 	}

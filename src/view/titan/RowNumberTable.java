@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -25,16 +26,19 @@ import javax.swing.table.TableColumn;
 public class RowNumberTable extends JTable 	implements ChangeListener, PropertyChangeListener, TableModelListener{
 	private static final long serialVersionUID = 1L;
 	private JTable main;
-
+	private static String[] hdrName = null;
+	public void setHeaderName(String[] hdr){
+		hdrName = hdr;
+	}
 	public RowNumberTable(JTable table)
 	{
 		main = table;
 		main.addPropertyChangeListener( this );
 		main.getModel().addTableModelListener( this );
 
-		setFocusable( false );
-		setAutoCreateColumnsFromModel( false );
-		setSelectionModel( main.getSelectionModel() );
+		//setFocusable( false );
+		//setAutoCreateColumnsFromModel( false );
+		//setSelectionModel( main.getSelectionModel() );
 
 
 		TableColumn column = new TableColumn();
@@ -42,8 +46,8 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 		addColumn( column );
 		column.setCellRenderer(new RowNumberRenderer());
 
-		getColumnModel().getColumn(0).setPreferredWidth(50);
-		setPreferredScrollableViewportSize(getPreferredSize());
+		//getColumnModel().getColumn(0).setPreferredWidth(50);
+		//setPreferredScrollableViewportSize(getPreferredSize());
 	}
 
 	@Override
@@ -173,8 +177,14 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 			
 			if(isSelected)
 				rdr.setFont(getFont().deriveFont(Font.BOLD));
+			
+			rdr.setHorizontalAlignment(SwingConstants.LEFT);
 			//
-			rdr.setHorizontalAlignment(JLabel.CENTER);			
+			if(hdrName != null){
+				rdr.setText(row + " " + hdrName[row]);
+			}else{
+				rdr.setText(Integer.toString(row));
+			}	
 			return rdr;
 			
 			/*

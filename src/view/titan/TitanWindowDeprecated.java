@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -48,6 +48,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.ListSelectionModel;
 
 public class TitanWindowDeprecated extends JFrame implements ActionListener{
 
@@ -333,6 +334,10 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		spltPan.setRightComponent(scrpanTbl);
 		
 		tblDSMMatrix = new JTable();
+		tblDSMMatrix.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		tblDSMMatrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblDSMMatrix.setCellSelectionEnabled(true);
+		tblDSMMatrix.setColumnSelectionAllowed(true);
 		tblDSMMatrix.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null, null, null, null},
@@ -362,7 +367,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	
 	private void changeLaF(Component c, String className){
 		try{
-			//ë£©ì•¤í•„ ì„¤ì • ë° ì—°ê´€ëœ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ì˜ í…Œë§ˆë¥¼ ì¬ì„¤ì • í›„ ë·° ì˜ì—­ ë¦¬íŒ©
+			//·è¾ØÇÊ ¼³Á¤ ¹× ¿¬°üµÈ ¸ğµç ÄÄÆ÷³ÍÆ®ÀÇ Å×¸¶¸¦ Àç¼³Á¤ ÈÄ ºä ¿µ¿ª ¸®ÆÑ
 			UIManager.setLookAndFeel(className);
 			SwingUtilities.updateComponentTreeUI(c);
 			this.pack();
@@ -374,26 +379,26 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	
 	public void uiMnuChangeLafHandler(ActionEvent e){
-		//UIê´€ë¦¬ìë¡œë¶€í„° í˜„ì¬ JREí™˜ê²½ì— ì„¤ì¹˜ëœ ê¸°ë³¸ LaFí´ë˜ìŠ¤ë¥¼ ì¡°ì‚¬
+		//UI°ü¸®ÀÚ·ÎºÎÅÍ ÇöÀç JREÈ¯°æ¿¡ ¼³Ä¡µÈ ±âº» LaFÅ¬·¡½º¸¦ Á¶»ç
 		UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
 		
-		//LaFì¡°ì‚¬ ì‹¤íŒ¨ì‹œ ì•„ë¬´ëŸ° ë™ì‘ì„ í•˜ì§€ ì•ŠëŠ”ë‹¤
+		//LaFÁ¶»ç ½ÇÆĞ½Ã ¾Æ¹«·± µ¿ÀÛÀ» ÇÏÁö ¾Ê´Â´Ù
 		if(lafs == null || lafs.length == 0){
 			return ;
 		}
 		
-		//ì½¤ë³´ë°•ìŠ¤ì— í‘œì‹œí•  LaFì´ë¦„ì„ ì¡°ì‚¬
+		//ÄŞº¸¹Ú½º¿¡ Ç¥½ÃÇÒ LaFÀÌ¸§À» Á¶»ç
 		String[] lafName = new String[lafs.length];
 		for(int i = 0; i < lafs.length; i++){
 			lafName[i] = lafs[i].getName();
 		}
 		
 		String selLaFName = (String)JOptionPane.showInputDialog(
-								null, "ì‹œìŠ¤í…œ UIí…Œë§ˆë¥¼ ì„ íƒí•˜ì„¸ìš”.", "UI í…Œë§ˆ ë³€ê²½", 
+								null, "½Ã½ºÅÛ UIÅ×¸¶¸¦ ¼±ÅÃÇÏ¼¼¿ä.", "UI Å×¸¶ º¯°æ", 
 								JOptionPane.PLAIN_MESSAGE, null,
 								lafName, lafName[0]);
 		
-		//ì„ íƒëœ LaF Nameì„ UI Managerì—ê²Œ í†µë³´í•˜ê³  ì „ì²´ ì‹œìŠ¤í…œ UI Theme ë³€ê²½
+		//¼±ÅÃµÈ LaF NameÀ» UI Manager¿¡°Ô Åëº¸ÇÏ°í ÀüÃ¼ ½Ã½ºÅÛ UI Theme º¯°æ
 		for(UIManager.LookAndFeelInfo laf : lafs){
 			if(laf.getName().equals(selLaFName) == true){
 				changeLaF(this, laf.getClassName());
@@ -402,14 +407,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	
 	public void uiMnuNewDSM(ActionEvent e){
-		//í…ìŠ¤íŠ¸ í•„ë“œ ìƒì„±
+		//ÅØ½ºÆ® ÇÊµå »ı¼º
 		final JTextField txt = new JTextField(10);
 		
-		//êµ¬ì„±ìš”ì†Œ ìƒì„±
+		//±¸¼º¿ä¼Ò »ı¼º
 		Object[] bodyAndTxtField = {"How many rows added?\n", txt};
 		Object[] btnTxt = {"OK", "Cancel"};
 		
-		//ì˜µì…˜íŒ¨ë„ ìƒì„±
+		//¿É¼ÇÆĞ³Î »ı¼º
 		final JOptionPane optionPane = new JOptionPane(
 													bodyAndTxtField,
 													JOptionPane.QUESTION_MESSAGE,
@@ -419,14 +424,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 													btnTxt[0]
 												);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ ìƒì„±
+		//´ÙÀÌ¾ó·Î±× »ı¼º
 		final JDialog dialog = new JDialog(this, "New DSM", true);
 		dialog.setContentPane(optionPane);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ê°€ ìë™ìœ¼ë¡œ ë‹«íˆì§€ ì•Šê²Œ ì„¤ì •
+		//´ÙÀÌ¾ó·Î±×°¡ ÀÚµ¿À¸·Î ´İÈ÷Áö ¾Ê°Ô ¼³Á¤
 		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ê°€ ì—´ë¦¬ë©´ í…ìŠ¤íŠ¸í•„ë“œë¡œ í¬ì»¤ìŠ¤ê°€ ì´ë™í•˜ë„ë¡ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ì„¤ì • 
+		//´ÙÀÌ¾ó·Î±×°¡ ¿­¸®¸é ÅØ½ºÆ®ÇÊµå·Î Æ÷Ä¿½º°¡ ÀÌµ¿ÇÏµµ·Ï ÀÌº¥Æ® ÇÚµé·¯ ¼³Á¤ 
 		dialog.addComponentListener(new ComponentAdapter(){
 			@Override
 			public void componentShown(ComponentEvent ce){
@@ -434,15 +439,15 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 			}
 		});
 		
-		//Xë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì²˜ë¦¬ë¥¼ ìœ„í•´ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ì¶”ê°€ 
+		//X¹öÆ°À» ´­·¶À» ¶§ Ã³¸®¸¦ À§ÇØ ÀÌº¥Æ® ÇÚµé·¯ Ãß°¡ 
 		dialog.addWindowListener(new WindowAdapter(){
 		    public void windowClosing(WindowEvent we){
-		    	//Xë²„íŠ¼ì„ ëˆŒë €ë‹¤ë©´ ê·¸ëƒ¥ ì¢…ë£Œí•´ì£¼ì
+		    	//X¹öÆ°À» ´­·¶´Ù¸é ±×³É Á¾·áÇØÁÖÀÚ
 		    	dialog.dispose();
 		    }
 		});
 		
-		//ì†ì„±(ì˜ˆë¥¼ ë“¤ì–´ ë²„íŠ¼ì´ ëˆŒë ¸ë‹¤ë˜ì§€)ì´ ë³€ê²½ëœ ê²½ìš°ë¥¼ í™•ì¸
+		//¼Ó¼º(¿¹¸¦ µé¾î ¹öÆ°ÀÌ ´­·È´Ù´øÁö)ÀÌ º¯°æµÈ °æ¿ì¸¦ È®ÀÎ
 		optionPane.addPropertyChangeListener(
 		    new PropertyChangeListener() {
 		        public void propertyChange(PropertyChangeEvent e) {
@@ -461,8 +466,8 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		            		return;
 		            	}
 		            	
-		            	//ì´ ê°’ì„ ì„¤ì •í•˜ì§€ ì•Šìœ¼ë©´ ë‹¤ìŒë²ˆì— ìœ ì €ê°€ ì´ë²¤íŠ¸ë¥¼ ë°œìƒì‹œí‚¤ë”ë¼ë„
-		            	//í”„ë¡œí¼í‹° ë³€ê²½ ì´ë²¤íŠ¸ê°€ ë°œìƒí•˜ì§€ ì•Šê²Œ ëœë‹¤.
+		            	//ÀÌ °ªÀ» ¼³Á¤ÇÏÁö ¾ÊÀ¸¸é ´ÙÀ½¹ø¿¡ À¯Àú°¡ ÀÌº¥Æ®¸¦ ¹ß»ı½ÃÅ°´õ¶óµµ
+		            	//ÇÁ·ÎÆÛÆ¼ º¯°æ ÀÌº¥Æ®°¡ ¹ß»ıÇÏÁö ¾Ê°Ô µÈ´Ù.
 		            	optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 		            	
 		            	if("OK".equals(value)){
@@ -483,16 +488,16 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		            }
 		        }
 		    });
-		//ë‹¤ì´ì–¼ë¡œê·¸ ìš”ì†Œë¥¼ ì ì ˆí•˜ê²Œ ë°°ì¹˜
+		//´ÙÀÌ¾ó·Î±× ¿ä¼Ò¸¦ ÀûÀıÇÏ°Ô ¹èÄ¡
 		dialog.pack();
 		
-		//ë¶€ëª¨ ìœˆë„ìš°ì˜ ì¤‘ì•™ì— ì˜¤ë„ë¡ ì¡°ì •
+		//ºÎ¸ğ À©µµ¿ìÀÇ Áß¾Ó¿¡ ¿Àµµ·Ï Á¶Á¤
 		dialog.setLocationRelativeTo(this);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ ì „ì‹œ
+		//´ÙÀÌ¾ó·Î±× Àü½Ã
 		dialog.setVisible(true);
 		
-		//ì—¬ê¸°ì— í•„ìš”í•œ ì½”ë“œ ì‘ì„±
+		//¿©±â¿¡ ÇÊ¿äÇÑ ÄÚµå ÀÛ¼º
 	}
 	
 	void uiMnuOpenDSM(ActionEvent e){
@@ -502,7 +507,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "ì—‘ì…€ íŒŒì¼ë¡œ ë‚´ë³´ëƒˆìŠµë‹ˆë‹¤.");
+			//JOptionPane.showMessageDialog(null, "¿¢¼¿ ÆÄÀÏ·Î ³»º¸³Â½À´Ï´Ù.");
 		}
 	}
 	
@@ -513,7 +518,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "ì—‘ì…€ íŒŒì¼ë¡œ ë‚´ë³´ëƒˆìŠµë‹ˆë‹¤.");
+			//JOptionPane.showMessageDialog(null, "¿¢¼¿ ÆÄÀÏ·Î ³»º¸³Â½À´Ï´Ù.");
 		}
 	}
 	
@@ -528,7 +533,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "ì—‘ì…€ íŒŒì¼ë¡œ ë‚´ë³´ëƒˆìŠµë‹ˆë‹¤.");
+			//JOptionPane.showMessageDialog(null, "¿¢¼¿ ÆÄÀÏ·Î ³»º¸³Â½À´Ï´Ù.");
 		}
 	}
 	
@@ -595,7 +600,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	void uiToolbarSort(ActionEvent e){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treDSM.getLastSelectedPathComponent();
 		
-		//nodeê°€ ë£¨íŠ¸ë¼ë©´ í•œì •ì ìœ¼ë¡œ ìì‹ë…¸ë“œë§Œ ì†ŒíŠ¸		
+		//node°¡ ·çÆ®¶ó¸é ÇÑÁ¤ÀûÀ¸·Î ÀÚ½Ä³ëµå¸¸ ¼ÒÆ®		
 		if(node == null)
 			return;
 		
@@ -603,14 +608,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		
 		if(root.equals(node)){
 			System.out.println("you select root node.");
-			//ë£¨íŠ¸ë¥¼ ì„ íƒí–ˆë‹¤ë©´ ë£¨íŠ¸ì— ìì‹ì´ ìˆëŠ”ì§€ í™•ì¸
+			//·çÆ®¸¦ ¼±ÅÃÇß´Ù¸é ·çÆ®¿¡ ÀÚ½ÄÀÌ ÀÖ´ÂÁö È®ÀÎ
 			node = (DefaultMutableTreeNode)root.getFirstChild();
 			
 			if(node == null){
 				System.out.println("there are no childs.");
 				return ;
 			}
-			//ìì‹ë…¸ë“œê°€ ìˆë‹¤ë©´ í•´ë‹¹ ë…¸ë“œë¥¼ ì„ íƒí•˜ê³  ì •ë ¬ ìˆ˜í–‰....
+			//ÀÚ½Ä³ëµå°¡ ÀÖ´Ù¸é ÇØ´ç ³ëµå¸¦ ¼±ÅÃÇÏ°í Á¤·Ä ¼öÇà....
 		}
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)node.getParent();
 		
@@ -635,7 +640,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	void uiToolbarRename(ActionEvent e){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treDSM.getLastSelectedPathComponent();
 		
-		//nodeê°€ ë£¨íŠ¸ë¼ë©´ í•œì •ì ìœ¼ë¡œ ìì‹ë…¸ë“œë§Œ ì†ŒíŠ¸		
+		//node°¡ ·çÆ®¶ó¸é ÇÑÁ¤ÀûÀ¸·Î ÀÚ½Ä³ëµå¸¸ ¼ÒÆ®		
 		if(node == null)
 			return;
 		
@@ -647,7 +652,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e){
-		//ì´ë²¤íŠ¸ë¥¼ ë°›ì€ UI ìš”ì†Œë¥¼ íŒŒì•…í•˜ê³  ì ì ˆí•œ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ í˜¸ì¶œ
+		//ÀÌº¥Æ®¸¦ ¹ŞÀº UI ¿ä¼Ò¸¦ ÆÄ¾ÇÇÏ°í ÀûÀıÇÑ ÀÌº¥Æ® ÇÚµé·¯ È£Ãâ
 		System.out.println(e.getActionCommand());
 		System.out.println("event triggered.");
 		switch(e.getActionCommand()){

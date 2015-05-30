@@ -1,4 +1,4 @@
-package titan.gui;
+package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -32,16 +33,20 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import model.Data;
+
 import com.ezware.dialog.task.TaskDialogs;
+
+import controller.DataController;
 
 /*
  * @date	: 2015-05-21
  * @author	: seok
  * @version	: 1  
- * TITAN í”„ë¡œê·¸ë¨ì˜ ë©”ì¸ ìœˆë„ìš° ë¼ˆëŒ€
- * ì—¬ê¸°ì— TreePaneê³¼ TablePaneì„ ë¶€ì°©í•˜ì—¬ ê¸°ë³¸ í™”ë©´ì„ êµ¬ì„±í•œë‹¤.
- * Fork ë˜ëŠ” Duplicateë˜ëŠ” ê²½ìš° enableToolBarë©”ì„œë“œë¥¼ í˜¸ì¶œí•˜ì§€ ì•ŠëŠ” ê²ƒìœ¼ë¡œ
- * ì£¼ ìœˆë„ìš°ì™€ ë¶€ ìœˆë„ìš°ë¥¼ êµ¬ë¶„í•  ìˆ˜ ìˆë‹¤.
+ * TITAN ÇÁ·Î±×·¥ÀÇ ¸ŞÀÎ À©µµ¿ì »À´ë
+ * ¿©±â¿¡ TreePane°ú TablePaneÀ» ºÎÂøÇÏ¿© ±âº» È­¸éÀ» ±¸¼ºÇÑ´Ù.
+ * Fork ¶Ç´Â DuplicateµÇ´Â °æ¿ì enableToolBar¸Ş¼­µå¸¦ È£ÃâÇÏÁö ¾Ê´Â °ÍÀ¸·Î
+ * ÁÖ À©µµ¿ì¿Í ºÎ À©µµ¿ì¸¦ ±¸ºĞÇÒ ¼ö ÀÖ´Ù.
  * 
  */
 
@@ -52,53 +57,93 @@ public class TitanWindow implements ActionListener{
 	private JFrame					frame;
 	
 	
-	//ì‚¬ìš©ìê°€ ì„ íƒí•œ DSMíŒŒì¼ì„ ë‚˜íƒ€ë‚¸ë‹¤. 
-	//íŒŒì¼ ì„ íƒì„ ì·¨ì†Œ ë˜ëŠ” ì„ íƒí•˜ì§€ ì•Šì€ ê²½ìš°ì—ëŠ” null
+	//»ç¿ëÀÚ°¡ ¼±ÅÃÇÑ DSMÆÄÀÏÀ» ³ªÅ¸³½´Ù. 
+	//ÆÄÀÏ ¼±ÅÃÀ» Ãë¼Ò ¶Ç´Â ¼±ÅÃÇÏÁö ¾ÊÀº °æ¿ì¿¡´Â null
 	private File		dsmFile = null;
 	
-	//ì‚¬ìš©ìê°€ ì„ íƒí•œ CLSXíŒŒì¼ì„ ë‚˜íƒ€ë‚¸ë‹¤.
-	//íŒŒì¼ ì„ íƒì„ ì·¨ì†Œ ë˜ëŠ” ì„ íƒí•˜ì§€ ì•Šì€ ê²½ìš°ì—ëŠ” null
+	//»ç¿ëÀÚ°¡ ¼±ÅÃÇÑ CLSXÆÄÀÏÀ» ³ªÅ¸³½´Ù.
+	//ÆÄÀÏ ¼±ÅÃÀ» Ãë¼Ò ¶Ç´Â ¼±ÅÃÇÏÁö ¾ÊÀº °æ¿ì¿¡´Â null
 	private File		clsxFile = null;
 	
-	//í”„ë¡œê·¸ë¨ ìˆ˜ì • ì—¬ë¶€, ìƒˆë¡œìš´ íŒŒì¼ì„ ì—¬ëŠ” ê²½ìš°ì—ë§Œ false, ë‚˜ë¨¸ì§€ ë™ì‘ ìˆ˜í–‰ì‹œ trueë¡œ ì„¤ì •
+	//ÇÁ·Î±×·¥ ¼öÁ¤ ¿©ºÎ, »õ·Î¿î ÆÄÀÏÀ» ¿©´Â °æ¿ì¿¡¸¸ false, ³ª¸ÓÁö µ¿ÀÛ ¼öÇà½Ã true·Î ¼³Á¤
 	private boolean	isModified = false;
 	
-	//ìƒì„±ê³¼ ë™ì‹œì— ì´ˆê¸°í™” ìˆ˜í–‰
+	private DataController dc;
+	//»ı¼º°ú µ¿½Ã¿¡ ÃÊ±âÈ­ ¼öÇà
 	{
 		init();
 		initMenuBar();
 		initToolBar();
 	}
+	
+	public void setDataController(Data dsmData){
+		//µ¥ÀÌÅÍ ·Îµå ½ÃÀÛ ¹× ·çÆ® »ı¼º
+		TitanTreeContainer tc = this.getTitanTreeContainer();
+		tc.setRoot(dsmData);
+		
+		//Âß ÀĞ¾î¿È
+		Object o = tc.getRoot();
+		for(int i = 0; i < dsmData.ItemCount(); i++){
+			tc.insertNode(o, dsmData.child.get(i));
+		}
+		
+		//ÀĞ¾î¿Â µ¥ÀÌÅÍ·Î Å×ÀÌºí Ãß°¡
+		this.getTitanTableContainer().setColumnSize(dsmData.child.size());
+		
+		
+		//
+		for(int i = 0; i < dsmData.ItemCount(); i++){
+			Vector<String> vc = new Vector<String>();
+			
+			for(int j = 0; j < dsmData.ItemCount(); j++){
+				if(i == j)
+					vc.add(".");
+				else
+					vc.add("");
+			}
+			
+			Data d = dsmData.child.get(i);
+			for(Data target : d.depend){
+				int idx = tc.findNodeIndex(target);
+				if(idx != -1)
+					vc.set(idx, "x");
+			}
+			this.getTitanTableContainer().addNewRow(vc);
+		}
+		this.getTitanTableContainer().setRowHeaderTxt(tc.getItemText());
+		this.getTitanTableContainer().setColumnSizePref();	
+	}
+	
 	/*
-	 * ìœˆë„ìš°ì— ë©”ë‰´ë°” ë¶€ì°©
+	 * À©µµ¿ì¿¡ ¸Ş´º¹Ù ºÎÂø
 	 */
 	public void attachMenuBar(){
 		frame.setJMenuBar(mnuBar);
 	}
 	
 	/*
-	 * ìœˆë„ìš°ì— ë©”ë‰´ë°” ë¶„ë¦¬
+	 * À©µµ¿ì¿¡ ¸Ş´º¹Ù ºĞ¸®
 	 */
 	public void detachMenuBar(){
 		frame.setJMenuBar(null);
 	}
 	
 	/*
-	 * ìœˆë„ìš°ì— íˆ´ë°” ë¶€ì°©
+	 * À©µµ¿ì¿¡ Åø¹Ù ºÎÂø
 	 */
 	public void attachToolBar(){
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
 	}
 	
 	/*
-	 * ìœˆë„ìš°ì— íˆ´ë°” ë¶„ë¦¬
+	 * À©µµ¿ì¿¡ Åø¹Ù ºĞ¸®
 	 */
 	public void detachToolBar(){
 		frame.getContentPane().remove(toolBar);
 	}
 	
 	/*
-	 * íˆ´ë°” ì´ˆê¸°í™”
+	 * Åø¹Ù ÃÊ±âÈ­
 	 */
 	private void initToolBar(){
 		toolBar = new JToolBar();
@@ -131,7 +176,7 @@ public class TitanWindow implements ActionListener{
 		toolBar.add(tmp);
 	}
 	/*
-	 * ë©”ë‰´ë°” ìƒì„± ë° ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ì—°ê²°
+	 * ¸Ş´º¹Ù »ı¼º ¹× ÀÌº¥Æ® ÇÚµé·¯ ¿¬°á
 	 */
 	private void initMenuBar(){
 		mnuBar = new JMenuBar();
@@ -188,22 +233,22 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * ìœˆë„ìš° ì´ˆê¸°í™”
+	 * À©µµ¿ì ÃÊ±âÈ­
 	 */
 	private void init(){
 		frame = new JFrame();
 		
-		//íƒ€ì´í‹€ ì„¤ì •
+		//Å¸ÀÌÆ² ¼³Á¤
 		frame.setTitle("TITAN");
 		
-		//íƒ€ì´íƒ„ë·°ì–´ ìƒì„±
+		//Å¸ÀÌÅººä¾î »ı¼º
 		view = new TitanSplitContainer();
 		frame.getContentPane().add(view.getContainer(), BorderLayout.CENTER);
 		
 		/*
-		 * Look And Feelì„ OSì— ë”°ë¼ ê²°ì •
-		 * Windows ê³„ì—´ : Windows
-		 * ë¹„ Windows ê³„ì—´ : Nimbus
+		 * Look And FeelÀ» OS¿¡ µû¶ó °áÁ¤
+		 * Windows °è¿­ : Windows
+		 * ºñ Windows °è¿­ : Nimbus
 		 */
 		if(System.getProperty("os.name").contains("Windows") == true){
 			changeLaF(frame, "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -211,28 +256,28 @@ public class TitanWindow implements ActionListener{
 			changeLaF(frame, "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		}
 		
-		//ì†Œìœ í•˜ê³  ìˆëŠ” ëª¨ë“  ì»¨í…Œì´ë„ˆì˜ í¬ê¸° ë° ìœ„ì¹˜ë¥¼ ì¬ì¡°ì •
+		//¼ÒÀ¯ÇÏ°í ÀÖ´Â ¸ğµç ÄÁÅ×ÀÌ³ÊÀÇ Å©±â ¹× À§Ä¡¸¦ ÀçÁ¶Á¤
 		frame.pack();
 		
-		//í˜„ì¬ ì„ íƒëœ ëª¨ë‹ˆí„°ì˜ ì¤‘ì•™ìœ¼ë¡œ ì´ë™
+		//ÇöÀç ¼±ÅÃµÈ ¸ğ´ÏÅÍÀÇ Áß¾ÓÀ¸·Î ÀÌµ¿
 		frame.setLocationRelativeTo(null);
 		
-		//ë‹«ê¸° ë²„íŠ¼ ëˆ„ë¥´ë©´ VMê¹Œì§€ ì¢…ë£Œë˜ë„ë¡ ì„¤ì •
+		//´İ±â ¹öÆ° ´©¸£¸é VM±îÁö Á¾·áµÇµµ·Ï ¼³Á¤
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
 	/*
-	 * ìƒˆë¡œìš´ DSMì„ ìƒì„±
+	 * »õ·Î¿î DSMÀ» »ı¼º
 	 */
 	public void uiMnuNewDSM(ActionEvent ae){
-		//í…ìŠ¤íŠ¸ í•„ë“œ ìƒì„±
+		//ÅØ½ºÆ® ÇÊµå »ı¼º
 		final JTextField txtFld = new JTextField(10);
 		
-		//êµ¬ì„±ìš”ì†Œ
+		//±¸¼º¿ä¼Ò
 		Object[] bodyAndTxtField = {"How many rows added?\n", txtFld};
 		Object[] btnTxt = {"OK", "Cancel"};
 		
-		//ì˜µì…˜íŒ¨ë„ ìƒì„±
+		//¿É¼ÇÆĞ³Î »ı¼º
 		final JOptionPane optionPane = new JOptionPane(
 													bodyAndTxtField,
 													JOptionPane.QUESTION_MESSAGE,
@@ -242,14 +287,14 @@ public class TitanWindow implements ActionListener{
 													btnTxt[0]
 												);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ ìƒì„±
+		//´ÙÀÌ¾ó·Î±× »ı¼º
 		final JDialog dialog = new JDialog(frame, "New DSM", true);
 		dialog.setContentPane(optionPane);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ê°€ ìë™ìœ¼ë¡œ ë‹«íˆì§€ ì•Šê²Œ ì„¤ì •
+		//´ÙÀÌ¾ó·Î±×°¡ ÀÚµ¿À¸·Î ´İÈ÷Áö ¾Ê°Ô ¼³Á¤
 		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ê°€ ì—´ë¦¬ë©´ í…ìŠ¤íŠ¸í•„ë“œë¡œ í¬ì»¤ìŠ¤ê°€ ì´ë™í•˜ë„ë¡ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ì„¤ì • 
+		//´ÙÀÌ¾ó·Î±×°¡ ¿­¸®¸é ÅØ½ºÆ®ÇÊµå·Î Æ÷Ä¿½º°¡ ÀÌµ¿ÇÏµµ·Ï ÀÌº¥Æ® ÇÚµé·¯ ¼³Á¤ 
 		dialog.addComponentListener(new ComponentAdapter(){
 			@Override
 			public void componentShown(ComponentEvent ce){
@@ -257,15 +302,15 @@ public class TitanWindow implements ActionListener{
 			}
 		});
 		
-		//Xë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ì²˜ë¦¬ë¥¼ ìœ„í•´ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ì¶”ê°€ 
+		//X¹öÆ°À» ´­·¶À» ¶§ Ã³¸®¸¦ À§ÇØ ÀÌº¥Æ® ÇÚµé·¯ Ãß°¡ 
 		dialog.addWindowListener(new WindowAdapter(){
 		    public void windowClosing(WindowEvent we){
-		    	//Xë²„íŠ¼ì„ ëˆŒë €ë‹¤ë©´ ì¢…ë£Œ
+		    	//X¹öÆ°À» ´­·¶´Ù¸é Á¾·á
 		    	dialog.dispose();
 		    }
 		});
 		
-		//ì†ì„±(ì˜ˆë¥¼ ë“¤ì–´ ë²„íŠ¼ì´ ëˆŒë ¸ë‹¤ë˜ì§€)ì´ ë³€ê²½ëœ ê²½ìš°ë¥¼ í™•ì¸
+		//¼Ó¼º(¿¹¸¦ µé¾î ¹öÆ°ÀÌ ´­·È´Ù´øÁö)ÀÌ º¯°æµÈ °æ¿ì¸¦ È®ÀÎ
 		optionPane.addPropertyChangeListener(
 		    new PropertyChangeListener(){
 		        public void propertyChange(PropertyChangeEvent pcEvt){
@@ -280,8 +325,8 @@ public class TitanWindow implements ActionListener{
 		            		return;
 		            	}
 		            	
-		            	//ì´ ê°’ì„ ì„¤ì •í•˜ì§€ ì•Šìœ¼ë©´ ë‹¤ìŒë²ˆì— ìœ ì €ê°€ ì´ë²¤íŠ¸ë¥¼ ë°œìƒì‹œí‚¤ë”ë¼ë„
-		            	//í”„ë¡œí¼í‹° ë³€ê²½ ì´ë²¤íŠ¸ê°€ ë°œìƒí•˜ì§€ ì•Šê²Œ ëœë‹¤.
+		            	//ÀÌ °ªÀ» ¼³Á¤ÇÏÁö ¾ÊÀ¸¸é ´ÙÀ½¹ø¿¡ À¯Àú°¡ ÀÌº¥Æ®¸¦ ¹ß»ı½ÃÅ°´õ¶óµµ
+		            	//ÇÁ·ÎÆÛÆ¼ º¯°æ ÀÌº¥Æ®°¡ ¹ß»ıÇÏÁö ¾Ê°Ô µÈ´Ù.
 		            	optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 		            	
 		            	if("OK".equals(value)){
@@ -308,18 +353,18 @@ public class TitanWindow implements ActionListener{
 		            }
 		        }
 		    });
-		//ë‹¤ì´ì–¼ë¡œê·¸ ìš”ì†Œë¥¼ ì ì ˆí•˜ê²Œ ë°°ì¹˜
+		//´ÙÀÌ¾ó·Î±× ¿ä¼Ò¸¦ ÀûÀıÇÏ°Ô ¹èÄ¡
 		dialog.pack();
 		
-		//ë¶€ëª¨ ìœˆë„ìš°ì˜ ì¤‘ì•™ì— ì˜¤ë„ë¡ ì¡°ì •
+		//ºÎ¸ğ À©µµ¿ìÀÇ Áß¾Ó¿¡ ¿Àµµ·Ï Á¶Á¤
 		dialog.setLocationRelativeTo(frame);
 		
-		//ë‹¤ì´ì–¼ë¡œê·¸ ì „ì‹œ
+		//´ÙÀÌ¾ó·Î±× Àü½Ã
 		dialog.setVisible(true);
 	}
 	
 	/*
-	 * DSMíŒŒì¼ì˜ ê²½ë¡œë¥¼ ë°˜í™˜
+	 * DSMÆÄÀÏÀÇ °æ·Î¸¦ ¹İÈ¯
 	 */
 	private void uiMnuOpenDSM(ActionEvent ae){
 		FileNameExtensionFilter flt = new FileNameExtensionFilter("DSM File(*.dsm)", "dsm");
@@ -334,14 +379,14 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * ìƒˆë¡œìš´ í´ëŸ¬ìŠ¤í„°ë§ ìƒì„±
+	 * »õ·Î¿î Å¬·¯½ºÅÍ¸µ »ı¼º
 	 */
 	void uiMnuNewClustering(ActionEvent ae){
 		JOptionPane.showMessageDialog(frame, "All grouped matrix are reverted...");
 	}
 	
 	/*
-	 * í´ëŸ¬ìŠ¤í„°ë§ ë¡œë“œ
+	 * Å¬·¯½ºÅÍ¸µ ·Îµå
 	 */
 	void uiMnuLoadClustering(ActionEvent ae){
 		FileNameExtensionFilter flt = new FileNameExtensionFilter("Clustering File(*.clsx)", "clsx");
@@ -356,15 +401,15 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * í´ëŸ¬ìŠ¤í„°ë§ ì €ì¥
+	 * Å¬·¯½ºÅÍ¸µ ÀúÀå
 	 */
 	void uiMnuSaveClustering(ActionEvent ae){
 		JOptionPane.showMessageDialog(frame, "Clustering saved...");
 	}
 	
 	/*
-	 * í´ëŸ¬ìŠ¤í„°ë§ì„ ë‹¤ë¥¸ ì´ë¦„ìœ¼ë¡œ ì €ì¥,
-	 * ì´ ë•Œ getCLSXFile ë©”ì†Œë“œë¡œ ìƒˆë¡œìš´ CLSXíŒŒì¼ì„ ì•Œ ìˆ˜ ìˆìŒ
+	 * Å¬·¯½ºÅÍ¸µÀ» ´Ù¸¥ ÀÌ¸§À¸·Î ÀúÀå,
+	 * ÀÌ ¶§ getCLSXFile ¸Ş¼Òµå·Î »õ·Î¿î CLSXÆÄÀÏÀ» ¾Ë ¼ö ÀÖÀ½
 	 */	
 	void uiMnuSaveClusteringAs(ActionEvent ae){
 		FileNameExtensionFilter flt = new FileNameExtensionFilter("Clustering File(*.clsx)", "clsx");
@@ -379,14 +424,14 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * í”„ë¡œê·¸ë¨ ì¢…ë£Œ
+	 * ÇÁ·Î±×·¥ Á¾·á
 	 */	
 	void uiMnuExit(ActionEvent ae){
-		//ë³€ê²½ì‚¬í•­ ê°ì§€
+		//º¯°æ»çÇ× °¨Áö
 		isModified = true;
 		if(isModified == true){
-			//ì¢…ë£Œ ì—¬ë¶€ í™•ì¸
-			int result = JOptionPane.showConfirmDialog(frame, "ë³€ê²½ ì‚¬í•­ì´ ìˆìŠµë‹ˆë‹¤. ì €ì¥í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
+			//Á¾·á ¿©ºÎ È®ÀÎ
+			int result = JOptionPane.showConfirmDialog(frame, "º¯°æ »çÇ×ÀÌ ÀÖ½À´Ï´Ù. ÀúÀåÇÏ½Ã°Ú½À´Ï±î?");
 			
 			if(result == JOptionPane.YES_OPTION){
 				//save
@@ -395,56 +440,56 @@ public class TitanWindow implements ActionListener{
 			}
 		}
 		
-		//í”„ë¡œê·¸ë¨ ì¢…ë£Œ
+		//ÇÁ·Î±×·¥ Á¾·á
 		System.exit(0);
 	}
 	
 	/*
-	 * ë‹¤ì‹œ ê·¸ë¦¬ê¸°
+	 * ´Ù½Ã ±×¸®±â
 	 */	
 	void uiMnuRedraw(ActionEvent ae){
 		JOptionPane.showMessageDialog(frame, "redrawed...");
 	}
 	
 	/*
-	 * í–‰ ë ˆì´ë¸” ë³´ì´ê¸° í† ê¸€
+	 * Çà ·¹ÀÌºí º¸ÀÌ±â Åä±Û
 	 */	
 	void uiMnuShowRowLable(ActionEvent ae){
 		JOptionPane.showMessageDialog(frame, "Toggled.");
 	}
 	
 	/*
-	 * ì–´ë°”ì›ƒ Team
+	 * ¾î¹Ù¿ô Team
 	 */	
 	void uiMnuAbout(ActionEvent ae){
 		JOptionPane.showMessageDialog(frame, "EMPTY");
 	}
 	
 	/*
-	 * LAFë¥¼ ì„ íƒí•  ìˆ˜ ìˆë„ë¡ ì „ì‹œ
+	 * LAF¸¦ ¼±ÅÃÇÒ ¼ö ÀÖµµ·Ï Àü½Ã
 	 */
 	private void uiMnuChangeLAF(ActionEvent ae){
-		//UIê´€ë¦¬ìë¡œë¶€í„° í˜„ì¬ JREí™˜ê²½ì— ì„¤ì¹˜ëœ ê¸°ë³¸ LaFí´ë˜ìŠ¤ë¥¼ ì¡°ì‚¬
+		//UI°ü¸®ÀÚ·ÎºÎÅÍ ÇöÀç JREÈ¯°æ¿¡ ¼³Ä¡µÈ ±âº» LaFÅ¬·¡½º¸¦ Á¶»ç
 		UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
 		
-		//LaFì¡°ì‚¬ ì‹¤íŒ¨ì‹œ ì•„ë¬´ëŸ° ë™ì‘ì„ í•˜ì§€ ì•ŠëŠ”ë‹¤
+		//LaFÁ¶»ç ½ÇÆĞ½Ã ¾Æ¹«·± µ¿ÀÛÀ» ÇÏÁö ¾Ê´Â´Ù
 		if(lafs == null || lafs.length == 0){
 			return ;
 		}
 		
-		//ì½¤ë³´ë°•ìŠ¤ì— í‘œì‹œí•  LAFì´ë¦„ì„ ì¡°ì‚¬í•˜ê³  ì½¤ë³´ë°•ìŠ¤ì— ì¶”ê°€
+		//ÄŞº¸¹Ú½º¿¡ Ç¥½ÃÇÒ LAFÀÌ¸§À» Á¶»çÇÏ°í ÄŞº¸¹Ú½º¿¡ Ãß°¡
 		String[] lafName = new String[lafs.length];
 		for(int i = 0; i < lafs.length; i++){
 			lafName[i] = lafs[i].getName();
 		}
 		
-		//ì‚¬ìš©ìê°€ ì„ íƒí•œ LAFë¥¼ ì–»ì–´ë‚¸ë‹¤
+		//»ç¿ëÀÚ°¡ ¼±ÅÃÇÑ LAF¸¦ ¾ò¾î³½´Ù
 		String selLaFName = (String)JOptionPane.showInputDialog(
 								null, "Select System UI", "Change UI", 
 								JOptionPane.PLAIN_MESSAGE, null,
 								lafName, lafName[0]);
 		
-		//ì„ íƒëœ LaFë¥¼ UIê´€ë¦¬ìì—ê²Œ ì•Œë¦°ë‹¤
+		//¼±ÅÃµÈ LaF¸¦ UI°ü¸®ÀÚ¿¡°Ô ¾Ë¸°´Ù
 		for(UIManager.LookAndFeelInfo laf : lafs){
 			if(laf.getName().equals(selLaFName) == true){
 				changeLaF(frame, laf.getClassName());
@@ -452,12 +497,12 @@ public class TitanWindow implements ActionListener{
 		}
 	}
 	/*
-	 * íˆ´ë°” ë° ë©”ë‰´ì— ê´€ë ¨ëœ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•˜ëŠ” í•¸ë“¤ëŸ¬
+	 * Åø¹Ù ¹× ¸Ş´º¿¡ °ü·ÃµÈ ÀÌº¥Æ®¸¦ Ã³¸®ÇÏ´Â ÇÚµé·¯
 	 * 
 	 */
 	@Override
 	public void actionPerformed(ActionEvent ae){
-		//ì•¡ì…˜ì»¤ë§¨ë“œì— ë”°ë¼ ì ì ˆí•œ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ í˜¸ì¶œ
+		//¾×¼ÇÄ¿¸Çµå¿¡ µû¶ó ÀûÀıÇÑ ÀÌº¥Æ® ÇÚµé·¯ È£Ãâ
 		switch(ae.getActionCommand()){
 		case "New DSM":
 			uiMnuNewDSM(ae);
@@ -497,7 +542,7 @@ public class TitanWindow implements ActionListener{
 	
 	private void changeLaF(Component c, String clsName){
 		try{
-			//ì†Œìœ í•˜ê³  ìˆëŠ” ëª¨ë“  ì»´í¬ë„ŒíŠ¸ì˜ ë£©ì•¤í•„ ì†ì„± ë³€ê²½
+			//¼ÒÀ¯ÇÏ°í ÀÖ´Â ¸ğµç ÄÄÆ÷³ÍÆ®ÀÇ ·è¾ØÇÊ ¼Ó¼º º¯°æ
 			UIManager.setLookAndFeel(clsName);
 			SwingUtilities.updateComponentTreeUI(c);
 			frame.pack();
@@ -528,14 +573,14 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * DSM íŒŒì¼ ì •ë³´
+	 * DSM ÆÄÀÏ Á¤º¸
 	 */
 	public File getDSMFile(){
 		return dsmFile;
 	}
 	
 	/*
-	 * CLSX íŒŒì¼ ì •ë³´
+	 * CLSX ÆÄÀÏ Á¤º¸
 	 */
 	public File getCLSXFile(){
 		return clsxFile;
