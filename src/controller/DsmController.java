@@ -12,44 +12,55 @@ import java.util.Scanner;
 
 import model.Dsm;
 
-
-public class ReadDsmController {
+public class DsmController {
+	private final String NEWDSMNAME = "entity";
 	ArrayList<Dsm> dsms;
-	
-	public ReadDsmController() {
+
+	public DsmController() {
 		dsms = new ArrayList<Dsm>();
 	}
-	
+
 	public int getNumber() {
 		return dsms.size();
 	}
-	
+
 	public Dsm getDsm(int index) {
 		Optional<Dsm> find = dsms.stream()
-			.filter(dsm -> dsm.getIndex() == index)
-			.findFirst();
+				.filter(dsm -> dsm.getIndex() == index).findFirst();
 
 		// FIXME
 		if (find.isPresent())
-			return find.get();	// found
+			return find.get(); // found
 		else
-			return null;		// cannot found
+			return null; // cannot found
 	}
-	
+
+	public void newDsm(int number) {
+		// Clear dsms
+		dsms.clear();
+
+		// Make DsmModel
+		for (int i = 0; i < number; i++) {
+			dsms.add(new Dsm(i, NEWDSMNAME + i));
+		}
+
+	}
+
 	/**
 	 * Read dsm file and make Dsm list
+	 * 
 	 * @param file
 	 */
 	public void readFile(File file) {
 		try {
 			Scanner scanner = new Scanner(file);
 			int number = scanner.nextInt();
-			
+
 			// Make DsmModel
 			for (int i = 0; i < number; i++) {
 				dsms.add(new Dsm(i));
 			}
-			
+
 			// Set dependency
 			for (int i = 0; i < number; i++) {
 				Dsm model = dsms.get(i);
@@ -65,49 +76,50 @@ public class ReadDsmController {
 
 			// FIXME: 실제 데이터에는 공백이 없는데 nextLine에서 하나 나옴. 그래서 그걸 제거.
 			scanner.nextLine();
-			
+
 			// Set name
-			for (int i=0; i < number; i++) {
+			for (int i = 0; i < number; i++) {
 				if (scanner.hasNextLine())
 					dsms.get(i).setName(scanner.nextLine());
 				System.out.println(i + "th dsm: " + dsms.get(i).getName());
 			}
-			
+
 			scanner.close();
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void writeFile() {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
-			
+			BufferedWriter out = new BufferedWriter(new FileWriter(
+					"src/res/out.txt"));
+
 			int number = dsms.size();
-			out.write(number+""); 
+			out.write(number + "");
 			out.newLine();
-			
-			for (int i = 0; i < number  ; i++) {
+
+			for (int i = 0; i < number; i++) {
 				for (int j = 0; j < number; j++) {
-					if (dsms.get(i).isDependent(j)) 
+					if (dsms.get(i).isDependent(j))
 						out.write(1 + " ");
 					else
 						out.write(0 + " ");
 				}
 				out.newLine();
 			}
-			
+
 			for (int i = 0; i < number; i++) {
 				out.write(dsms.get(i).getName());
 				out.newLine();
 			}
-			
+
 			out.close();
-			
+
 		} catch (IOException e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -129,9 +141,11 @@ public class ReadDsmController {
 	 */
 	public void deleteItem(int index) {
 		// remove from dsm array
-		this.dsms.removeIf((Dsm d) -> { return d.getIndex() == index; });
-		
-		// remove dependency for Item in each dsm  
+		this.dsms.removeIf((Dsm d) -> {
+			return d.getIndex() == index;
+		});
+
+		// remove dependency for Item in each dsm
 		for (Dsm dsm : dsms) {
 			dsm.removeDependency(index);
 		}
@@ -145,27 +159,25 @@ public class ReadDsmController {
 	public void changeDependency(int a, int b) {
 		if (dsms.get(a).isDependent(b)) {
 			dsms.get(a).removeDependency(b);
-			dsms.get(b).removeDependency(a);	
-		}
-		else {
+			dsms.get(b).removeDependency(a);
+		} else {
 			dsms.get(a).addModel(dsms.get(b));
 			dsms.get(b).addModel(dsms.get(a));
 		}
 	}
-	
+
 	public void printDependency() {
 		int number = dsms.size();
 		for (int i = 0; i < number; i++) {
 			for (int j = 0; j < number; j++) {
 				if (dsms.get(i).isDependent(j)) {
 					System.out.print("O ");
-				}
-				else {
+				} else {
 					System.out.print("X ");
 				}
 			}
 			System.out.println("");
-			
+
 			dsms.get(i);
 		}
 	}
