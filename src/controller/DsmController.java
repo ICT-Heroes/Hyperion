@@ -5,17 +5,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
 
 import model.Dsm;
 
+/**
+ * Read dsm file and make Dsm list
+ * 
+ * @param file
+ */
 public class DsmController {
 	private final String NEWDSMNAME = "entity";
 	ArrayList<Dsm> dsms;
 
+	
 	public DsmController() {
 		dsms = new ArrayList<Dsm>();
 	}
@@ -28,13 +33,12 @@ public class DsmController {
 		Optional<Dsm> find = dsms.stream()
 				.filter(dsm -> dsm.getIndex() == index).findFirst();
 
-		// FIXME
 		if (find.isPresent())
 			return find.get(); // found
 		else
 			return null; // cannot found
 	}
-
+	
 	public void newDsm(int number) {
 		// Clear dsms
 		dsms.clear();
@@ -46,11 +50,6 @@ public class DsmController {
 
 	}
 
-	/**
-	 * Read dsm file and make Dsm list
-	 * 
-	 * @param file
-	 */
 	public void readFile(File file) {
 		try {
 			Scanner scanner = new Scanner(file);
@@ -74,14 +73,13 @@ public class DsmController {
 				}
 			}
 
-			// FIXME: 실제 데이터에는 공백이 없는데 nextLine에서 하나 나옴. 그래서 그걸 제거.
 			scanner.nextLine();
 
 			// Set name
 			for (int i = 0; i < number; i++) {
 				if (scanner.hasNextLine())
 					dsms.get(i).setName(scanner.nextLine());
-				System.out.println(i + "th dsm: " + dsms.get(i).getName());
+				//System.out.println(i + "th dsm: " + dsms.get(i).getName());
 			}
 
 			scanner.close();
@@ -94,11 +92,12 @@ public class DsmController {
 	/**
 	 * 
 	 */
-	public void writeFile() {
+	
+	public void writeFile(File file) {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(
-					"src/res/out.txt"));
-
+			//BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
+			
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
 			int number = dsms.size();
 			out.write(number + "");
 			out.newLine();
@@ -126,19 +125,10 @@ public class DsmController {
 		}
 	}
 
-	/**
-	 * 
-	 * @param index
-	 * @param name
-	 */
 	public void insertItem(int index, String name) {
 		dsms.add(new Dsm(index, name));
 	}
 
-	/**
-	 * 
-	 * @param index
-	 */
 	public void deleteItem(int index) {
 		// remove from dsm array
 		this.dsms.removeIf((Dsm d) -> {
@@ -151,11 +141,6 @@ public class DsmController {
 		}
 	}
 
-	/**
-	 * 
-	 * @param a
-	 * @param b
-	 */
 	public void changeDependency(int a, int b) {
 		if (dsms.get(a).isDependent(b)) {
 			dsms.get(a).removeDependency(b);

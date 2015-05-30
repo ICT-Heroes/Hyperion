@@ -36,6 +36,24 @@ public class ClsxController {
 		}
 	}
 
+	public Clsx readFile(File file){
+		Clsx clsx;
+		try {
+			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
+			Document doc = docBuild.parse(file);
+			doc.getDocumentElement().normalize();
+			clsx = new Clsx();
+			Node node = doc.getFirstChild().getChildNodes().item(1);
+			makeNode(clsx, node);
+			return clsx;
+		} catch (Exception e) {
+
+		}
+		
+		return null;
+	}
+
 	private void makeNode(Clsx clsx, Node node) {
 		// node의 이름과 item의 크기를 할당
 		clsx.setName(node.getAttributes().item(0).getTextContent());

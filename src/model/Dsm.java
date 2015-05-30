@@ -3,9 +3,9 @@ package model;
 import java.util.ArrayList;
 
 public class Dsm {
-	int index;
-	String name;
-	ArrayList<Dsm> dependent;
+	private int index;
+	private String name;
+	private ArrayList<Dsm> dependent;
 	
 	public Dsm() {
 		
