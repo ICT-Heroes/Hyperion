@@ -50,40 +50,7 @@ public class ReadClsxController {
 		}
 	}
 	
-	public Clsx GetItem(Clsx c, int index){
-		int curIndex = index;
-		if(GetItemLength(c) < index){
-			return new Clsx("null");
-		}else{
-			for(int i = 0 ; i < c.item.length ; i ++){
-				curIndex -= GetItemLength(c.item[i]);
-				if(curIndex < 0){
-					curIndex += GetItemLength(c.item[i]);
-					return GetItem(c.item[i], curIndex);
-				}else if(curIndex == 0){
-					return c.item[i];
-				}
-			}
-		}
-		return new Clsx();
-	}
-	
-	public int GetItemLength(Clsx c){
-		int length = 0;
-		int ret = 0;
-		if(c.item != null){
-			length = c.item.length;
-		}
-		if(length == 0){
-			ret = 1;
-		}else{
-			ret = length;
-			for(int i = 0 ; i < length ; i ++){
-				ret += GetItemLength(c.item[i]);
-			}
-		}
-		return ret;
-	}
+
 
 }
 
