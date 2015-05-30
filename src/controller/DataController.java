@@ -64,8 +64,45 @@ public class DataController {
 		return new Data();
 	}
 	
-	public void SetDependancy(String name, String name2){
-		
+	/*
+	 * data의 어느 노드 객체의 이름을 바꾸는 함수
+	 */
+	public void SetName(Data data, String exName, String newName){	data.FindData(exName).name = newName;	}
+	public void SetName(Data data, int dataIndex, String newName){	data.GetData(dataIndex).name = newName;	}
+	
+	
+	/*
+	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진
+	 * Data 객체를 추가하거나 삭제함.
+	 * 이미 의존성을 갖고 있으면 삭제
+	 * 의존성이 없으면 추가
+	 * toggle
+	 */
+	public void SetDependancy(Data data, String itemName, String dependItemName){
+		Data item, depItem;
+		item = data.FindItem(itemName);
+		depItem = data.FindItem(dependItemName);
+		if(isDepend(data, itemName, dependItemName)){
+			item.depend.remove(depItem);
+		}else{
+			item.depend.add(depItem);
+		}
+	}
+	
+	/*
+	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
+	 */
+	public boolean isDepend(Data data, String itemName, String dependItemName){
+		Data item, depItem;
+		item = data.FindItem(itemName);
+		depItem = data.FindItem(dependItemName);
+		int length = item.depend.size();
+		for(int i = 0 ; i < length ; i ++){
+			if(item.depend.get(i).name == depItem.name){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/*
