@@ -40,7 +40,7 @@ public class Data {
 		Data retData = new Data("null");
 		int length = DataCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(GetData(i).name == name){
+			if(SameString(GetData(i).name, name)){
 				return GetData(i);
 			}
 		}
@@ -54,7 +54,7 @@ public class Data {
 		Data retData = new Data("null");
 		int length = ItemCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(GetItem(i).name == name){
+			if(SameString(GetItem(i).name, name)){
 				return GetItem(i);
 			}
 		}
@@ -100,7 +100,7 @@ public class Data {
 	public int FindDataIndex(String name){
 		int length = DataCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(GetData(i).name == name){
+			if(SameString(GetData(i).name, name)){
 				return i;
 			}
 		}
@@ -110,11 +110,22 @@ public class Data {
 	public int FindItemIndex(String name){
 		int length = ItemCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(GetItem(i).name == name){
+			if(SameString(GetItem(i).name, name)){
 				return i;
 			}
 		}
 		return -1;
+	}
+	
+	public int FindChildIndex(String name){
+		int index = -1;
+		for(int i = 0 ; i < child.size() ; i ++){
+			if(SameString(child.get(i).name, name)){
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
 	
 	/*
@@ -155,6 +166,21 @@ public class Data {
 		return new Data("");
 	}
 	
+	private boolean SameString(String s1, String s2){
+		if(s1.length() == s2.length()){
+			char[] c1, c2;
+			c1 = s1.toCharArray();
+			c2 = s2.toCharArray();
+			for(int i = 0 ; i < s1.length(); i ++){
+				if(c1[i]!=c2[i]){
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+		return true;
+	}
+	
 
 }
-

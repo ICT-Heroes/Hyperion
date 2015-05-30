@@ -106,6 +106,118 @@ public class DataController {
 	}
 	
 	/*
+	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면
+	 * 그 자리에 newData 라는 이름으로 아이템을 추가한다.
+	 */
+	public void AddItem(Data data, String itemName){
+		AddItem(data, itemName, "newData");
+	}
+	public void AddItem(Data data, String itemName, String newItemName){
+		Data newData;
+		int i = 0;
+		while(data.FindData(newItemName + i).name != "null"){
+			i++;
+			if(100000<i){
+				System.out.println("아이템 추가 실패, 너무 많은 아이템이 이름 변경 없이 추가되려 하고있다.");
+				return;
+			}
+		}
+		if(i == 0){	newData = new Data(newItemName);		}
+		else{		newData = new Data(newItemName + i);	}
+		if(0 < data.FindData(itemName).child.size()){
+			data.FindData(itemName).child.add(newData);
+		}else{
+			Data parent = FindParent(data, itemName);
+			parent.child.add(newData);
+		}
+	}
+	
+	/*
+	 * data 내의 아이템을 지운다.
+	 */
+	public void DeleteItem(Data data, String itemName){
+		//연결 지우기
+		for(int i = 0 ; i < data.ItemCount() ; i++){
+			int depLength = data.GetItem(i).depend.size();
+			for(int j = 0 ; j < depLength ; j++){
+				if(data.GetItem(i).depend.get(j).name == itemName){
+					data.GetItem(i).depend.remove(j);
+				}
+			}
+		}
+		//직접적인 데이터 지우기
+		Data parent = FindParent(data, itemName);
+		for(int i = 0 ; i < parent.child.size() ; i ++){
+			if(parent.child.get(i).child.size() == 0){
+				if(parent.child.get(i).name == itemName){
+					parent.child.remove(i);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * 같은 부모를 가진 노드들 끼리만 결합할 수 있다.
+	 * startName 은 그룹을 시작하는 노드, endName 은 그룹을 끝내는 노드
+	 * startName, endName 모두 그룹 안에 들어간다.
+	 */
+	public void CreateGroup(Data data, String startName, String endName){
+		CreateGroup(data, startName, endName, "newGroup");
+	}
+	public void CreateGroup(Data data, String startName, String endName, String groupName){
+		int index = 0;
+		while(data.FindData(groupName + index).name != "null"){
+			index++;
+			if(100000<index){
+				System.out.println("그룹짓기 실패, 너무 많은 그룹이 비슷한 이름을 갖고 있다.");
+				return;
+			}
+		}
+		if(startName != endName){
+			if(FindParent(data, startName).name == FindParent(data, endName).name){
+				int start, end;
+				start = end = 0;
+				Data parent = FindParent(data, startName);
+				for(int i = 0 ; i < parent.child.size() ; i++){
+					if(parent.child.get(i).name == startName){	start = i;	}
+					if(parent.child.get(i).name == endName){	end = i;	}
+				}
+				if(end < start){
+					int a = end;
+					end = start;
+					start = a;
+				}
+				Data newData;
+				if(index == 0){		newData = new Data(groupName);	}
+				else{				newData = new Data(groupName + index);	}
+				for(int i = 0 ; i < end-start+1 ; i ++){
+					newData.child.add(parent.child.get(start + i));
+				}
+				parent.child.set(start, newData);
+				for(int i = 0 ; i < end-start ; i ++){
+					parent.child.remove(start+1);
+				}
+			}
+		}
+	}
+	
+	
+	/*
+	 * 그룹풀기
+	 * 그룹의 이름을 두번째 인자로 넣으면 그 그룹을 푼다.
+	 */
+	public void DeleteGroup(Data data, String groupName){
+		Data parent = FindParent(data, groupName);
+		Data Group = data.FindData(groupName);
+		int index = parent.FindChildIndex(groupName);
+		int size = Group.child.size();
+		for(int i = 0 ; i < size ; i ++){
+			parent.child.add(index+1, Group.child.get(size-i-1));
+		}
+		parent.child.remove(index);
+	}
+	
+	/*
 	 * File 을 받으면 Dsm 정보를 읽고 Data로 변환하여 Data 를 리턴
 	 */
 	public Data LoadDsm(File file){
@@ -256,3 +368,4 @@ public class DataController {
 		readDsm = new ReadDsmController();
 	}
 }
+
