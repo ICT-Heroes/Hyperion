@@ -217,6 +217,32 @@ public class DataController {
 		parent.child.remove(index);
 	}
 	
+	
+	/*
+	 * data 내의 GroupName 만을 따로 떼내서 새로 복제해 만든다.
+	 * data 내의 dependancy 가 복잡하게 얽혀있는데, 단순히 일부분만 따로 떼내서 복제한다면
+	 * null dependancy 를 갖고 올 수도 있으므로
+	 * 일부분을 제외한 다른 곳과의 dependancy 는 무시하도록 복제한다.
+	 */
+	public Data Dupicate(Data data, String GroupName){
+		Data exData = data.FindData(GroupName);
+		Data newData = new Data(exData);
+		
+		int length = exData.ItemCount();
+		
+		for(int i = 0 ; i < length ; i ++){
+			for(int j = 0; j < length ; j ++){
+				if(isDepend(data, exData.GetItem(i).name, exData.GetItem(j).name)){
+					SetDependancy(newData, newData.GetItem(i).name, newData.GetItem(j).name);
+				}
+			}
+		}
+		
+		return newData;
+	}
+	
+	
+	
 	/*
 	 * File 을 받으면 Dsm 정보를 읽고 Data로 변환하여 Data 를 리턴
 	 */
@@ -368,4 +394,3 @@ public class DataController {
 		readDsm = new ReadDsmController();
 	}
 }
-
