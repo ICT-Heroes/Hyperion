@@ -1,4 +1,4 @@
-package test;
+package test.controller;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -13,24 +13,24 @@ import org.junit.Test;
 import controller.DsmController;
 
 public class DsmTest {
-	private DsmController controller;
+	private DsmController dsmController;
 	private File file;
 
 	@Before
 	public void setup() {
-		controller = new DsmController();
+		dsmController = new DsmController();
 		file = new File("src/res/titan.dsm");
-		controller.readFile(file);
+		dsmController.readFile(file);
 	}
 
 	@Test
 	public void readFileTest() {
-		controller.printDependency();
+		dsmController.printDependency();
 	}
 
 	@Test
 	public void getDsmTest() {
-		Dsm dsm = controller.getDsm(1);
+		Dsm dsm = dsmController.getDsm(1);
 		assertThat(
 				dsm.getName(),
 				is(equalTo("edu.drexel.cs.rise.titan.action.ExportExcelAction")));
@@ -39,16 +39,16 @@ public class DsmTest {
 	//FIXME 에러나길래 일단 주석달았는데 이부분 해결좀
 	@Test
 	public void writeFileTest() {
-		int number = controller.getNumber();
-		Dsm dsm = controller.getDsm(1);
+		int number = dsmController.getNumber();
+		Dsm dsm = dsmController.getDsm(1);
 
 		//controller.writeFile();
 
 		File newFile = new File("src/res/out.txt");
-		controller.readFile(newFile);
+		dsmController.readFile(newFile);
 
-		int newNumber = controller.getNumber();
-		Dsm newDsm = controller.getDsm(1);
+		int newNumber = dsmController.getNumber();
+		Dsm newDsm = dsmController.getDsm(1);
 
 		assertThat(newNumber, is(equalTo(newNumber)));
 		assertThat(newDsm.getName(), is(equalTo(dsm.getName())));

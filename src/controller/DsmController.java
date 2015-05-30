@@ -17,8 +17,8 @@ import model.Dsm;
  * @param file
  */
 public class DsmController {
-	private final String NEWDSMNAME = "entity";
-	ArrayList<Dsm> dsms;
+	private final String NEW_DSM_NAME = "entity";
+	private ArrayList<Dsm> dsms;
 
 	
 	public DsmController() {
@@ -45,7 +45,7 @@ public class DsmController {
 
 		// Make DsmModel
 		for (int i = 0; i < number; i++) {
-			dsms.add(new Dsm(i, NEWDSMNAME + i));
+			dsms.add(new Dsm(i, NEW_DSM_NAME + i));
 		}
 
 	}

@@ -8,15 +8,17 @@ import model.Data;
 import model.Dsm;
 
 public class DataController {
-	
 	private ClsxController clsxController;
 	private DsmController dsmController;
 	
+	/*
+	 * 생성자
+	 */
+	public DataController(){
+		clsxController = new ClsxController();
+		dsmController = new DsmController();
+	}
 	
-	//private WriteClsxController writeClsx;
-	//private WriteDsmController writeDsm;
-	
-
 	public void MoveUp(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
@@ -248,7 +250,6 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file){
 		Data dsmData;
-		dsmController = new DsmController();
 		dsmController.readFile(file);
 		
 		int nodeNumber = dsmController.getNumber();
@@ -385,12 +386,5 @@ public class DataController {
 		}
 		return true;
 	}
-	
-	/*
-	 * 생성자
-	 */
-	public DataController(){
-		clsxController = new ClsxController();
-		dsmController = new DsmController();
-	}
+
 }
