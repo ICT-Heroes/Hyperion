@@ -13,22 +13,24 @@ import org.w3c.dom.NodeList;
 
 public class ReadClsxController {
 	
-	public Clsx clsx;
+	public ReadClsxController(){}
 	
-	public ReadClsxController(File f)
-	{
+	public Clsx ReadFile(File file){
+		Clsx clsx;
 		try {
 			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-			Document doc = docBuild.parse(f);
+			Document doc = docBuild.parse(file);
 			doc.getDocumentElement().normalize();
 			clsx = new Clsx();
 			Node node = doc.getFirstChild().getChildNodes().item(1);
 			makeNode(clsx, node);
-			
+			return clsx;
 		} catch (Exception e) {
 
 		}
+		
+		return null;
 	}
 
 	private void makeNode(Clsx clsx, Node node) {
@@ -84,3 +86,4 @@ public class ReadClsxController {
 	}
 
 }
+

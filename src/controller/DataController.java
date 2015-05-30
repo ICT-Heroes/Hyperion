@@ -8,95 +8,109 @@ import model.Data;
 import model.Dsm;
 
 public class DataController {
-	private boolean isLoadClsx;
 	
-	private ReadClsxController clsx;
-	private ReadDsmController dsm;
-	public Data data, dsmData, clsxData;
+	private ReadClsxController readClsx;
+	private ReadDsmController readDsm;
 	
 	public DataController(){
-		isLoadClsx = false;
+		readClsx = new ReadClsxController();
+		readDsm = new ReadDsmController();
 	}
 	
-
-	public Clsx GetClsx(){
-		return clsx.clsx;
-	}
-	
-	public ArrayList<Dsm> GetDsm(){
-		return dsm.dsms;
-	}
-	
-	public void LoadDsm(File file){
-		dsm = new ReadDsmController();
-		dsm.readFile(file);
+	public Data LoadDsm(File file){
 		
-		int nodeNumber = dsm.getNumber();
+		Data dsmData;
+		readDsm = new ReadDsmController();
+		readDsm.readFile(file);
+		
+		int nodeNumber = readDsm.getNumber();
 		dsmData = new Data("root");
 		
 		//노드 생성
 		for(int i = 0 ; i < nodeNumber ; i ++){
-			dsmData.child.add(new Data(dsm.getDsm(i).getName()));
+			dsmData.child.add(new Data(readDsm.getDsm(i).getName()));
 		}
 		
 		//dependancy 연결
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			for(int j = 0 ; j < nodeNumber ; j ++){
-				if(dsm.getDsm(i).isDependent(j)){
+				if(readDsm.getDsm(i).isDependent(j)){
 					dsmData.child.get(i).depend.add(dsmData.child.get(j));
 				}
 			}
 		}
 		
-		if(isLoadClsx && CheckClsxAndData()){
-			Data newData = new Data("root");
-			
-		}else{
-			isLoadClsx = false;
-			clsx = null;
-		}
+		return dsmData;
 	}
 
 	
 	
-	public void LoadClsx(File file){
-		clsx = new ReadClsxController(file);
-		clsxData = MakeClsxData(clsx.clsx);
+	public Data LoadClsx(File file){
+		return MakeClsxToData(readClsx.ReadFile(file));
 	}
 	
-	private void SumData(){
-		data = new Data(clsxData);
+	public Data LoadClsx(Clsx clsx){
+		return MakeClsxToData(clsx);
 	}
 	
 	
 	/*
-	public void LoadClsx(Clsx c){
-		clsxData = MakeClsxData(c);
+	private void SumData(){
+		if(CheckClsxAndData()){
+			data = new Data(clsxData);
+		}else{
+			System.out.println("Clsx 와 Dsm 이 서로 맞지 않습니다.");
+		}
 	}
+	
+	private void SetDep(Data info, ArrayList<Data> array, String name){
+		
+	}
+	
+	private void FindClsxItem(String name){
+		
+	}
+	
 	*/
 	
-	private Data MakeClsxData(Clsx c){
+	
+	private Data MakeClsxToData(Clsx c){
 		Data newData = new Data(c.getName());
 		if(c.item != null){
 			for(int i = 0 ; i < c.item.length ; i ++){
-				newData.child.add(MakeClsxData(c.item[i]));
+				newData.child.add(MakeClsxToData(c.item[i]));
 			}
 		}
 		return newData;
 	}
+	
+	/*
+	 * 혹시 쓸일이 있을까봐 만들어 놓음
+	private Clsx MakeDataToClsx(Data d){
+		Clsx newClsx = new Clsx(d.name);
+		if(d.child != null){
+			int length = d.child.size();
+			newClsx.item = new Clsx[length];
+			for(int i = 0 ; i < length ; i ++){
+				newClsx.item[i] = MakeDataToClsx(d.child.get(i));
+			}
+		}
+		return newClsx;
+	}
+	*/
 
 
 
-	private boolean CheckClsxAndData(){
-		int nodeNumber = clsx.GetItemLength(clsx.clsx);
-		int dataNumber = data.Length();
+	private boolean CheckSameData(Clsx clsxData, Data dsmData){
+		int nodeNumber = readClsx.GetItemLength(clsxData);
+		int dataNumber = dsmData.ItemCount();
 		if(nodeNumber != dataNumber){
 			return false;
 		}
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			boolean ret = false;
 			for(int j = 0 ; j < dataNumber ; j ++ ){
-				if(clsx.GetItem(clsx.clsx, i).getName() == data.GetItem(j).name){
+				if(readClsx.GetItem(clsxData, i).getName() == dsmData.GetItem(j).name){
 					ret = true;
 				}
 			}
@@ -107,5 +121,8 @@ public class DataController {
 		return true;
 	}
 }
+
+
+
 
 

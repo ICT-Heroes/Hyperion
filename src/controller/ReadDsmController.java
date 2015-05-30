@@ -64,7 +64,7 @@ public class ReadDsmController {
 			for (int i=0; i < number; i++) {
 				if (scanner.hasNextLine())
 					dsms.get(i).setName(scanner.nextLine());
-				System.out.println(i + "th dsm: " + dsms.get(i).getName());
+				//System.out.println(i + "th dsm: " + dsms.get(i).getName());
 			}
 			
 			scanner.close();
