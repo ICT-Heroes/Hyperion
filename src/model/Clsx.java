@@ -48,7 +48,7 @@ public class Clsx {
 	}
 	
 	/*
-	 * Clsx °¡ °®´Â ¾ÆÀÌÅÛµéÀÇ °¹¼ö¸¦ ¸®ÅÏ
+	 * Clsx ê°€ ê°–ëŠ” ì•„ì´í…œë“¤ì˜ ê°¯ìˆ˜ë¥¼ ë¦¬í„´
 	 */
 	public int GetItemCount(){
 		int length = 0;

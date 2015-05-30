@@ -65,17 +65,17 @@ public class DataController {
 	}
 	
 	/*
-	 * dataÀÇ ¾î´À ³ëµå °´Ã¼ÀÇ ÀÌ¸§À» ¹Ù²Ù´Â ÇÔ¼ö
+	 * dataì˜ ì–´ëŠ ë…¸ë“œ ê°ì²´ì˜ ì´ë¦„ì„ ë°”ê¾¸ëŠ” í•¨ìˆ˜
 	 */
 	public void SetName(Data data, String exName, String newName){	data.FindData(exName).name = newName;	}
 	public void SetName(Data data, int dataIndex, String newName){	data.GetData(dataIndex).name = newName;	}
 	
 	
 	/*
-	 * data ÀÇ itemName ¿¡ ÇØ´çÇÏ´Â Data°´Ã¼ÀÇ depend Áß dependItemName °ú µ¿ÀÏÇÑ ÀÌ¸§À» °¡Áø
-	 * Data °´Ã¼¸¦ Ãß°¡ÇÏ°Å³ª »èÁ¦ÇÔ.
-	 * ÀÌ¹Ì ÀÇÁ¸¼ºÀ» °®°í ÀÖÀ¸¸é »èÁ¦
-	 * ÀÇÁ¸¼ºÀÌ ¾øÀ¸¸é Ãß°¡
+	 * data ì˜ itemName ì— í•´ë‹¹í•˜ëŠ” Dataê°ì²´ì˜ depend ì¤‘ dependItemName ê³¼ ë™ì¼í•œ ì´ë¦„ì„ ê°€ì§„
+	 * Data ê°ì²´ë¥¼ ì¶”ê°€í•˜ê±°ë‚˜ ì‚­ì œí•¨.
+	 * ì´ë¯¸ ì˜ì¡´ì„±ì„ ê°–ê³  ìˆìœ¼ë©´ ì‚­ì œ
+	 * ì˜ì¡´ì„±ì´ ì—†ìœ¼ë©´ ì¶”ê°€
 	 * toggle
 	 */
 	public void SetDependancy(Data data, String itemName, String dependItemName){
@@ -90,7 +90,7 @@ public class DataController {
 	}
 	
 	/*
-	 * data ÀÇ itemName ÀÌ dependItemName ¿¡°Ô ÀÇÁ¸ÇÏ°í ÀÖ´Â°¡?
+	 * data ì˜ itemName ì´ dependItemName ì—ê²Œ ì˜ì¡´í•˜ê³  ìˆëŠ”ê°€?
 	 */
 	public boolean isDepend(Data data, String itemName, String dependItemName){
 		Data item, depItem;
@@ -106,8 +106,8 @@ public class DataController {
 	}
 	
 	/*
-	 * data ³»ÀÇ ¾ÆÀÌÅÛ Áß Ãß°¡ÇÏ°í½ÍÀº ÀÚ¸®ÀÇ ÀÌ¸§À» µÎ¹øÂ° ÀÎ¼ö·Î ÀûÀ¸¸é
-	 * ±× ÀÚ¸®¿¡ newData ¶ó´Â ÀÌ¸§À¸·Î ¾ÆÀÌÅÛÀ» Ãß°¡ÇÑ´Ù.
+	 * data ë‚´ì˜ ì•„ì´í…œ ì¤‘ ì¶”ê°€í•˜ê³ ì‹¶ì€ ìë¦¬ì˜ ì´ë¦„ì„ ë‘ë²ˆì§¸ ì¸ìˆ˜ë¡œ ì ìœ¼ë©´
+	 * ê·¸ ìë¦¬ì— newData ë¼ëŠ” ì´ë¦„ìœ¼ë¡œ ì•„ì´í…œì„ ì¶”ê°€í•œë‹¤.
 	 */
 	public void AddItem(Data data, String itemName){
 		AddItem(data, itemName, "newData");
@@ -118,7 +118,7 @@ public class DataController {
 		while(data.FindData(newItemName + i).name != "null"){
 			i++;
 			if(100000<i){
-				System.out.println("¾ÆÀÌÅÛ Ãß°¡ ½ÇÆĞ, ³Ê¹« ¸¹Àº ¾ÆÀÌÅÛÀÌ ÀÌ¸§ º¯°æ ¾øÀÌ Ãß°¡µÇ·Á ÇÏ°íÀÖ´Ù.");
+				System.out.println("ì•„ì´í…œ ì¶”ê°€ ì‹¤íŒ¨, ë„ˆë¬´ ë§ì€ ì•„ì´í…œì´ ì´ë¦„ ë³€ê²½ ì—†ì´ ì¶”ê°€ë˜ë ¤ í•˜ê³ ìˆë‹¤.");
 				return;
 			}
 		}
@@ -133,10 +133,10 @@ public class DataController {
 	}
 	
 	/*
-	 * data ³»ÀÇ ¾ÆÀÌÅÛÀ» Áö¿î´Ù.
+	 * data ë‚´ì˜ ì•„ì´í…œì„ ì§€ìš´ë‹¤.
 	 */
 	public void DeleteItem(Data data, String itemName){
-		//¿¬°á Áö¿ì±â
+		//ì—°ê²° ì§€ìš°ê¸°
 		for(int i = 0 ; i < data.ItemCount() ; i++){
 			int depLength = data.GetItem(i).depend.size();
 			for(int j = 0 ; j < depLength ; j++){
@@ -145,7 +145,7 @@ public class DataController {
 				}
 			}
 		}
-		//Á÷Á¢ÀûÀÎ µ¥ÀÌÅÍ Áö¿ì±â
+		//ì§ì ‘ì ì¸ ë°ì´í„° ì§€ìš°ê¸°
 		Data parent = FindParent(data, itemName);
 		for(int i = 0 ; i < parent.child.size() ; i ++){
 			if(parent.child.get(i).child.size() == 0){
@@ -157,9 +157,9 @@ public class DataController {
 	}
 	
 	/*
-	 * °°Àº ºÎ¸ğ¸¦ °¡Áø ³ëµåµé ³¢¸®¸¸ °áÇÕÇÒ ¼ö ÀÖ´Ù.
-	 * startName Àº ±×·ìÀ» ½ÃÀÛÇÏ´Â ³ëµå, endName Àº ±×·ìÀ» ³¡³»´Â ³ëµå
-	 * startName, endName ¸ğµÎ ±×·ì ¾È¿¡ µé¾î°£´Ù.
+	 * ê°™ì€ ë¶€ëª¨ë¥¼ ê°€ì§„ ë…¸ë“œë“¤ ë¼ë¦¬ë§Œ ê²°í•©í•  ìˆ˜ ìˆë‹¤.
+	 * startName ì€ ê·¸ë£¹ì„ ì‹œì‘í•˜ëŠ” ë…¸ë“œ, endName ì€ ê·¸ë£¹ì„ ëë‚´ëŠ” ë…¸ë“œ
+	 * startName, endName ëª¨ë‘ ê·¸ë£¹ ì•ˆì— ë“¤ì–´ê°„ë‹¤.
 	 */
 	public void CreateGroup(Data data, String startName, String endName){
 		CreateGroup(data, startName, endName, "newGroup");
@@ -169,7 +169,7 @@ public class DataController {
 		while(data.FindData(groupName + index).name != "null"){
 			index++;
 			if(100000<index){
-				System.out.println("±×·ìÁş±â ½ÇÆĞ, ³Ê¹« ¸¹Àº ±×·ìÀÌ ºñ½ÁÇÑ ÀÌ¸§À» °®°í ÀÖ´Ù.");
+				System.out.println("ê·¸ë£¹ì§“ê¸° ì‹¤íŒ¨, ë„ˆë¬´ ë§ì€ ê·¸ë£¹ì´ ë¹„ìŠ·í•œ ì´ë¦„ì„ ê°–ê³  ìˆë‹¤.");
 				return;
 			}
 		}
@@ -203,8 +203,8 @@ public class DataController {
 	
 	
 	/*
-	 * ±×·ìÇ®±â
-	 * ±×·ìÀÇ ÀÌ¸§À» µÎ¹øÂ° ÀÎÀÚ·Î ³ÖÀ¸¸é ±× ±×·ìÀ» Ç¬´Ù.
+	 * ê·¸ë£¹í’€ê¸°
+	 * ê·¸ë£¹ì˜ ì´ë¦„ì„ ë‘ë²ˆì§¸ ì¸ìë¡œ ë„£ìœ¼ë©´ ê·¸ ê·¸ë£¹ì„ í‘¼ë‹¤.
 	 */
 	public void DeleteGroup(Data data, String groupName){
 		Data parent = FindParent(data, groupName);
@@ -219,10 +219,10 @@ public class DataController {
 	
 	
 	/*
-	 * data ³»ÀÇ GroupName ¸¸À» µû·Î ¶¼³»¼­ »õ·Î º¹Á¦ÇØ ¸¸µç´Ù.
-	 * data ³»ÀÇ dependancy °¡ º¹ÀâÇÏ°Ô ¾ôÇôÀÖ´Âµ¥, ´Ü¼øÈ÷ ÀÏºÎºĞ¸¸ µû·Î ¶¼³»¼­ º¹Á¦ÇÑ´Ù¸é
-	 * null dependancy ¸¦ °®°í ¿Ã ¼öµµ ÀÖÀ¸¹Ç·Î
-	 * ÀÏºÎºĞÀ» Á¦¿ÜÇÑ ´Ù¸¥ °÷°úÀÇ dependancy ´Â ¹«½ÃÇÏµµ·Ï º¹Á¦ÇÑ´Ù.
+	 * data ë‚´ì˜ GroupName ë§Œì„ ë”°ë¡œ ë–¼ë‚´ì„œ ìƒˆë¡œ ë³µì œí•´ ë§Œë“ ë‹¤.
+	 * data ë‚´ì˜ dependancy ê°€ ë³µì¡í•˜ê²Œ ì–½í˜€ìˆëŠ”ë°, ë‹¨ìˆœíˆ ì¼ë¶€ë¶„ë§Œ ë”°ë¡œ ë–¼ë‚´ì„œ ë³µì œí•œë‹¤ë©´
+	 * null dependancy ë¥¼ ê°–ê³  ì˜¬ ìˆ˜ë„ ìˆìœ¼ë¯€ë¡œ
+	 * ì¼ë¶€ë¶„ì„ ì œì™¸í•œ ë‹¤ë¥¸ ê³³ê³¼ì˜ dependancy ëŠ” ë¬´ì‹œí•˜ë„ë¡ ë³µì œí•œë‹¤.
 	 */
 	public Data Dupicate(Data data, String GroupName){
 		Data exData = data.FindData(GroupName);
@@ -244,7 +244,7 @@ public class DataController {
 	
 	
 	/*
-	 * File À» ¹ŞÀ¸¸é Dsm Á¤º¸¸¦ ÀĞ°í Data·Î º¯È¯ÇÏ¿© Data ¸¦ ¸®ÅÏ
+	 * File ì„ ë°›ìœ¼ë©´ Dsm ì •ë³´ë¥¼ ì½ê³  Dataë¡œ ë³€í™˜í•˜ì—¬ Data ë¥¼ ë¦¬í„´
 	 */
 	public Data LoadDsm(File file){
 		Data dsmData;
@@ -254,12 +254,12 @@ public class DataController {
 		int nodeNumber = readDsm.getNumber();
 		dsmData = new Data("root");
 		
-		//³ëµå »ı¼º
+		//ë…¸ë“œ ìƒì„±
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			dsmData.child.add(new Data(readDsm.getDsm(i).getName()));
 		}
 		
-		//dependancy ¿¬°á
+		//dependancy ì—°ê²°
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			for(int j = 0 ; j < nodeNumber ; j ++){
 				if(readDsm.getDsm(i).isDependent(j)){
@@ -280,12 +280,12 @@ public class DataController {
 	
 	
 	/*
-	 * µÎ ÆÄÀÏ Á¤º¸¸¦ ´Ù °®°í ÀÖÀ» ¶§ »ç¿ëÇÒ ¼ö ÀÖ´Ù.
-	 * µÎ ÆÄÀÏ Á¤º¸°¡ ²À dsm À» ·ÎµåÇÏ¿´°Å³ª clsx ÆÄÀÏÀ» ·ÎµåÇÏÁö ¾Ê¾Æµµ µ¿ÀÛÇÑ´Ù.
-	 * Àû´çÈ÷ Á¶ÀÛµÈ Data ±¸Á¶¸¦ ³Ö¾îÁàµµ µ¿ÀÛÇÑ´Ù.
+	 * ë‘ íŒŒì¼ ì •ë³´ë¥¼ ë‹¤ ê°–ê³  ìˆì„ ë•Œ ì‚¬ìš©í•  ìˆ˜ ìˆë‹¤.
+	 * ë‘ íŒŒì¼ ì •ë³´ê°€ ê¼­ dsm ì„ ë¡œë“œí•˜ì˜€ê±°ë‚˜ clsx íŒŒì¼ì„ ë¡œë“œí•˜ì§€ ì•Šì•„ë„ ë™ì‘í•œë‹¤.
+	 * ì ë‹¹íˆ ì¡°ì‘ëœ Data êµ¬ì¡°ë¥¼ ë„£ì–´ì¤˜ë„ ë™ì‘í•œë‹¤.
 	 * 
-	 * ¸®ÅÏµÇ¾î ³ª¿À´Â Data ´Â µÎ¹øÂ° ÀÎÀÚÀÇ Æ®¸®±¸Á¶¸¦ µû¶óÇÏ¸ç,
-	 * Ã¹¹øÀç ÀÎÀÚÀÇ dependancy Á¤º¸¸¦ °¡Á®¿Â´Ù.
+	 * ë¦¬í„´ë˜ì–´ ë‚˜ì˜¤ëŠ” Data ëŠ” ë‘ë²ˆì§¸ ì¸ìì˜ íŠ¸ë¦¬êµ¬ì¡°ë¥¼ ë”°ë¼í•˜ë©°,
+	 * ì²«ë²ˆì¬ ì¸ìì˜ dependancy ì •ë³´ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
 	 */
 	public Data LoadDsmClsx(File dsmFile, File clsxFile){	return SumData(LoadClsx(clsxFile),LoadDsm(dsmFile));	}
 	public Data LoadDsmClsx(Data dsmData, File clsxFile){	return SumData(LoadClsx(clsxFile),dsmData);				}
@@ -305,7 +305,7 @@ public class DataController {
 				}
 			}
 		}else{
-			System.out.println("µÎ Data°¡ °°Àº .dsmÀ» »ç¿ëÇÏ¿© ¸¸µé¾îÁöÁö ¾Ê¾Ò½À´Ï´Ù");
+			System.out.println("ë‘ Dataê°€ ê°™ì€ .dsmì„ ì‚¬ìš©í•˜ì—¬ ë§Œë“¤ì–´ì§€ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤");
 			retData.name = "null";
 		}
 		return retData;
@@ -314,9 +314,9 @@ public class DataController {
 	
 
 	/*
-	 * Clsx¸¦ Data ·Î ¹Ù²Ù´Â ÇÔ¼ö
-	 * Dsm Á¤º¸´Â ¾ø°í Clsx ÀÇ Æ®¸®±¸Á¶¸¸ °®´Â Data°¡ ¸®ÅÏµÈ´Ù
-	 * read Àü¿ë
+	 * Clsxë¥¼ Data ë¡œ ë°”ê¾¸ëŠ” í•¨ìˆ˜
+	 * Dsm ì •ë³´ëŠ” ì—†ê³  Clsx ì˜ íŠ¸ë¦¬êµ¬ì¡°ë§Œ ê°–ëŠ” Dataê°€ ë¦¬í„´ëœë‹¤
+	 * read ì „ìš©
 	 */
 	private Data MakeClsxToData(Clsx c){
 		Data newData = new Data(c.getName());
@@ -329,9 +329,9 @@ public class DataController {
 	}
 	
 	/*
-	 * µ¥ÀÌÅÍ¸¦ clsx ·Î ¹Ù²Ù´Â ÇÔ¼ö
-	 * µ¥ÀÌÅÍÀÇ Dsm Á¤º¸´Â »©°í ÀúÀåÇÏ¿© ¸®ÅÏÇÑ´Ù.
-	 * write Àü¿ë
+	 * ë°ì´í„°ë¥¼ clsx ë¡œ ë°”ê¾¸ëŠ” í•¨ìˆ˜
+	 * ë°ì´í„°ì˜ Dsm ì •ë³´ëŠ” ë¹¼ê³  ì €ì¥í•˜ì—¬ ë¦¬í„´í•œë‹¤.
+	 * write ì „ìš©
 	 */
 	private Clsx MakeDataToClsx(Data d){
 		Clsx newClsx = new Clsx(d.name);
@@ -347,9 +347,9 @@ public class DataController {
 	
 	
 	/*
-	 * Data ¸¦ ArrayList<Dsm> À¸·Î ¹Ù²Ù´Â ÇÔ¼ö
-	 * ¼ø¼­´Â Data ÀÇ item ¼ø¼­ ±×´ë·Î °¡Á®¿Â´Ù.
-	 * write Àü¿ë
+	 * Data ë¥¼ ArrayList<Dsm> ìœ¼ë¡œ ë°”ê¾¸ëŠ” í•¨ìˆ˜
+	 * ìˆœì„œëŠ” Data ì˜ item ìˆœì„œ ê·¸ëŒ€ë¡œ ê°€ì ¸ì˜¨ë‹¤.
+	 * write ì „ìš©
 	 */
 	private ArrayList<Dsm> MakeDataToDsm(Data data){
 		ArrayList<Dsm> retList = new ArrayList<Dsm>();
@@ -368,8 +368,8 @@ public class DataController {
 
 
 	/*
-	 * µÎ Data °´Ã¼ÀÇ ³ëµåµéÀÇ ÀÌ¸§µéÀÌ °°ÀºÁö¸¦ Á¶»ç.
-	 * true¸é ¼­·Î °°Àº dsm µ¥ÀÌÅÍ¸¦ °®°í Á¶ÀÛÇÑ clsx Æ®¸®
+	 * ë‘ Data ê°ì²´ì˜ ë…¸ë“œë“¤ì˜ ì´ë¦„ë“¤ì´ ê°™ì€ì§€ë¥¼ ì¡°ì‚¬.
+	 * trueë©´ ì„œë¡œ ê°™ì€ dsm ë°ì´í„°ë¥¼ ê°–ê³  ì¡°ì‘í•œ clsx íŠ¸ë¦¬
 	 */
 	private boolean CheckSameData(Data clsxData, Data dsmData){
 		int nodeNumber = clsxData.ItemCount();
@@ -387,7 +387,7 @@ public class DataController {
 	}
 	
 	/*
-	 * »ı¼ºÀÚ
+	 * ìƒì„±ì
 	 */
 	public DataController(){
 		readClsx = new ReadClsxController();
