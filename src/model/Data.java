@@ -34,9 +34,23 @@ public class Data {
 	
 	
 	/*
-	 * 이름이 같은 노드를 찾는 함수
+	 * 이름을 통해 Data를 찾는 함수
 	 */
-	public Data Find(String name){
+	public Data FindData(String name){
+		Data retData = new Data("null");
+		int length = DataCount();
+		for(int i = 0 ; i < length ; i ++){
+			if(GetData(i).name == name){
+				return GetData(i);
+			}
+		}
+		return retData;
+	}
+	
+	/*
+	 * 이름을 통해 Item을 찾는 함수
+	 */
+	public Data FindItem(String name){
 		Data retData = new Data("null");
 		int length = ItemCount();
 		for(int i = 0 ; i < length ; i ++){
@@ -83,6 +97,15 @@ public class Data {
 		return new Data("");
 	}
 
+	public int FindDataIndex(String name){
+		int length = DataCount();
+		for(int i = 0 ; i < length ; i ++){
+			if(GetData(i).name == name){
+				return i;
+			}
+		}
+		return -1;
+	}
 	
 	public int FindItemIndex(String name){
 		int length = ItemCount();
@@ -131,4 +154,7 @@ public class Data {
 		}
 		return new Data("");
 	}
+	
+
 }
+

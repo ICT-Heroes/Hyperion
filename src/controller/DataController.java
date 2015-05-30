@@ -16,11 +16,61 @@ public class DataController {
 	//private WriteClsxController writeClsx;
 	//private WriteDsmController writeDsm;
 	
-	public DataController(){
-		readClsx = new ReadClsxController();
-		readDsm = new ReadDsmController();
+
+	public void MoveUp(Data data, String name){
+		Data parent = FindParent(data, name);
+		int index = 0;
+		for(; index < parent.child.size() ; index++){
+			if(parent.child.get(index).name == name){
+				break;
+			}
+		}
+		System.out.println(index);
+		if(0 < index){
+
+			Data cur, forward;
+			cur = parent.child.get(index);
+			forward = parent.child.get(index -1);
+			parent.child.set(index, forward);
+			parent.child.set(index-1, cur);
+		}
 	}
 	
+	public void MoveDown(Data data, String name){
+		Data parent = FindParent(data, name);
+		int index = 0;
+		for(; index < parent.child.size() ; index++){
+			if(parent.child.get(index).name == name){
+				break;
+			}
+		}
+		if(index < parent.child.size()-1){
+			Data cur, back;
+			cur = parent.child.get(index);
+			back = parent.child.get(index+1);
+			parent.child.set(index, back);
+			parent.child.set(index+1, cur);
+		}
+	}
+	
+	private Data FindParent(Data data, String name){
+		int dataIndex = data.FindDataIndex(name);
+		for(int i = 1 ; i <= dataIndex ; i ++){
+			Data fdata = data.FindData(data.GetData(dataIndex - i).name);
+			if(fdata.FindData(name).name != "null"){
+				return fdata;
+			}
+		}
+		return new Data();
+	}
+	
+	public void SetDependancy(String name, String name2){
+		
+	}
+	
+	/*
+	 * File 을 받으면 Dsm 정보를 읽고 Data로 변환하여 Data 를 리턴
+	 */
 	public Data LoadDsm(File file){
 		Data dsmData;
 		readDsm = new ReadDsmController();
@@ -45,33 +95,14 @@ public class DataController {
 		return dsmData;
 	}
 	
-	
-	/*
-	 * Data 를 ArrayList<Dsm> 으로 바꾸는 함수
-	 * 순서는 Data 의 item 순서 그대로 가져온다.
-	 * write 할 때 쓰기 위해 만듬
-	 */
-	public ArrayList<Dsm> MakeDataToDsm(Data data){
-		ArrayList<Dsm> retList = new ArrayList<Dsm>();
-		int length = data.ItemCount();
-		for(int i = 0 ; i < length ; i ++)
-			retList.add(new Dsm(i, data.GetItem(i).name));
-		for(int i = 0 ; i < length ; i++){
-			int depLength = data.GetItem(i).depend.size();
-			for(int j = 0 ; j < depLength ; j ++){
-				int itemIndex = data.FindItemIndex(data.GetItem(i).depend.get(j).name);
-				retList.get(i).addModel(retList.get(itemIndex));
-			}
-		}
-		return retList;
-	}
-	
-
-	
-	
 	public Data LoadClsx(File file){
 		return MakeClsxToData(readClsx.ReadFile(file));
-	}	
+	}
+	
+	public Data LoadClsx(Clsx c){
+		return MakeClsxToData(c);
+	}
+	
 	
 	/*
 	 * 두 파일 정보를 다 갖고 있을 때 사용할 수 있다.
@@ -85,31 +116,16 @@ public class DataController {
 	public Data LoadDsmClsx(Data dsmData, File clsxFile){	return SumData(LoadClsx(clsxFile),dsmData);				}
 	public Data LoadDsmClsx(File dsmFile, Data clsxData){	return SumData(clsxData,LoadDsm(dsmFile));				}
 	public Data LoadDsmClsx(Data dsmData, Data clsxData){	return SumData(clsxData, dsmData);						}
-	
-	
-	public void MoveUp(Data data, String name){
-		
-	}
-	
-	public void MoveDown(Data data, String name){
-		
-	}
-	
-	public void SetDependancy(){
-		
-	}
-	
-	
 	private Data SumData(Data clsxData, Data dsmData){
 		Data retData = new Data("root");
 		if(CheckSameData(clsxData, dsmData)){
 			retData = new Data(clsxData);
 			int length = retData.ItemCount();
 			for(int i = 0 ; i < length ; i ++){
-				Data dsmDatai = dsmData.Find(retData.GetItem(i).name);
+				Data dsmDatai = dsmData.FindItem(retData.GetItem(i).name);
 				int depSize = dsmDatai.depend.size();
 				for(int j = 0 ; j < depSize ; j ++){
-					Data retDataji = retData.Find(dsmDatai.depend.get(j).name);
+					Data retDataji = retData.FindItem(dsmDatai.depend.get(j).name);
 					retData.GetItem(i).depend.add(retDataji);
 				}
 			}
@@ -119,9 +135,14 @@ public class DataController {
 		}
 		return retData;
 	}
-	
 
 	
+
+	/*
+	 * Clsx를 Data 로 바꾸는 함수
+	 * Dsm 정보는 없고 Clsx 의 트리구조만 갖는 Data가 리턴된다
+	 * read 전용
+	 */
 	private Data MakeClsxToData(Clsx c){
 		Data newData = new Data(c.getName());
 		if(c.item != null){
@@ -137,7 +158,7 @@ public class DataController {
 	 * 데이터의 Dsm 정보는 빼고 저장하여 리턴한다.
 	 * write 전용
 	 */
-	public Clsx MakeDataToClsx(Data d){
+	private Clsx MakeDataToClsx(Data d){
 		Clsx newClsx = new Clsx(d.name);
 		if(d.child != null){
 			int length = d.child.size();
@@ -148,11 +169,32 @@ public class DataController {
 		}
 		return newClsx;
 	}
+	
+	
+	/*
+	 * Data 를 ArrayList<Dsm> 으로 바꾸는 함수
+	 * 순서는 Data 의 item 순서 그대로 가져온다.
+	 * write 전용
+	 */
+	private ArrayList<Dsm> MakeDataToDsm(Data data){
+		ArrayList<Dsm> retList = new ArrayList<Dsm>();
+		int length = data.ItemCount();
+		for(int i = 0 ; i < length ; i ++)
+			retList.add(new Dsm(i, data.GetItem(i).name));
+		for(int i = 0 ; i < length ; i++){
+			int depLength = data.GetItem(i).depend.size();
+			for(int j = 0 ; j < depLength ; j ++){
+				int itemIndex = data.FindItemIndex(data.GetItem(i).depend.get(j).name);
+				retList.get(i).addModel(retList.get(itemIndex));
+			}
+		}
+		return retList;
+	}
 
 
 	/*
 	 * 두 Data 객체의 노드들의 이름들이 같은지를 조사.
-	 * 같으면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리임
+	 * true면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리
 	 */
 	private boolean CheckSameData(Data clsxData, Data dsmData){
 		int nodeNumber = clsxData.ItemCount();
@@ -168,5 +210,12 @@ public class DataController {
 		}
 		return true;
 	}
+	
+	/*
+	 * 생성자
+	 */
+	public DataController(){
+		readClsx = new ReadClsxController();
+		readDsm = new ReadDsmController();
+	}
 }
-
