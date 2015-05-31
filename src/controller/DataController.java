@@ -8,22 +8,20 @@ import model.Data;
 import model.Dsm;
 
 public class DataController {
-	private ClsxController clsxController;
-	private DsmController dsmController;
 	
-	/*
-	 * 생성자
-	 */
-	public DataController(){
-		clsxController = new ClsxController();
-		dsmController = new DsmController();
-	}
+	private ClsxController readClsx;
+	private DsmController readDsm;
 	
+	
+	//private WriteClsxController writeClsx;
+	//private WriteDsmController writeDsm;
+	
+
 	public void MoveUp(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
-		for(; index < parent.child.size() ; index++){
-			if(parent.child.get(index).name == name){
+		for(; index < parent.GetChildLength() ; index++){
+			if(parent.GetChild(index).name == name){
 				break;
 			}
 		}
@@ -31,27 +29,27 @@ public class DataController {
 		if(0 < index){
 
 			Data cur, forward;
-			cur = parent.child.get(index);
-			forward = parent.child.get(index -1);
-			parent.child.set(index, forward);
-			parent.child.set(index-1, cur);
+			cur = parent.GetChild(index);
+			forward = parent.GetChild(index -1);
+			parent.SetChild(index, forward);
+			parent.SetChild(index-1, cur);
 		}
 	}
 	
 	public void MoveDown(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
-		for(; index < parent.child.size() ; index++){
-			if(parent.child.get(index).name == name){
+		for(; index < parent.GetChildLength() ; index++){
+			if(parent.GetChild(index).name == name){
 				break;
 			}
 		}
-		if(index < parent.child.size()-1){
+		if(index < parent.GetChildLength()-1){
 			Data cur, back;
-			cur = parent.child.get(index);
-			back = parent.child.get(index+1);
-			parent.child.set(index, back);
-			parent.child.set(index+1, cur);
+			cur = parent.GetChild(index);
+			back = parent.GetChild(index+1);
+			parent.SetChild(index, back);
+			parent.SetChild(index+1, cur);
 		}
 	}
 	
@@ -85,9 +83,9 @@ public class DataController {
 		item = data.FindItem(itemName);
 		depItem = data.FindItem(dependItemName);
 		if(isDepend(data, itemName, dependItemName)){
-			item.depend.remove(depItem);
+			item.RemoveDepend(depItem);
 		}else{
-			item.depend.add(depItem);
+			item.AddDepend(depItem);
 		}
 	}
 	
@@ -98,9 +96,9 @@ public class DataController {
 		Data item, depItem;
 		item = data.FindItem(itemName);
 		depItem = data.FindItem(dependItemName);
-		int length = item.depend.size();
+		int length = item.GetDependLength();
 		for(int i = 0 ; i < length ; i ++){
-			if(item.depend.get(i).name == depItem.name){
+			if(item.GetDepend(i).name == depItem.name){
 				return true;
 			}
 		}
@@ -126,11 +124,11 @@ public class DataController {
 		}
 		if(i == 0){	newData = new Data(newItemName);		}
 		else{		newData = new Data(newItemName + i);	}
-		if(0 < data.FindData(itemName).child.size()){
-			data.FindData(itemName).child.add(newData);
+		if(0 < data.FindData(itemName).GetChildLength()){
+			data.FindData(itemName).AddChild(newData);
 		}else{
 			Data parent = FindParent(data, itemName);
-			parent.child.add(newData);
+			parent.AddChild(newData);
 		}
 	}
 	
@@ -140,19 +138,19 @@ public class DataController {
 	public void DeleteItem(Data data, String itemName){
 		//연결 지우기
 		for(int i = 0 ; i < data.ItemCount() ; i++){
-			int depLength = data.GetItem(i).depend.size();
+			int depLength = data.GetItem(i).GetDependLength();
 			for(int j = 0 ; j < depLength ; j++){
-				if(data.GetItem(i).depend.get(j).name == itemName){
-					data.GetItem(i).depend.remove(j);
+				if(data.GetItem(i).GetDepend(j).name == itemName){
+					data.GetItem(i).RemoveDepend(j);
 				}
 			}
 		}
 		//직접적인 데이터 지우기
 		Data parent = FindParent(data, itemName);
-		for(int i = 0 ; i < parent.child.size() ; i ++){
-			if(parent.child.get(i).child.size() == 0){
-				if(parent.child.get(i).name == itemName){
-					parent.child.remove(i);
+		for(int i = 0 ; i < parent.GetChildLength() ; i ++){
+			if(parent.GetChild(i).GetChildLength() == 0){
+				if(parent.GetChild(i).name == itemName){
+					parent.RemoveChild(i);
 				}
 			}
 		}
@@ -180,9 +178,9 @@ public class DataController {
 				int start, end;
 				start = end = 0;
 				Data parent = FindParent(data, startName);
-				for(int i = 0 ; i < parent.child.size() ; i++){
-					if(parent.child.get(i).name == startName){	start = i;	}
-					if(parent.child.get(i).name == endName){	end = i;	}
+				for(int i = 0 ; i < parent.GetChildLength() ; i++){
+					if(parent.GetChild(i).name == startName){	start = i;	}
+					if(parent.GetChild(i).name == endName){	end = i;	}
 				}
 				if(end < start){
 					int a = end;
@@ -193,11 +191,11 @@ public class DataController {
 				if(index == 0){		newData = new Data(groupName);	}
 				else{				newData = new Data(groupName + index);	}
 				for(int i = 0 ; i < end-start+1 ; i ++){
-					newData.child.add(parent.child.get(start + i));
+					newData.AddChild(parent.GetChild(start + i));
 				}
-				parent.child.set(start, newData);
+				parent.SetChild(start, newData);
 				for(int i = 0 ; i < end-start ; i ++){
-					parent.child.remove(start+1);
+					parent.RemoveChild(start+1);
 				}
 			}
 		}
@@ -212,11 +210,11 @@ public class DataController {
 		Data parent = FindParent(data, groupName);
 		Data Group = data.FindData(groupName);
 		int index = parent.FindChildIndex(groupName);
-		int size = Group.child.size();
+		int size = Group.GetChildLength();
 		for(int i = 0 ; i < size ; i ++){
-			parent.child.add(index+1, Group.child.get(size-i-1));
+			parent.AddChild(index+1, Group.GetChild(size-i-1));
 		}
-		parent.child.remove(index);
+		parent.RemoveChild(index);
 	}
 	
 	
@@ -250,21 +248,22 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file){
 		Data dsmData;
-		dsmController.readFile(file);
+		readDsm = new DsmController();
+		readDsm.readFile(file);
 		
-		int nodeNumber = dsmController.getNumber();
+		int nodeNumber = readDsm.getNumber();
 		dsmData = new Data("root");
 		
 		//노드 생성
 		for(int i = 0 ; i < nodeNumber ; i ++){
-			dsmData.child.add(new Data(dsmController.getDsm(i).getName()));
+			dsmData.AddChild(new Data(readDsm.getDsm(i).getName()));
 		}
 		
 		//dependancy 연결
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			for(int j = 0 ; j < nodeNumber ; j ++){
-				if(dsmController.getDsm(i).isDependent(j)){
-					dsmData.child.get(i).depend.add(dsmData.child.get(j));
+				if(readDsm.getDsm(i).isDependent(j)){
+					dsmData.GetChild(i).AddDepend(dsmData.GetChild(j));
 				}
 			}
 		}
@@ -272,7 +271,7 @@ public class DataController {
 	}
 	
 	public Data LoadClsx(File file){
-		return MakeClsxToData(clsxController.readFile(file));
+		return MakeClsxToData(readClsx.readFile(file));
 	}
 	
 	public Data LoadClsx(Clsx c){
@@ -299,10 +298,10 @@ public class DataController {
 			int length = retData.ItemCount();
 			for(int i = 0 ; i < length ; i ++){
 				Data dsmDatai = dsmData.FindItem(retData.GetItem(i).name);
-				int depSize = dsmDatai.depend.size();
+				int depSize = dsmDatai.GetDependLength();
 				for(int j = 0 ; j < depSize ; j ++){
-					Data retDataji = retData.FindItem(dsmDatai.depend.get(j).name);
-					retData.GetItem(i).depend.add(retDataji);
+					Data retDataji = retData.FindItem(dsmDatai.GetDepend(j).name);
+					retData.GetItem(i).AddDepend(retDataji);
 				}
 			}
 		}else{
@@ -323,7 +322,7 @@ public class DataController {
 		Data newData = new Data(c.getName());
 		if(c.item != null){
 			for(int i = 0 ; i < c.item.length ; i ++){
-				newData.child.add(MakeClsxToData(c.item[i]));
+				newData.AddChild(MakeClsxToData(c.item[i]));
 			}
 		}
 		return newData;
@@ -336,12 +335,10 @@ public class DataController {
 	 */
 	private Clsx MakeDataToClsx(Data d){
 		Clsx newClsx = new Clsx(d.name);
-		if(d.child != null){
-			int length = d.child.size();
-			newClsx.item = new Clsx[length];
-			for(int i = 0 ; i < length ; i ++){
-				newClsx.item[i] = MakeDataToClsx(d.child.get(i));
-			}
+		int length = d.GetChildLength();
+		newClsx.item = new Clsx[length];
+		for(int i = 0 ; i < length ; i ++){
+			newClsx.item[i] = MakeDataToClsx(d.GetChild(i));
 		}
 		return newClsx;
 	}
@@ -358,9 +355,9 @@ public class DataController {
 		for(int i = 0 ; i < length ; i ++)
 			retList.add(new Dsm(i, data.GetItem(i).name));
 		for(int i = 0 ; i < length ; i++){
-			int depLength = data.GetItem(i).depend.size();
+			int depLength = data.GetItem(i).GetDependLength();
 			for(int j = 0 ; j < depLength ; j ++){
-				int itemIndex = data.FindItemIndex(data.GetItem(i).depend.get(j).name);
+				int itemIndex = data.FindItemIndex(data.GetItem(i).GetDepend(j).name);
 				retList.get(i).addModel(retList.get(itemIndex));
 			}
 		}
@@ -386,5 +383,12 @@ public class DataController {
 		}
 		return true;
 	}
-
+	
+	/*
+	 * 생성자
+	 */
+	public DataController(){
+		readClsx = new ClsxController();
+		readDsm = new DsmController();
+	}
 }

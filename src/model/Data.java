@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Data {
 	public String name;
-	public ArrayList<Data> child;
-	public ArrayList<Data> depend;
+	private ArrayList<Data> child;
+	private ArrayList<Data> depend;
 
 	public Data(String name){
 		this.name = name;
@@ -181,6 +181,29 @@ public class Data {
 		}
 		return true;
 	}
+	
+	
+	/*
+	 * Getter, Setter 
+	 */
+	public Data GetChild(int index){				return child.get(index);	}
+	public Data GetDepend(int index){				return depend.get(index);	}
+
+	public int GetChildLength(){					return child.size();		}
+	public int GetDependLength(){					return depend.size();		}
+	
+	public void AddChild(Data data){				child.add(data);			}
+	public void AddChild(int index, Data data){		child.add(index, data);		}
+	public void AddDepend(Data data){				depend.add(data);			}
+	public void AddDepend(int index, Data data){	depend.add(index, data);	}
+	
+	public void RemoveChild(int index){				child.remove(index);		}
+	public void RemoveChild(Data data){				child.remove(data);			}
+	public void RemoveDepend(int index){			depend.remove(index);		}
+	public void RemoveDepend(Data data){			depend.remove(data);		}
+	
+	public void SetChild(int index, Data data){		child.set(index, data);		}
+	public void SetDepend(int index, Data data){	depend.set(index, data);	}
 	
 
 }
