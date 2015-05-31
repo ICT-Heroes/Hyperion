@@ -14,8 +14,8 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -32,7 +32,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import model.Data;
+
 import com.ezware.dialog.task.TaskDialogs;
+
+import controller.DataController;
 
 /*
  * @date	: 2015-05-21
@@ -50,6 +54,8 @@ public class TitanWindow implements ActionListener{
 	private JMenuBar				mnuBar;
 	private JToolBar				toolBar;
 	private JFrame					frame;
+	private int					defCloseAction = WindowConstants.EXIT_ON_CLOSE;
+	private Data					currentData;
 	
 	
 	//사용자가 선택한 DSM파일을 나타낸다. 
@@ -63,128 +69,103 @@ public class TitanWindow implements ActionListener{
 	//프로그램 수정 여부, 새로운 파일을 여는 경우에만 false, 나머지 동작 수행시 true로 설정
 	private boolean	isModified = false;
 	
-	//생성과 동시에 초기화 수행
+	//클래스가 생성되면서 초기화 수행
 	{
 		init();
 		initMenuBar();
 		initToolBar();
 	}
+	
 	/*
-	 * 윈도우에 메뉴바 부착
+	 * 프레임의 종료 명령이 전달된 경우 닫기 동작에 대한 행동을 설정하는 메서드
+	 */
+	public void setCloseAction(int action){
+		defCloseAction = action;
+	}
+	
+	/*
+	 * 윈도우 메뉴바 부착 메서드
 	 */
 	public void attachMenuBar(){
 		frame.setJMenuBar(mnuBar);
 	}
 	
 	/*
-	 * 윈도우에 메뉴바 분리
+	 * 윈도우 메뉴바 분리 메서드
 	 */
 	public void detachMenuBar(){
 		frame.setJMenuBar(null);
 	}
 	
 	/*
-	 * 윈도우에 툴바 부착
+	 * 윈도우 툴바 부착 메서드
 	 */
 	public void attachToolBar(){
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
 	}
 	
 	/*
-	 * 윈도우에 툴바 분리
+	 * 윈도우 툴바 분리 메서드
 	 */
 	public void detachToolBar(){
 		frame.getContentPane().remove(toolBar);
 	}
 	
 	/*
-	 * 툴바 초기화
+	 * 툴바 초기화 메서드
 	 */
 	private void initToolBar(){
 		toolBar = new JToolBar();
 		
-		JButton tmp;
-		tmp = TitanUtil.buildImgButton("Open DSM", this, TitanWindow.class.getResource("/res/open-dsm.png"));
-		tmp.setToolTipText("Open DSM");
-		toolBar.add(tmp);
+		toolBar.add(TitanUtil.buildImgButton("Open DSM", this, TitanWindow.class.getResource("/res/open-dsm.png")));		
+		toolBar.add(TitanUtil.buildImgButton("Redraw", this, TitanWindow.class.getResource("/res/redraw.png")));
 		
-		tmp = TitanUtil.buildImgButton("Redraw", this, TitanWindow.class.getResource("/res/redraw.png"));
-		tmp.setToolTipText("Redraw");
-		toolBar.add(tmp);
-		
+		//툴바 버튼 사이에 분리자 추가
 		toolBar.addSeparator(new Dimension(2, 20));
 		
-		tmp = TitanUtil.buildImgButton("New Clustering", this, TitanWindow.class.getResource("/res/new-clsx.png"));
-		tmp.setToolTipText("New Clustering");
-		toolBar.add(tmp);
-		
-		tmp = TitanUtil.buildImgButton("Load Clustering", this, TitanWindow.class.getResource("/res/open-clsx.png"));
-		tmp.setToolTipText("Load Clustering");
-		toolBar.add(tmp);
-		
-		tmp = TitanUtil.buildImgButton("Save Clustering", this, TitanWindow.class.getResource("/res/save-clsx.png"));
-		tmp.setToolTipText("Save Clustering");
-		toolBar.add(tmp);
-		
-		tmp = TitanUtil.buildImgButton("Save Clustering As...", this, TitanWindow.class.getResource("/res/save-clsx-as.png"));
-		tmp.setToolTipText("Save Clustering As...");
-		toolBar.add(tmp);
+		toolBar.add(TitanUtil.buildImgButton("New Clustering", this, TitanWindow.class.getResource("/res/new-clsx.png")));
+		toolBar.add(TitanUtil.buildImgButton("Load Clustering", this, TitanWindow.class.getResource("/res/open-clsx.png")));
+		toolBar.add(TitanUtil.buildImgButton("Save Clustering", this, TitanWindow.class.getResource("/res/save-clsx.png")));
+		toolBar.add(TitanUtil.buildImgButton("Save Clustering As...", this, TitanWindow.class.getResource("/res/save-clsx-as.png")));
 	}
+	
 	/*
 	 * 메뉴바 생성 및 이벤트 핸들러 연결
 	 */
 	private void initMenuBar(){
-		mnuBar = new JMenuBar();
-		
 		JMenu mnuTmp;
-		JMenuItem mntmTmp;
+		
+		mnuBar = new JMenuBar();	
 		
 		mnuTmp = TitanUtil.buildMenu("File", 'F');
 		mnuBar.add(mnuTmp);
 		
-		mntmTmp = TitanUtil.buildMenuItem("New DSM", this, KeyEvent.VK_N, InputEvent.CTRL_MASK);
-		mnuTmp.add(mntmTmp);		
+		mnuTmp.add(TitanUtil.buildMenuItem("New DSM", this, KeyEvent.VK_N, InputEvent.CTRL_MASK));		
 		mnuTmp.add(new JSeparator());
 		
-		mntmTmp = TitanUtil.buildMenuItem("Open DSM", this, KeyEvent.VK_O, InputEvent.CTRL_MASK);	
-		mnuTmp.add(mntmTmp);
+		mnuTmp.add(TitanUtil.buildMenuItem("Open DSM", this, KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mnuTmp.add(new JSeparator());
 		
-		mntmTmp = TitanUtil.buildMenuItem("New Clustering", this, KeyEvent.VK_N, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-		mnuTmp.add(mntmTmp);
-		
-		mntmTmp = TitanUtil.buildMenuItem("Load Clustering", this, KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-		mnuTmp.add(mntmTmp);
-		mnuTmp.add(new JSeparator());		
-		
-		mntmTmp = TitanUtil.buildMenuItem("Save Clustering", this, KeyEvent.VK_S, InputEvent.CTRL_MASK);
-		mnuTmp.add(mntmTmp);
-		
-		mntmTmp = TitanUtil.buildMenuItem("Save Clustering As...", this, KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-		mnuTmp.add(mntmTmp);
+		mnuTmp.add(TitanUtil.buildMenuItem("New Clustering", this, KeyEvent.VK_N, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnuTmp.add(TitanUtil.buildMenuItem("Load Clustering", this, KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnuTmp.add(new JSeparator());
+
+		mnuTmp.add(TitanUtil.buildMenuItem("Save Clustering", this, KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		mnuTmp.add(TitanUtil.buildMenuItem("Save Clustering As...", this, KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnuTmp.add(new JSeparator());
 		
-		mntmTmp = TitanUtil.buildMenuItem("Exit", this, KeyEvent.VK_F4, InputEvent.ALT_MASK);
-		mnuTmp.add(mntmTmp);
-		
+		mnuTmp.add(TitanUtil.buildMenuItem("Exit", this, KeyEvent.VK_F4, InputEvent.ALT_MASK));
 		mnuTmp = TitanUtil.buildMenu("View", 'V');
 		mnuBar.add(mnuTmp);
-		
-		mntmTmp = TitanUtil.buildMenuItem("Redraw", this, KeyEvent.VK_F5, 0);
-		mnuTmp.add(mntmTmp);
+		mnuTmp.add(TitanUtil.buildMenuItem("Redraw", this, KeyEvent.VK_F5, 0));
 		mnuTmp.add(new JSeparator());
 		
-		mntmTmp = TitanUtil.buildMenuItem("Show Row Lables", this, KeyEvent.VK_F6, 0);
-		mnuTmp.add(mntmTmp);
-		
-		mntmTmp = TitanUtil.buildMenuItem("Change UI Theme", this);
-		mnuTmp.add(mntmTmp);		
+		mnuTmp.add(TitanUtil.buildMenuItem("Show Row Lables", this, KeyEvent.VK_F6, 0));
+		mnuTmp.add(TitanUtil.buildMenuItem("Change UI Theme", this));
 		
 		mnuTmp = TitanUtil.buildMenu("Help", 'H');
-		mnuBar.add(mnuTmp);		
-		
-		mntmTmp = TitanUtil.buildMenuItem("About", this);
-		mnuTmp.add(mntmTmp);
+		mnuBar.add(mnuTmp);
+		mnuTmp.add(TitanUtil.buildMenuItem("About", this));
 	}
 	
 	/*
@@ -202,8 +183,8 @@ public class TitanWindow implements ActionListener{
 		
 		/*
 		 * Look And Feel을 OS에 따라 결정
-		 * Windows 계열 : Windows
-		 * 비 Windows 계열 : Nimbus
+		 * Windows 계열		: Windows
+		 * 비 Windows 계열	: Nimbus
 		 */
 		if(System.getProperty("os.name").contains("Windows") == true){
 			changeLaF(frame, "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -211,14 +192,14 @@ public class TitanWindow implements ActionListener{
 			changeLaF(frame, "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		}
 		
-		//소유하고 있는 모든 컨테이너의 크기 및 위치를 재조정
+		//소유하고 있는 모든 컨테이너의 크기 및 위치 조정
 		frame.pack();
 		
 		//현재 선택된 모니터의 중앙으로 이동
 		frame.setLocationRelativeTo(null);
 		
-		//닫기 버튼 누르면 VM까지 종료되도록 설정
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		//설정된 창 닫기 옵션을 수행하도록 지정(기본값 : VM종료)
+		frame.setDefaultCloseOperation(defCloseAction);
 	}
 
 	/*
@@ -318,16 +299,74 @@ public class TitanWindow implements ActionListener{
 		dialog.setVisible(true);
 	}
 	
+	private void loadDSMFromData(){
+		//변경사항이 없음을 알림
+		isModified = false;
+		
+		//트리 컨테이너 획득
+		TitanTreeContainer tc = this.getTitanTreeContainer();
+		
+		//테이블 컨테이너 획득
+		TitanTableContainer tbc = this.getTitanTableContainer();
+		
+		//트리의 모든 요소 삭제
+		tc.setRoot(currentData);
+		
+		//차일드 아이템 설정
+		Object root = tc.getRoot();
+		for(int i = 0; i < currentData.ItemCount(); i++){
+			tc.insertNode(root, currentData.child.get(i));
+		}
+		
+		//열 개수 설정
+		tbc.setColumnSize(currentData.child.size());
+		
+		//의존도 정보를 셀에 표시
+		for(int i = 0; i < currentData.ItemCount(); i++){
+			Vector<String> vc = new Vector<String>();
+			
+			for(int j = 0; j < currentData.ItemCount(); j++){
+				//대각성분은 .으로 표시
+				if(i == j){
+					vc.add(".");
+				}else{
+					vc.add("");
+				}
+			}
+			
+			//DSM 정보를 읽어서 배열에 채운다
+			Data dsmRelation = currentData.child.get(i);
+			
+			for(Data target : dsmRelation.depend){
+				int idx = tc.findNodeIndex(target);
+				if(idx != -1)
+					vc.set(idx, "x");
+			}
+			
+			//새로운 행 추가
+			tbc.addNewRow(vc);
+		}
+		tbc.setRowHeaderTxt(tc.getItemText());
+		tbc.setColumnSizePref();
+	}
+	
 	/*
 	 * DSM파일의 경로를 반환
 	 */
 	private void uiMnuOpenDSM(ActionEvent ae){
+		//변경사항이 있는지 확인한다
+		if(isModified){
+			TaskDialogs.ask(null, "You have unsaved changes, save dsm before open?", "Your changes will be lost if you don't save them");
+		}
+		
 		FileNameExtensionFilter flt = new FileNameExtensionFilter("DSM File(*.dsm)", "dsm");
 		JFileChooser jfc = new JFileChooser();
 		jfc.setDialogTitle("Open DSM");
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION){
 			dsmFile = jfc.getSelectedFile();
+			currentData = dc.LoadDsm(dsmFile);
+			loadDSMFromData();
 		}else{
 			dsmFile = null;
 		}
@@ -410,7 +449,13 @@ public class TitanWindow implements ActionListener{
 	 * 행 레이블 보이기 토글
 	 */	
 	void uiMnuShowRowLable(ActionEvent ae){
-		JOptionPane.showMessageDialog(frame, "Toggled.");
+		boolean beforeState = this.getTitanTableContainer().toggleRowHeader();
+		JMenuItem itm = (JMenuItem)ae.getSource();
+		if(beforeState == true){
+			itm.setText("Show Row Lables");
+		}else{
+			itm.setText("Hide Row Lables");
+		}
 	}
 	
 	/*
@@ -483,6 +528,7 @@ public class TitanWindow implements ActionListener{
 		case "Redraw":
 			uiMnuRedraw(ae);
 			break;
+		case "Hide Row Lables":
 		case "Show Row Lables":
 			uiMnuShowRowLable(ae);
 			break;
@@ -539,6 +585,49 @@ public class TitanWindow implements ActionListener{
 	 */
 	public File getCLSXFile(){
 		return clsxFile;
+	}
+	public void setDataController(Data dsmData){
+		//������ �ε� ���� �� ��Ʈ ����
+		TitanTreeContainer tc = this.getTitanTreeContainer();
+		tc.setRoot(dsmData);
+		
+		//�� �о��
+		Object o = tc.getRoot();
+		for(int i = 0; i < dsmData.ItemCount(); i++){
+			tc.insertNode(o, dsmData.child.get(i));
+		}
+		
+		//�о�� �����ͷ� ���̺� �߰�
+		this.getTitanTableContainer().setColumnSize(dsmData.child.size());
+		
+		
+		//
+		for(int i = 0; i < dsmData.ItemCount(); i++){
+			Vector<String> vc = new Vector<String>();
+			
+			for(int j = 0; j < dsmData.ItemCount(); j++){
+				if(i == j)
+					vc.add(".");
+				else
+					vc.add("");
+			}
+			
+			Data d = dsmData.child.get(i);
+			for(Data target : d.depend){
+				int idx = tc.findNodeIndex(target);
+				if(idx != -1)
+					vc.set(idx, "x");
+			}
+			this.getTitanTableContainer().addNewRow(vc);
+		}
+		this.getTitanTableContainer().setRowHeaderTxt(tc.getItemText());
+		this.getTitanTableContainer().setColumnSizePref();	
+	}
+
+	private DataController		dc;
+	
+	public void setDataController(DataController dc){
+		this.dc = dc;
 	}
 	
 }
