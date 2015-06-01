@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -25,32 +26,47 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import model.Data;
+
+import com.ezware.dialog.task.TaskDialogs;
+import com.ezware.dialog.task.TaskDialog.StandardIcon;
+
+import controller.DataController;
+
 
 public final class TitanTreeContainer{
-	private JPanel			container;
-	private JPanel			pnlToolbar;		//Åø¹Ù ÄÁÅ×ÀÌ³Ê
-	private JScrollPane	pnlTree;		//Æ®¸® ÄÁÅ×ÀÌ³Ê
-	private JToolBar		tbarTree;		//Æ®¸®¸¦ Á¦¾îÇÏ´Â µ¥ »ç¿ëÇÒ Åø¹Ù
-	private JTree			treeDSM;		//DSM Æ®¸®
-	private JPopupMenu	mnuTree;		//Æ®¸® ¸Þ´º
-	private EventHandler	evtObj;			//ÀÌº¥Æ® Ã³¸®±â
+	private JPanel				container;
+	private JPanel				pnlToolbar;		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½
+	private JScrollPane		pnlTree;		//Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½
+	private JToolBar			tbarTree;		//Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	private JTree				treeDSM;		//DSM Æ®ï¿½ï¿½
+	private JPopupMenu		mnuTree;		//Æ®ï¿½ï¿½ ï¿½Þ´ï¿½
+	private EventHandler		evtObj;			//ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½ï¿½ï¿½
+	private DataController	dc;
+	
+	void setDataController(DataController dc){
+		this.dc = dc;
+	}
 	
 	
 	{
 		init();
 	}
 	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void init(){
-		//ÀÌº¥Æ® Ã³¸®±â »ý¼º
+		//ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		evtObj = new EventHandler();
 		
-		//ÄÁÅ×ÀÌ³Ê »ý¼º
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½ï¿½ï¿½ï¿½
 		container = new JPanel();
 		
-		//·¹ÀÌ¾Æ¿ô ¼³Á¤(hgap : 5, vgap : 1)
+		//ï¿½ï¿½ï¿½Ì¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½(hgap : 5, vgap : 1)
 		container.setLayout(new BorderLayout(5, 1));
 		
-		//Åø¹Ù ·¹ÀÌ¾Æ¿ô »ý¼º
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 		pnlToolbar = new JPanel(new FlowLayout());
 		pnlToolbar.setBorder(null);
 		
@@ -60,7 +76,7 @@ public final class TitanTreeContainer{
 		flToolbar.setAlignment(FlowLayout.LEFT);
 		container.add(pnlToolbar, BorderLayout.NORTH);
 			
-		//Åø¹Ù »ý¼º
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		tbarTree = new JToolBar();
 		tbarTree.setForeground(new Color(255, 255, 255));
 		tbarTree.setFloatable(false);
@@ -69,10 +85,14 @@ public final class TitanTreeContainer{
 		JButton btnTmp;		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Expand All");
+		btnTmp.setActionCommand("Expand All");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/expand.png")));
 		tbarTree.add(btnTmp);
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Collapse All");
+		btnTmp.setActionCommand("Collapse All");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/collapse.png")));
 		tbarTree.add(btnTmp);
 		tbarTree.addSeparator(new Dimension(2, 20));
@@ -114,6 +134,8 @@ public final class TitanTreeContainer{
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Add New DSM Row");
+		btnTmp.setActionCommand("Add New DSM Row");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/newrow.png")));
 		tbarTree.add(btnTmp);
 		
@@ -126,26 +148,47 @@ public final class TitanTreeContainer{
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Delete");
+		btnTmp.addActionListener(evtObj);
+		btnTmp.setActionCommand("Delete");
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/delete.png")));
 		tbarTree.add(btnTmp);
 		
-		//Æ®¸® ·¹ÀÌ¾Æ¿ô »ý¼º
+		//Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 		pnlTree = new JScrollPane();
 		container.add(pnlTree, BorderLayout.CENTER);
 		
-		//Æ®¸® »ý¼º
+		//Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		treeDSM = new JTree();
 		treeDSM.setEditable(true);
+
 		treeDSM.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Root")));
 		
-		//ºäÆ÷Æ®¿¡ Æ®¸® Ãß°¡
+		//ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ß°ï¿½
 		pnlTree.setViewportView(treeDSM);
 		
-		//Æ®¸®¿¡ ¿¬°áµÉ ÆË¾÷ ¸Þ´º »ý¼º
+		//Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½Þ´ï¿½ ï¿½ï¿½ï¿½ï¿½
 		mnuTree = new JPopupMenu();
 		addPopup(treeDSM, mnuTree);
 		
-		//ÆË¾÷ ¸Þ´º¿¡ ¾ÆÀÌÅÛ Ãß°¡
+
+		MouseListener ml = new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        int selRow = treeDSM.getRowForLocation(e.getX(), e.getY());
+		        TreePath selPath = treeDSM.getPathForLocation(e.getX(), e.getY());
+		        if(selRow != -1){
+		        	if(e.getClickCount() == 2){
+		        		DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath.getLastPathComponent();
+		        		if(node.isRoot() == false){
+		        			System.out.println(((Data)node.getUserObject()).name);
+		        			editDSMNodeName((Data)node.getUserObject());
+		        		}
+		            }
+		        }
+		    }
+		};
+		treeDSM.addMouseListener(ml);
+		
+		//ï¿½Ë¾ï¿½ ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		JMenuItem mntmTmp = TitanUtil.buildMenuItem("Rename", evtObj);
 		mnuTree.add(mntmTmp);
 		mntmTmp = TitanUtil.buildMenuItem("Duplicate", evtObj);
@@ -154,22 +197,67 @@ public final class TitanTreeContainer{
 		mnuTree.add(mntmTmp);		
 	}
 	
+	void uiExpandRoot(){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		
+		TreeNode[] nodes = dtm.getPathToRoot((TreeNode)dtm.getRoot());
+		TreePath path = new TreePath(nodes);
+		treeDSM.expandPath(path);
+	}
+	void uiToolbarExpandAll(ActionEvent ae){
+		for(int i = 0 ; i < treeDSM.getRowCount(); i++){
+			treeDSM.expandRow(i);
+		}
+	}
+	
+	void uiToolbarCollapseAll(ActionEvent ae){
+		for(int i = 0 ; i < treeDSM.getRowCount(); i++){
+			treeDSM.collapseRow(i);
+		}
+	}
+	
+	private void editDSMNodeName(Data dm){
+		String currentDSMName = dm.name;
+		boolean loopFlag = true;
+		while(loopFlag){
+			String input = TaskDialogs.input(null, "Edit DSM name", "Current : " + currentDSMName, "");
+			
+			if(input == null){
+				//ì‚¬ìš©ìžê°€ ì·¨ì†Œë¥¼ ëˆŒë €ìŒ
+				loopFlag = false;
+			}else{
+				//ì·¨ì†Œë¥¼ ëˆ„ë¥´ì§€ ì•Šì€ ê²½ìš° ì´ë¦„ì´ ì ì ˆí•œì§€ í™•ì¸í•˜ê³  ì ì ˆì¹˜ ì•Šë‹¤ë©´ ì·¨ì†Œë¥¼ ëˆ„ë¥´ê¸°ê¹Œì§€ 
+				if(input.equals("")){
+					TaskDialogs.error(null, "DSM name cannot be empty. Enter valid name.", "");
+				}else{
+					//ì¤‘ë³µëœ ì•„ì´í…œì´ ì¡´ìž¬í•˜ëŠ”ì§€ í™•ì¸
+					if(this.findNodeByName(input) != null){
+						TaskDialogs.error(null, "DSM name must be unique. Try another name.", "");
+					}else{
+						dc.SetName(dm, currentDSMName, input);
+					
+						//ë³€ê²½ëœ ì‚¬í•­ì„ ë‹¤ì‹œ ê·¸ë¦°ë‹¤
+						treeDSM.repaint();
+						loopFlag = false;
+					}
+				}
+			}
+		}
+	}
+	
 	void uiToolbarRename(ActionEvent ae){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
 		
-		//node°¡ ·çÆ®¶ó¸é ÀÚ½Ä³ëµå¸¸ ¼ÒÆ®		
+		//nodeï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ ï¿½Ú½Ä³ï¿½å¸¸ ï¿½ï¿½Æ®		
 		if(node == null)
 			return;
 		
-		//³ëµå¸¦ ÆíÁý°¡´É »óÅÂ·Î ¸¸µë
-		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
-		TreeNode[] nodes = dtm.getPathToRoot(node);
-		TreePath path = new TreePath(nodes);
-		treeDSM.startEditingAtPath(path);
+		//ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
+		editDSMNodeName((Data)node.getUserObject());
 	}
 	
 	void uiMnuDuplicate(ActionEvent ae){
-		//»õ·Î¿î TitanWindow¸¦ »ý¼º
+		//ï¿½ï¿½ï¿½Î¿ï¿½ TitanWindowï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		TitanWindow dupWnd = new TitanWindow();
 		dupWnd.setTitle("TITAN - Duplicated");
 		//wnd.attachToolBar();
@@ -178,11 +266,34 @@ public final class TitanTreeContainer{
 	}
 
 	void uiMnuFork(ActionEvent ae){
-		//»õ·Î¿î TitanWindow¸¦ »ý¼ºÇÏµÇ DataSource¸¦ µ¿ÀÏÇÑ °ÍÀ¸·Î Á¦°ø
+		//ï¿½ï¿½ï¿½Î¿ï¿½ TitanWindowï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ DataSourceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		TitanWindow forkWnd = new TitanWindow();
 		forkWnd.setTitle("TITAN - Fork");
 		forkWnd.pack();
 		forkWnd.setVisible(true);
+	}
+	
+	void uiToolbarAddNewRow(ActionEvent ae){
+	}
+	
+	void uiToolbarDelete(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		
+		if(node.isLeaf()){
+			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
+			node.removeFromParent();			
+			model.reload();
+			dc.DeleteItem(data, data.toString());		
+			
+			treeDSM.repaint();
+		}else{
+			
+		}
 	}
 	
 	private void popupEvtHandler(MouseEvent e, JPopupMenu popup){
@@ -197,6 +308,8 @@ public final class TitanTreeContainer{
 		target.setSelectionPath(path);
 		popup.show(target, x, y);
 	}
+	
+	
 	
 	private void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
@@ -218,14 +331,19 @@ public final class TitanTreeContainer{
 	}
 	
 	/*
-	 * ÀÌº¥Æ® Ã³¸®¿ë ³»ºÎ Å¬·¡½º(ºÒÇÊ¿äÇÏ°Ô ³ëÃâµÈ Public ¸Þ¼­µå Á¦°Å)
+	 * ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½Ê¿ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Public ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	 */
 	class EventHandler implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			switch(ae.getActionCommand()){
+			case "Expand All":
+				uiToolbarExpandAll(ae);
+				break;
+			case "Collapse All":
+				uiToolbarCollapseAll(ae);
+				break;
 			case "Rename":
-				//Æ®¸®¸Þ´º¿Í Åø¹ÙÀÇ Rename µ¿ÀÛ ¼öÇà
 				uiToolbarRename(ae);
 				break;
 			case "Duplicate":
@@ -234,13 +352,30 @@ public final class TitanTreeContainer{
 			case "Fork":
 				uiMnuFork(ae);
 				break;
+			case "Delete":
+				uiToolbarDelete(ae);
+				break;
+			case "Add New DSM Row":
+				break;
 			}
 		}		
 	}
 	
 	/////////////////////////////////////
-	//ºñ°ø°³ API
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ API
 	/////////////////////////////////////
+	private DefaultMutableTreeNode _findNodeByName(String s){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(s.equals(((Data)node.getUserObject()).name) == true){
+				return node;
+			}
+		}
+		return null;
+	}
 	private DefaultMutableTreeNode _findNode(Object o){
 		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
 		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
@@ -255,7 +390,7 @@ public final class TitanTreeContainer{
 	}
 	
 	/////////////////////////////////////
-	//°ø°³ API
+	//ï¿½ï¿½ï¿½ï¿½ API
 	/////////////////////////////////////
 	public void setRoot(Object o){
 		//get tree model
@@ -289,6 +424,11 @@ public final class TitanTreeContainer{
 	
 	public Object findNode(Object item){
 		DefaultMutableTreeNode node = _findNode(item);		
+		return node == null ? null : node.getUserObject();
+	}
+	
+	public Object findNodeByName(String item){
+		DefaultMutableTreeNode node = _findNodeByName(item);		
 		return node == null ? null : node.getUserObject();
 	}
 	

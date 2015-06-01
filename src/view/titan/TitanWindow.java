@@ -5,18 +5,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Vector;
 
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -24,7 +17,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -172,6 +164,12 @@ public class TitanWindow implements ActionListener{
 	 * 윈도우 초기화
 	 */
 	private void init(){
+		//이벤트 호출 대리자 추가
+		TitanUIEventSurrogateManager.addSurrogate(this);
+		TitanUIEventSurrogate sur = TitanUIEventSurrogateManager.selectSurrogate(this);
+		sur.bind("loadDSMFromData", "LoadDSM");
+		sur.call("LoadDSM", new Class[]{});
+		
 		frame = new JFrame();
 		
 		//타이틀 설정
@@ -205,101 +203,37 @@ public class TitanWindow implements ActionListener{
 	/*
 	 * 새로운 DSM을 생성
 	 */
+	private int lastNewDSMIndex = 0;
 	public void uiMnuNewDSM(ActionEvent ae){
-		//텍스트 필드 생성
-		final JTextField txtFld = new JTextField(10);
-		
-		//구성요소
-		Object[] bodyAndTxtField = {"How many rows added?\n", txtFld};
-		Object[] btnTxt = {"OK", "Cancel"};
-		
-		//옵션패널 생성
-		final JOptionPane optionPane = new JOptionPane(
-													bodyAndTxtField,
-													JOptionPane.QUESTION_MESSAGE,
-													JOptionPane.YES_NO_OPTION,
-													null,
-													btnTxt,
-													btnTxt[0]
-												);
-		
-		//다이얼로그 생성
-		final JDialog dialog = new JDialog(frame, "New DSM", true);
-		dialog.setContentPane(optionPane);
-		
-		//다이얼로그가 자동으로 닫히지 않게 설정
-		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		
-		//다이얼로그가 열리면 텍스트필드로 포커스가 이동하도록 이벤트 핸들러 설정 
-		dialog.addComponentListener(new ComponentAdapter(){
-			@Override
-			public void componentShown(ComponentEvent ce){
-				txtFld.requestFocusInWindow();
+		while(true){
+			String value = TitanDialogs.BuildInputDlg("New DSM Row", "How many rows are added?", "");
+			int rowCount = 0;
+			
+			if(value != null){
+				try{
+					rowCount = Integer.parseInt(value);
+					
+					//create new DSM
+					String _entity = "entity_";
+					
+					int lastIdx = 0;
+					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
+						dc.AddItem(this.currentData, this.currentData.name, _entity + (i + 1));
+						lastIdx = i;
+					}
+					lastNewDSMIndex = lastIdx + 1;
+					loadDSMFromData();
+					break;
+				}catch(NumberFormatException nfe){
+					TitanDialogs.BuildWarnDlg("Error", "Value must be integer. Try Again", "", null);
+				}
+			}else{
+				break;
 			}
-		});
-		
-		//X버튼을 눌렀을 때 처리를 위해 이벤트 핸들러 추가 
-		dialog.addWindowListener(new WindowAdapter(){
-		    public void windowClosing(WindowEvent we){
-		    	//X버튼을 눌렀다면 종료
-		    	dialog.dispose();
-		    }
-		});
-		
-		//속성(예를 들어 버튼이 눌렸다던지)이 변경된 경우를 확인
-		optionPane.addPropertyChangeListener(
-		    new PropertyChangeListener(){
-		        public void propertyChange(PropertyChangeEvent pcEvt){
-		            String prop = pcEvt.getPropertyName();
-		
-		            if (dialog.isVisible() 
-		             && (pcEvt.getSource() == optionPane)
-		             && (prop.equals(JOptionPane.VALUE_PROPERTY))){
-		            	Object value = optionPane.getValue();
-		            	
-		            	if(value == JOptionPane.UNINITIALIZED_VALUE){
-		            		return;
-		            	}
-		            	
-		            	//이 값을 설정하지 않으면 다음번에 유저가 이벤트를 발생시키더라도
-		            	//프로퍼티 변경 이벤트가 발생하지 않게 된다.
-		            	optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-		            	
-		            	if("OK".equals(value)){
-		            		boolean isOK = false;
-		            		String typedText = txtFld.getText();
-		            		int values = 0;
-		            		
-		            		try{
-		            			values = Integer.parseInt(typedText);
-		            			if(values < 0){
-		            				throw new Exception("Out of Range");
-		            			}
-		            			isOK = true;
-		            		}catch(Exception e){
-		            			JOptionPane.showMessageDialog(null, "Value must be positive integer, try again.");
-		            			txtFld.setText("");
-		            		}
-		            		if(isOK == true)
-		            			dialog.dispose();
-		            		
-		            	}else if("Cancel".equals(value)){
-		            		dialog.dispose();
-		            	}
-		            }
-		        }
-		    });
-		//다이얼로그 요소를 적절하게 배치
-		dialog.pack();
-		
-		//부모 윈도우의 중앙에 오도록 조정
-		dialog.setLocationRelativeTo(frame);
-		
-		//다이얼로그 전시
-		dialog.setVisible(true);
+		}
 	}
 	
-	private void loadDSMFromData(){
+	public void loadDSMFromData(){		
 		//변경사항이 없음을 알림
 		isModified = false;
 		
@@ -348,6 +282,9 @@ public class TitanWindow implements ActionListener{
 		}
 		tbc.setRowHeaderTxt(tc.getItemText());
 		tbc.setColumnSizePref();
+		
+		//트리의 첫 번째 수준까지 expand
+		tc.uiExpandRoot();
 	}
 	
 	/*
@@ -442,7 +379,7 @@ public class TitanWindow implements ActionListener{
 	 * 다시 그리기
 	 */	
 	void uiMnuRedraw(ActionEvent ae){
-		JOptionPane.showMessageDialog(frame, "redrawed...");
+		loadDSMFromData();
 	}
 	
 	/*
@@ -628,6 +565,7 @@ public class TitanWindow implements ActionListener{
 	
 	public void setDataController(DataController dc){
 		this.dc = dc;
+		this.getTitanTreeContainer().setDataController(dc);
 	}
 	
 }

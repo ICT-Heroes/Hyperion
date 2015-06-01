@@ -26,7 +26,11 @@ public final class TitanTableContainer{
 		container = new JScrollPane();
 		
 		//���̺� ����
-		tblDSM = new JTable();
+		tblDSM = new JTable(){
+			public boolean isCellEditable(int i, int i1) {
+				return false; //To change body of generated methods, choose Tools | Templates.
+			}
+	    };
 		
 		//���̺� �⺻ ������ �� �߰�
 		tblDSM.setModel(new DefaultTableModel(
@@ -42,6 +46,7 @@ public final class TitanTableContainer{
 		
 		container.setViewportView(tblDSM);
 		container.setRowHeaderView(tblRowHdr);
+		
 	}
 	
 	JScrollPane getContainer(){
