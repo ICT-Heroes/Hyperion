@@ -40,7 +40,7 @@ public class Data {
 		Data retData = new Data("null");
 		int length = DataCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(SameString(GetData(i).name, name)){
+			if(isSameString(GetData(i).name, name)){
 				return GetData(i);
 			}
 		}
@@ -54,7 +54,7 @@ public class Data {
 		Data retData = new Data("null");
 		int length = ItemCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(SameString(GetItem(i).name, name)){
+			if(isSameString(GetItem(i).name, name)){
 				return GetItem(i);
 			}
 		}
@@ -100,7 +100,7 @@ public class Data {
 	public int FindDataIndex(String name){
 		int length = DataCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(SameString(GetData(i).name, name)){
+			if(isSameString(GetData(i).name, name)){
 				return i;
 			}
 		}
@@ -110,7 +110,7 @@ public class Data {
 	public int FindItemIndex(String name){
 		int length = ItemCount();
 		for(int i = 0 ; i < length ; i ++){
-			if(SameString(GetItem(i).name, name)){
+			if(isSameString(GetItem(i).name, name)){
 				return i;
 			}
 		}
@@ -120,7 +120,7 @@ public class Data {
 	public int FindChildIndex(String name){
 		int index = -1;
 		for(int i = 0 ; i < child.size() ; i ++){
-			if(SameString(child.get(i).name, name)){
+			if(isSameString(child.get(i).name, name)){
 				index = i;
 				break;
 			}
@@ -166,7 +166,11 @@ public class Data {
 		return new Data("");
 	}
 	
-	private boolean SameString(String s1, String s2){
+	public boolean isSameName(String name){
+		return isSameString(name, this.name);
+	}
+	
+	private boolean isSameString(String s1, String s2){
 		if(s1.length() == s2.length()){
 			char[] c1, c2;
 			c1 = s1.toCharArray();

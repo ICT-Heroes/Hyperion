@@ -9,6 +9,7 @@ import model.Dsm;
 
 public class DataController {
 	
+	private Data data;
 	private ClsxController readClsx;
 	private DsmController readDsm;
 	
@@ -16,12 +17,12 @@ public class DataController {
 	//private WriteClsxController writeClsx;
 	//private WriteDsmController writeDsm;
 	
-
+	public void MoveUp(String name){	MoveUp(data, name);		}
 	public void MoveUp(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
 		for(; index < parent.GetChildLength() ; index++){
-			if(parent.GetChild(index).name == name){
+			if(parent.GetChild(index).isSameName(name)){
 				break;
 			}
 		}
@@ -36,11 +37,13 @@ public class DataController {
 		}
 	}
 	
+	
+	public void MoveDown(String name){		MoveDown(data, name);	}
 	public void MoveDown(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
 		for(; index < parent.GetChildLength() ; index++){
-			if(parent.GetChild(index).name == name){
+			if(parent.GetChild(index).isSameName(name)){
 				break;
 			}
 		}
@@ -53,11 +56,12 @@ public class DataController {
 		}
 	}
 	
+	private Data FindParent(String name){	return 	FindParent(data, name);		}
 	private Data FindParent(Data data, String name){
 		int dataIndex = data.FindDataIndex(name);
 		for(int i = 1 ; i <= dataIndex ; i ++){
 			Data fdata = data.FindData(data.GetData(dataIndex - i).name);
-			if(fdata.FindData(name).name != "null"){
+			if(!fdata.FindData(name).isSameName("null")){
 				return fdata;
 			}
 		}
@@ -69,6 +73,8 @@ public class DataController {
 	 */
 	public void SetName(Data data, String exName, String newName){	data.FindData(exName).name = newName;	}
 	public void SetName(Data data, int dataIndex, String newName){	data.GetData(dataIndex).name = newName;	}
+	public void SetName(String exName, String newName){	data.FindData(exName).name = newName;	}
+	public void SetName(int dataIndex, String newName){	data.GetData(dataIndex).name = newName;	}
 	
 	
 	/*
@@ -78,6 +84,7 @@ public class DataController {
 	 * 의존성이 없으면 추가
 	 * toggle
 	 */
+	public void SetDependancy(String itemName, String dependItemName){		SetDependancy(data, itemName, dependItemName);		}
 	public void SetDependancy(Data data, String itemName, String dependItemName){
 		Data item, depItem;
 		item = data.FindItem(itemName);
@@ -92,13 +99,14 @@ public class DataController {
 	/*
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
+	public boolean isDepend(String itemName, String dependItemName){		return isDepend(data, itemName, dependItemName);		}
 	public boolean isDepend(Data data, String itemName, String dependItemName){
 		Data item, depItem;
 		item = data.FindItem(itemName);
 		depItem = data.FindItem(dependItemName);
 		int length = item.GetDependLength();
 		for(int i = 0 ; i < length ; i ++){
-			if(item.GetDepend(i).name == depItem.name){
+			if(item.GetDepend(i).isSameName(depItem.name)){
 				return true;
 			}
 		}
@@ -109,13 +117,13 @@ public class DataController {
 	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면
 	 * 그 자리에 newData 라는 이름으로 아이템을 추가한다.
 	 */
-	public void AddItem(Data data, String itemName){
-		AddItem(data, itemName, "newData");
-	}
+	public void AddItem(String itemName){	AddItem(itemName, "newData");		}
+	public void AddItem(String itemName, String newItemName){	AddItem(data, itemName, newItemName);		}
+	public void AddItem(Data data, String itemName){	AddItem(data, itemName, "newData");		}
 	public void AddItem(Data data, String itemName, String newItemName){
 		Data newData;
 		int i = 0;
-		while(data.FindData(newItemName + i).name != "null"){
+		while(!data.FindData(newItemName + i).isSameName("null")){
 			i++;
 			if(100000<i){
 				System.out.println("아이템 추가 실패, 너무 많은 아이템이 이름 변경 없이 추가되려 하고있다.");
@@ -135,12 +143,13 @@ public class DataController {
 	/*
 	 * data 내의 아이템을 지운다.
 	 */
+	public void DeleteItem(String itemName){	DeleteItem(data, itemName);			}
 	public void DeleteItem(Data data, String itemName){
 		//연결 지우기
 		for(int i = 0 ; i < data.ItemCount() ; i++){
 			int depLength = data.GetItem(i).GetDependLength();
 			for(int j = 0 ; j < depLength ; j++){
-				if(data.GetItem(i).GetDepend(j).name == itemName){
+				if(data.GetItem(i).GetDepend(j).isSameName(itemName)){
 					data.GetItem(i).RemoveDepend(j);
 				}
 			}
@@ -149,7 +158,7 @@ public class DataController {
 		Data parent = FindParent(data, itemName);
 		for(int i = 0 ; i < parent.GetChildLength() ; i ++){
 			if(parent.GetChild(i).GetChildLength() == 0){
-				if(parent.GetChild(i).name == itemName){
+				if(parent.GetChild(i).isSameName(itemName)){
 					parent.RemoveChild(i);
 				}
 			}
@@ -161,9 +170,9 @@ public class DataController {
 	 * startName 은 그룹을 시작하는 노드, endName 은 그룹을 끝내는 노드
 	 * startName, endName 모두 그룹 안에 들어간다.
 	 */
-	public void CreateGroup(Data data, String startName, String endName){
-		CreateGroup(data, startName, endName, "newGroup");
-	}
+	public void CreateGroup(String startName, String endName){						CreateGroup(data, startName, endName);						}	
+	public void CreateGroup(String startName, String endName, String groupName){	CreateGroup(data, startName, endName, groupName);			}
+	public void CreateGroup(Data data, String startName, String endName){			CreateGroup(data, startName, endName, "newGroup");			}
 	public void CreateGroup(Data data, String startName, String endName, String groupName){
 		int index = 0;
 		while(data.FindData(groupName + index).name != "null"){
@@ -174,13 +183,13 @@ public class DataController {
 			}
 		}
 		if(startName != endName){
-			if(FindParent(data, startName).name == FindParent(data, endName).name){
+			if(FindParent(data, startName).isSameName(FindParent(data, endName).name)){
 				int start, end;
 				start = end = 0;
 				Data parent = FindParent(data, startName);
 				for(int i = 0 ; i < parent.GetChildLength() ; i++){
-					if(parent.GetChild(i).name == startName){	start = i;	}
-					if(parent.GetChild(i).name == endName){	end = i;	}
+					if(parent.GetChild(i).isSameName(startName)){	start = i;	}
+					if(parent.GetChild(i).isSameName(endName)){	end = i;	}
 				}
 				if(end < start){
 					int a = end;
@@ -206,6 +215,7 @@ public class DataController {
 	 * 그룹풀기
 	 * 그룹의 이름을 두번째 인자로 넣으면 그 그룹을 푼다.
 	 */
+	public void DeleteGroup(String groupName){		DeleteGroup(groupName);				}
 	public void DeleteGroup(Data data, String groupName){
 		Data parent = FindParent(data, groupName);
 		Data Group = data.FindData(groupName);
@@ -224,6 +234,7 @@ public class DataController {
 	 * null dependancy 를 갖고 올 수도 있으므로
 	 * 일부분을 제외한 다른 곳과의 dependancy 는 무시하도록 복제한다.
 	 */
+	public Data Dupicate(String GroupName){			return Dupicate(GroupName);		}
 	public Data Dupicate(Data data, String GroupName){
 		Data exData = data.FindData(GroupName);
 		Data newData = new Data(exData);
@@ -333,6 +344,7 @@ public class DataController {
 	 * 데이터의 Dsm 정보는 빼고 저장하여 리턴한다.
 	 * write 전용
 	 */
+	private Clsx MakeDataToClsx(){	return MakeDataToClsx(data);	}
 	private Clsx MakeDataToClsx(Data d){
 		Clsx newClsx = new Clsx(d.name);
 		int length = d.GetChildLength();
@@ -349,6 +361,7 @@ public class DataController {
 	 * 순서는 Data 의 item 순서 그대로 가져온다.
 	 * write 전용
 	 */
+	private ArrayList<Dsm> MakeDataToDsm(){					return MakeDataToDsm(data);					}
 	private ArrayList<Dsm> MakeDataToDsm(Data data){
 		ArrayList<Dsm> retList = new ArrayList<Dsm>();
 		int length = data.ItemCount();
@@ -369,6 +382,7 @@ public class DataController {
 	 * 두 Data 객체의 노드들의 이름들이 같은지를 조사.
 	 * true면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리
 	 */
+	private boolean CheckSameData(Data data){			return CheckSameData(data, this.data);				}
 	private boolean CheckSameData(Data clsxData, Data dsmData){
 		int nodeNumber = clsxData.ItemCount();
 		int dataNumber = dsmData.ItemCount();
@@ -376,7 +390,7 @@ public class DataController {
 		for(int i = 0 ; i < nodeNumber ; i ++){
 			boolean ret = false;
 			for(int j = 0 ; j < dataNumber ; j ++ )
-				if(clsxData.GetItem(i).name == dsmData.GetItem(j).name)
+				if(clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name))
 					ret = true;
 			if(!ret)
 				return false;
@@ -390,5 +404,11 @@ public class DataController {
 	public DataController(){
 		readClsx = new ClsxController();
 		readDsm = new DsmController();
+		
+		data = new Data("root");
+	}
+	
+	public Data GetRoot(){
+		return data;
 	}
 }
