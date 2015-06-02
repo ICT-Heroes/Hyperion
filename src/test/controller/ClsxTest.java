@@ -16,6 +16,7 @@ public class ClsxTest {
 	private static int groupSequence;
 
 	public static void main(String argv[]) {
+
 		{
 			try {
 				// clsx파일을 읽어온다.
@@ -43,8 +44,9 @@ public class ClsxTest {
 
 				makeNode(clsxTree, node);
 
-				for(int i=0; i< clsxTree.item[0].item.length; i++){
-					System.out.println("clsxTree가 잘 만들어졌나요?  :  "  +clsxTree.item[0].item[i].getName());
+				for (int i = 0; i < clsxTree.item[0].item.length; i++) {
+					System.out.println("clsxTree가 잘 만들어졌나요?  :  "
+							+ clsxTree.item[0].item[i].getName());
 				}
 				/*
 				 * clsxTree.setName(firstNodelist.item(3 * i - 2)
@@ -59,77 +61,57 @@ public class ClsxTest {
 				// 안된다.)
 				// item도 전부 들어간다.
 				/*
-				NodeList grouplist = doc.getElementsByTagName("*");
-
-				for (int i = 0; i < grouplist.getLength(); i++) {
-					Node groupNode = grouplist.item(i);
-
-					String groupName = groupNode.getAttributes().item(0)
-							.getTextContent();
-
-					if (groupNode == groupNode.getParentNode()) {
-						System.out.println(groupNode.getParentNode()
-								.getNodeName()
-								+ " : "
-								+ groupNode.getNodeName() + " : " + groupName);
-					} else {
-
-					}
-				}
-				// group의 총 갯수만큼 반복한다.
-				for (int i = 0; i < grouplist.getLength(); i++) {
-					// group으로 들어가서 해당 attribute의 첫번째 item 즉 name을 가져온다. (한마디로
-					// // group name)
-					Node groupNode = grouplist.item(i);
-
-					String groupName = groupNode.getAttributes().item(0)
-							.getTextContent();
-
-					printGroupList(groupName);
-
-					// 그룹 이름을 출력한 뒤 하위에 item이 있는지 없는지를 체크한다. 없으면 item이라는 것이고 있다면
-					// group이라는 뜻
-					if (groupNode.getNodeType() == Node.ELEMENT_NODE) {
-						Element groupElmnt = (Element) groupNode;
-						if (checkHasGroupList(groupElmnt)) {
-							// groupList가 있다는 것은 Group이라는 것
-							if (groupNode.hasChildNodes() == false) {
-								// item의 경우 childnodes가 없기 때문에 true가야한다.
-								System.out.println("Item을 가지고 있지 않습니다");
-								System.out.println();
-								doc.getFirstChild();
-							} else {
-								System.out.println("Item입니다");
-							}
-
-						} else { // groupList가 없다는것은 Item이라는 것
-							NodeList itemList = groupElmnt
-									.getElementsByTagName("item");
-							for (int j = 0; j < itemList.getLength(); j++) {
-								Node itemNode = itemList.item(j);
-								if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
-									System.out.println("item name    : "
-											+ (j + 1)
-											+ "번째 "
-											+ itemList.item(j).getAttributes()
-													.item(0).getTextContent());
-								}
-							}
-						}
-					}
-
-					System.out
-							.println("---------------------------------------------");
-					System.out.println();
-				}
-*/
+				 * NodeList grouplist = doc.getElementsByTagName("*");
+				 * 
+				 * for (int i = 0; i < grouplist.getLength(); i++) { Node
+				 * groupNode = grouplist.item(i);
+				 * 
+				 * String groupName = groupNode.getAttributes().item(0)
+				 * .getTextContent();
+				 * 
+				 * if (groupNode == groupNode.getParentNode()) {
+				 * System.out.println(groupNode.getParentNode() .getNodeName() +
+				 * " : " + groupNode.getNodeName() + " : " + groupName); } else
+				 * {
+				 * 
+				 * } } // group의 총 갯수만큼 반복한다. for (int i = 0; i <
+				 * grouplist.getLength(); i++) { // group으로 들어가서 해당 attribute의
+				 * 첫번째 item 즉 name을 가져온다. (한마디로 // // group name) Node groupNode
+				 * = grouplist.item(i);
+				 * 
+				 * String groupName = groupNode.getAttributes().item(0)
+				 * .getTextContent();
+				 * 
+				 * printGroupList(groupName);
+				 * 
+				 * // 그룹 이름을 출력한 뒤 하위에 item이 있는지 없는지를 체크한다. 없으면 item이라는 것이고 있다면
+				 * // group이라는 뜻 if (groupNode.getNodeType() ==
+				 * Node.ELEMENT_NODE) { Element groupElmnt = (Element)
+				 * groupNode; if (checkHasGroupList(groupElmnt)) { // groupList가
+				 * 있다는 것은 Group이라는 것 if (groupNode.hasChildNodes() == false) {
+				 * // item의 경우 childnodes가 없기 때문에 true가야한다.
+				 * System.out.println("Item을 가지고 있지 않습니다");
+				 * System.out.println(); doc.getFirstChild(); } else {
+				 * System.out.println("Item입니다"); }
+				 * 
+				 * } else { // groupList가 없다는것은 Item이라는 것 NodeList itemList =
+				 * groupElmnt .getElementsByTagName("item"); for (int j = 0; j <
+				 * itemList.getLength(); j++) { Node itemNode =
+				 * itemList.item(j); if (itemNode.getNodeType() ==
+				 * Node.ELEMENT_NODE) { System.out.println("item name    : " +
+				 * (j + 1) + "번째 " + itemList.item(j).getAttributes()
+				 * .item(0).getTextContent()); } } } }
+				 * 
+				 * System.out
+				 * .println("---------------------------------------------");
+				 * System.out.println(); }
+				 */
 			} catch (Exception e) {
 				System.out.println("파일을 읽을 수가 없습니다");
 				e.printStackTrace();
 			}
 		}
 	}
-
 
 	private static void makeNode(Clsx clsx, Node node) {
 		// node의 이름과 item의 크기를 할당

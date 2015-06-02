@@ -4,10 +4,16 @@ import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import model.Clsx;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -36,10 +42,11 @@ public class ClsxController {
 		}
 	}
 
-	public Clsx readFile(File file){
+	public Clsx readFile(File file) {
 		Clsx clsx;
 		try {
-			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
 			Document doc = docBuild.parse(file);
 			doc.getDocumentElement().normalize();
@@ -50,8 +57,45 @@ public class ClsxController {
 		} catch (Exception e) {
 
 		}
-		
+
 		return null;
+	}
+
+	public void writeFile() {
+
+		File file = new File("src/res/titan_DRH+ACDC.clsx");
+		ClsxController clsxcontroller = new ClsxController();
+		Clsx clsx = clsxcontroller.readFile(file);
+		try {
+
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			// root elements
+			Document doc = docBuilder.newDocument();
+
+			Element rootElement = doc.createElement("cluster");
+			doc.appendChild(rootElement);
+
+			Element staff = doc.createElement("group");
+			rootElement.appendChild(staff);
+
+			Attr attr = doc.createAttribute("name");
+			attr.setValue("1");
+			staff.setAttributeNode(attr);
+
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			// StreamResult result = new StreamResult(new File("C:\\file.xml"));
+			StreamResult result = new StreamResult(System.out);
+			transformer.transform(source, result);
+
+		} catch (Exception e) {
+
+		}
+
 	}
 
 	private void makeNode(Clsx clsx, Node node) {
