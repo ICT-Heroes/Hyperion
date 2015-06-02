@@ -27,27 +27,15 @@ public class ClsxTest {
 				Document doc = docBuild.parse(file);
 				doc.getDocumentElement().normalize();
 
-				NodeList firstNodelist = doc.getFirstChild().getChildNodes();
-				for (int i = 1; i <= firstNodelist.getLength() / 3; i++) {
-					System.out.println("My Test :"
-							+ firstNodelist.item(3 * i - 2).getAttributes()
-									.item(0).getTextContent());
-
-				}
-
 				// clsx 객체를 만든다.
 				Clsx clsxTree = new Clsx();
 
 				// 함수를 통해 트리 구조를 만든다. 처음은 cluster 임으로 root에서부터 시작한다.
 				// rootNode
 				Node node = doc.getFirstChild().getChildNodes().item(1);
-
+				System.out.println("Minsoo's Test " + node.getNodeName());
 				makeNode(clsxTree, node);
 
-				for (int i = 0; i < clsxTree.item[0].item.length; i++) {
-					System.out.println("clsxTree가 잘 만들어졌나요?  :  "
-							+ clsxTree.item[0].item[i].getName());
-				}
 				/*
 				 * clsxTree.setName(firstNodelist.item(3 * i - 2)
 				 * .getAttributes().item(0).getTextContent()); clsxTree.item =
