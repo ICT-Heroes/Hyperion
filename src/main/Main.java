@@ -1,6 +1,7 @@
 package main;
 import java.io.File;
 
+import model.Dsm;
 import controller.Partitioner;
 import controller.ReadDsmController;
 import view.titan.TitanTreeContainer;
@@ -24,21 +25,16 @@ public class Main{
 		//tree.removeNode(item2);
 		System.out.println(tree.getRoot().toString());*/
 		
-		ReadDsmController controller;
-		File file;
-		controller = new ReadDsmController();
-		file = new File("src/res/titan.dsm");
-		controller.readFile(file);
+		Dsm dsm;
+		ReadDsmController controller = new ReadDsmController();
+		Partitioner partitioner;
 		
-		Partitioner p = new Partitioner();
+		File file = new File("src/res/titan.dsm");
+		dsm = controller.readFromeFile(file);
+		partitioner = new Partitioner();
+		partitioner.setDsm(dsm);
 		
-		p.setDsm(controller.dsms);
-		
-		p.partitionByPathSearching();
-		//p.preProcessing();
-		
-		controller.setDsm(p.getResultDsm());
-		
-		controller.printDependency();
+		partitioner.preProcessing();
+		dsm.print();
 	}
 }

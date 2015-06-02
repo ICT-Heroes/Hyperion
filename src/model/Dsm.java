@@ -1,84 +1,130 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Dsm {
-	private int index;
-	private String name;
-	private ArrayList<Dsm> dependent;
-	
-	public Dsm() {
-		
+	private int number;
+	private ArrayList<String> names;
+	private boolean[][] dep;
+
+	public Dsm(int number) {
+		this.number = number;
+		dep = new boolean[number][number];
+		names = new ArrayList<String>(number);
 	}
 	
-	public Dsm(int index) {
-		this(index, "");
+	public String getName(int index) {
+		return names.get(index);
 	}
 	
-	public Dsm(int index, String name) {
-		this.index = index;
-		this.name = name;
-		
-		dependent = new ArrayList<Dsm>();
+	public void addName(String name) {
+		names.add(name);
 	}
 	
-	public void removeDependency(int index) {
-		dependent.removeIf((Dsm model) -> {return model.index == index;});
+	public boolean getDependency(int a, int b) {
+		if (a > number || b > number) {
+			// Out of bound.
+			// FIXME Error를 보여줘야함.
+			return false;
+		}
+		else {
+			return dep[a][b];
+		}
 	}
 	
-	public int getIndex() {
-		return index;
+	public void setDependency(boolean val, int a, int b) {
+		if (a > number || b > number) {
+			// Out of bound.
+		}
+		else {
+			dep[a][b] = val;
+		}
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void removeDependency(int a, int b) {
+		if (a > number || b > number) {
+			// Out of bound.
+		}
+		else {
+			dep[a][b] = !dep[a][b];	
+		}
 	}
 	
-	public ArrayList<Dsm> getDependents() {
-		return dependent;
-	}
-	
-	public Dsm getDependent(int index) {
-		return dependent.get(index);
-	}
-	
-	public void addModel(Dsm model) {
-		this.dependent.add(model);
-	}
-	
-	public boolean isDependent(int index) {
-		boolean result = false;
-		
-		for (Dsm model : dependent) {
-			if (model.index == index) {
-				result = true;
-				break;
-			}
+	public void setName(int index, String name) {
+		if (index > number) {
+			// Out of bound.
+		}
+		else {
+			this.names.set(index, name);			
 		}
 		
-		return result;
+	}
+	
+	public int getNumber() {
+		return number;
+	}
+	
+	/**
+	 * a와 b 노드의 순서를 바꾼다.
+	 * @param a
+	 * @param b
+	 */
+	public void changeOrder(int a, int b) {
+		// (a,a)와 (b,b) 성분을 바꾼다.
+		swapElement(a, a, b, b);
+		
+		// (a,b)와 (b,a) 성분을 바꾼다.
+		swapElement(a, b, b, a);
+		
+		// 나머지 행과 열을 바꾼다.
+		for (int i = 0; i < getNumber(); i++) {
+			if (i == a || i == b) 
+				continue;
+			
+			swapElement(a, i, b, i);
+			
+			swapElement(i, a, i, b);
+		}
+		
+		Collections.swap(names, a, b);
+	}
+	
+	/**
+	 * (i1, j1)과 (i2, j2) 성분을 바꾼다.
+	 * @param a1
+	 * @param b1
+	 * @param a2
+	 * @param b2
+	 */
+	private void swapElement(int a1, int b1, int a2, int b2)
+	{
+		boolean temp = dep[a1][b1];
+		dep[a1][b1] = dep[a2][b2];
+		dep[a2][b2] = temp;
+	}
+	
+	public void printDependencies() {
+		for (int i = 0; i < number; i++) {
+			for (int j = 0; j < number; j++) {
+				if (dep[i][j])
+					System.out.print("O ");
+				else
+					System.out.print("X ");	
+			}
+			System.out.println("");
+		}
+	}
+	
+	public void printNames() {
+		for (String name : names) {
+			System.out.println(name);
+		}
 	}
 	
 	public void print() {
-		System.out.println("[" + index + ":" + name + "]");
-		
-		for (Dsm dsm : dependent) {
-			System.out.println(dsm.getIndex() + ":" + dsm.getName());
-		}
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		Dsm dsm = (Dsm) obj;
-		return (this.index == dsm.getIndex()) && (this.name == dsm.getName());
+		printDependencies();
+		printNames();
 	}
 	
 	

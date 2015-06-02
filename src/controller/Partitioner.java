@@ -1,152 +1,109 @@
 package controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import model.Dsm;
 
 public class Partitioner {
-	// Original dsms
-	private ArrayList<Dsm> dsms;
-	// Result of partitioning
-	private ArrayList<Dsm> processedDsms;
-	// Array index
-	int start, end;
-
-	Dsm startDsm;
-	private ArrayList<Dsm> completeLoop;
-	private ArrayList<ArrayList<Dsm>> groups;
-
-	public void setDsm(ArrayList<Dsm> dsm) {
-		this.dsms = dsm;
+	private Dsm dsm;
+	private int head, faketail, fakehead, tail;
+	private ArrayList<Integer> heads, tails;
+	private ArrayList<Integer> aheads, atails;
+	private ArrayList<Integer> sizeList;
+	
+	public void setDsm(Dsm dsm) {
+		this.dsm = dsm;
 	}
-
-	public ArrayList<Dsm> getResultDsm() {
-		return processedDsms;
+	
+	public ArrayList<Integer> getSizeList() {
+		return sizeList;
 	}
 
 	public void preProcessing() {
-		// Initialization
-		start = 0;
-		end = dsms.size();
+		head = 0;
+		tail = dsm.getNumber();
+		
+		fakehead = head;
+		faketail = tail;
 
-		// This should be deepcopy.
-		processedDsms = (ArrayList<Dsm>) dsms.clone();
-
-		// No one uses this elements. This will be placed leftmost.
-		for (int i = 0; i < dsms.size(); i++) {
-			boolean used = false;
-			for (Dsm dsm2 : dsms) {
-				if (dsms.get(i) == dsm2)
-					continue;
-				for (Dsm dsm3 : dsm2.getDependents()) {
-					if (dsm3 == dsms.get(i))
-						used = true;
-				}
-			}
-
-			if (!used) {
-				Collections.swap(processedDsms, 0, i); // move to head of array
-				start++;
-			}
-		}
-
-		// This doesn't uses any elements. This will be placed rightmost.
-		for (int i = start; i < dsms.size(); i++) {
-			if (dsms.get(i).getDependents().size() == 0) {
-				Dsm target = dsms.get(i);
-				if (processedDsms.remove(target)) {
-					processedDsms.add(target); // move to tail of array
-					end--;
-				}
-			}
-		}
-
-	}
-
-	private void recursiveSearch(Dsm dsm, boolean first) {
-		// Complete loop is finished
-		if (dsm == startDsm && !first) {
-			System.out.println("A group1 " + completeLoop.size());
-			for (Dsm dsm2 : completeLoop) {
-				System.out.println("[" + dsm2.getIndex() + ":" + dsm2.getName() + "]");
-			}
-		}
-		//
-		else if (dsm.getDependents().size() > 0 && !completeLoop.contains(dsm)) {
-			completeLoop.add(dsm);
-			for (int i = 0; i < dsm.getDependents().size(); i++) {
-				recursiveSearch(dsm.getDependent(i), false);
-			}
-		}
-		//
-		else if(!completeLoop.contains(dsm)) {
-			completeLoop.add(dsm);
-			System.out.println("A group2 " + completeLoop.size());
-			for (Dsm dsm2 : completeLoop) {
-				System.out.println("[" + dsm2.getIndex() + ":" + dsm2.getName() + "]");
-			}
-		}
-	}
-
-	public void partitionByPathSearching() {
-
-		preProcessing();
-		groups = new ArrayList<ArrayList<Dsm>>();
-
-		// Path Searching Algorithm
-		for (int i = start; i < end;) {
-			startDsm = processedDsms.get(i);
-			completeLoop = new ArrayList<Dsm>();
-			// ArrayList<Dsm> dependent = dsms.get(i).getDependent();
-
-			// Loop를 이루는 노드를 찾는다.
-			recursiveSearch(startDsm, true);
-			groups.add(completeLoop);
-			end -= completeLoop.size();
+		aheads = new ArrayList<Integer>();
+		atails = new ArrayList<Integer>();
+		sizeList = new ArrayList<Integer>();
+		
+		while(true) {
+			heads = new ArrayList<Integer>();
+			tails = new ArrayList<Integer>();
 			
-			processedDsms.removeAll(completeLoop);
-			for (Dsm dsm2 : completeLoop) {
-				for (Dsm dsm : processedDsms) {
-					if (!dsm.isDependent(dsm2.getIndex()))
-							break;
-					dsm.getDependents().remove(dsm2);
+			// row가 0인 것들을 tail쪽으로 보냄
+			for (int i = fakehead; i < tail; i++) {
+				boolean result = true;
+				for (int j = fakehead; j < tail; j++) {
+					if (dsm.getDependency(i, j)) {
+						result = false;
+						continue;
+					}
+				}
+				
+				if (result) {
+					tails.add(i);
 				}
 			}
-
-
-			/*
-			 * // complete loop에 있는 것들을 left로 모은다. if (completeLoop.size() != 0)
-			 * { // 가장 작은 인덱스를 찾는다. int index = processedDsms.size(); for (int j
-			 * = 0; j < completeLoop.size(); j++) { int val =
-			 * processedDsms.indexOf(completeLoop.get(j)); if (index > val)
-			 * index = val; }
-			 * 
-			 * // ArrayList<Dsm> temp = (ArrayList<Dsm>)processedDsms.clone();
-			 * // 인덱스부터 차례대로 completeLoop에 있는 것들을 모은다. for (int j = index; j <
-			 * processedDsms.size(); j++) { if
-			 * (completeLoop.contains(processedDsms.get(j))) {
-			 * Collections.swap(processedDsms, index, j); index += 1; start +=
-			 * 1; i++; } } }
-			 * 
-			 * // i를 증가시킨다.
-			 */
-			/*System.out.println("A group " + completeLoop.size());
-			for (Dsm dsm : completeLoop) {
-				System.out.println("[" + dsm.getIndex() + ":" + dsm.getName() + "]");
-			}*/
+			
+			for (int i = 0; i < tails.size(); i++) {
+				int row = tails.get(i);
+				dsm.changeOrder(row, tail-1);
+				tail -= 1;
+			}
+			
+			// column이 0인 것들을 head쪽으로 보냄
+			for (int i = head; i < faketail; i++) {
+				boolean result = true;
+				for (int j = head; j < faketail; j++) {
+					if (dsm.getDependency(j, i)) {
+						result = false;
+						continue;
+					}
+				}
+				
+				if (result) {
+					heads.add(i);
+				}
+			}
+			
+			for (int i = 0; i < heads.size(); i++) {
+				int column = heads.get(i);
+				dsm.changeOrder(column, head);
+				head += 1;
+			}
+			
+			// 범위 축소
+			fakehead = head;
+			faketail = tail;
+			
+			if (heads.size() == 0 && tails.size() == 0)
+				break;
+			
+			aheads.add(heads.size());
+			atails.add(tails.size());
+		}
+	}
+	
+	public void pathSearching() {
+		
+	}
+	
+	public void postProcessing() {
+		int middleSize = dsm.getNumber();
+		
+		for (Integer val : aheads) {
+			middleSize -= val;
+		}
+		for (Integer val : atails) {
+			middleSize -= val;
 		}
 		
-		for (int i = 0; i < groups.size(); i++) {
-			for (int j = 0; j < groups.get(i).size(); j++) {
-				//groups.get(i).get(j).print();
-			}
-		}
-
+		sizeList.addAll(aheads);
+		sizeList.add(middleSize);
+		sizeList.addAll(atails);
 	}
-
-	public void partitionByAdjacencyMatrix() {
-
-	}
-
 }
