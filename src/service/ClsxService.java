@@ -60,7 +60,7 @@ public class ClsxService {
 	private void makeNode(Clsx clsx, Node node) {
 		// node의 이름과 item의 크기를 할당
 		clsx.setName(node.getAttributes().item(0).getTextContent());
-		for (int i = 0; i < clsx.item.length; i++) {
+		for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 			makeNextNode(clsx, node.getChildNodes());
 		}
 	}

@@ -8,7 +8,7 @@ public class Data {
 	private ArrayList<Data> depend;
 
 	public Data(String name){
-		this.name = name;
+		this.name = new String(name);
 		child = new ArrayList<Data>();
 		depend = new ArrayList<Data>();
 	}
@@ -18,13 +18,14 @@ public class Data {
 	}
 	
 	public Data(Data data){
-		name = data.name;
-		Data[] newDatas = new Data[data.child.size()];
-		for(int i = 0 ; i < newDatas.length ; i ++){
-			newDatas[i] = new Data(data.child.get(i));
-		}
-		for(int i = 0; i < newDatas.length ; i ++){
-			child.add(newDatas[i]);
+		name = new String(data.name);
+		child = new ArrayList<Data>();
+		depend = new ArrayList<Data>();
+		//System.out.println("new Data name : " + name);
+		if(data.child != null){
+			for(int i = 0; i < data.child.size() ; i ++){
+				child.add(new Data(data.child.get(i)));
+			}
 		}
 	}
 	
@@ -151,19 +152,24 @@ public class Data {
 	public Data GetItem(int index){
 		int curIndex = index;
 		if(ItemCount() < index){
-			return new Data("null");
+			return new Data("null_itemCountLessThenIndex");
 		}else{
 			for(int i = 0 ; i < child.size() ; i ++){
+				if(curIndex == 0){
+					if(child.get(i).child.size() == 0){
+						return child.get(i);
+					}else{
+						return child.get(i).GetItem(0);
+					}
+				}
 				curIndex -= child.get(i).ItemCount();
 				if(curIndex < 0){
 					curIndex += child.get(i).ItemCount();
 					return child.get(i).GetItem(curIndex);
-				}else if(curIndex == 0){
-					return child.get(i);
 				}
 			}
 		}
-		return new Data("");
+		return new Data("nnnnnnnnn");
 	}
 	
 	public boolean isSameName(String name){

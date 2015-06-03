@@ -8,21 +8,22 @@ import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
-import service.ClsxService;
-import service.DsmService;
 
 public class DataController {
 
-	private Data data;
-	private ClsxService readClsx;
-	private DsmService readDsm;
+	public Data data;
+	
+	
+	
+	public void Sort(){
+		
+	}
+	
+	public void MoveUp(String name) {
+		MoveUp(data, name);
+	}
 
-	
-	//private WriteClsxController writeClsx;
-	//private WriteDsmController writeDsm;
-	
-	public void MoveUp(String name){	MoveUp(data, name);		}
-	public void MoveUp(Data data, String name){
+	public void MoveUp(Data data, String name) {
 		Data parent = FindParent(data, name);
 		int index = 0;
 		for (; index < parent.GetChildLength(); index++) {
@@ -67,7 +68,6 @@ public class DataController {
 	}
 
 	private Data FindParent(Data data, String name) {
-
 		int dataIndex = data.FindDataIndex(name);
 		for (int i = 1; i <= dataIndex; i++) {
 			Data fdata = data.FindData(data.GetData(dataIndex - i).name);
@@ -81,7 +81,6 @@ public class DataController {
 	/*
 	 * data의 어느 노드 객체의 이름을 바꾸는 함수
 	 */
-
 	public void SetName(Data data, String exName, String newName) {
 		data.FindData(exName).name = newName;
 	}
@@ -102,7 +101,6 @@ public class DataController {
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
 	 */
-
 	public void SetDependancy(String itemName, String dependItemName) {
 		SetDependancy(data, itemName, dependItemName);
 	}
@@ -121,7 +119,6 @@ public class DataController {
 	/*
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
-
 	public boolean isDepend(String itemName, String dependItemName) {
 		return isDepend(data, itemName, dependItemName);
 	}
@@ -142,7 +139,6 @@ public class DataController {
 	/*
 	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면 그 자리에 newData 라는 이름으로 아이템을 추가한다.
 	 */
-
 	public void AddItem(String itemName) {
 		AddItem(itemName, "newData");
 	}
@@ -232,7 +228,6 @@ public class DataController {
 				return;
 			}
 		}
-
 		if (startName != endName) {
 			if (FindParent(data, startName).isSameName(
 					FindParent(data, endName).name)) {
@@ -253,7 +248,6 @@ public class DataController {
 					start = a;
 				}
 				Data newData;
-
 				if (index == 0) {
 					newData = new Data(groupName);
 				} else {
@@ -321,21 +315,22 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file) {
 		Data dsmData;
-		readDsm = new DsmService();
-		readDsm.readFile(file);
+		DsmService dsm = new DsmService();
+		dsm.readFile(file);
 
-		int nodeNumber = readDsm.getNumber();
+		int nodeNumber = dsm.getNumber();
 		dsmData = new Data("root");
 
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
-			dsmData.AddChild(new Data(readDsm.getDsm(i).getName()));
+			dsmData.AddChild(new Data(dsm.getDsm(i).getName()));
+			
 		}
 
 		// dependancy 연결
 		for (int i = 0; i < nodeNumber; i++) {
 			for (int j = 0; j < nodeNumber; j++) {
-				if (readDsm.getDsm(i).isDependent(j)) {
+				if (dsm.getDsm(i).isDependent(j)) {
 					dsmData.GetChild(i).AddDepend(dsmData.GetChild(j));
 				}
 			}
@@ -344,7 +339,7 @@ public class DataController {
 	}
 
 	public Data LoadClsx(File file) {
-		return MakeClsxToData(readClsx.readFile(file));
+		return MakeClsxToData(new ClsxService().readFile(file));
 	}
 
 	public Data LoadClsx(Clsx c) {
@@ -377,17 +372,18 @@ public class DataController {
 		Data retData = new Data("root");
 		if (CheckSameData(clsxData, dsmData)) {
 			retData = new Data(clsxData);
+
 			int length = retData.ItemCount();
 			for (int i = 0; i < length; i++) {
-				Data dsmDatai = dsmData.FindItem(retData.GetItem(i).name);
-				int depSize = dsmDatai.GetDependLength();
-				for (int j = 0; j < depSize; j++) {
-					Data retDataji = retData
-							.FindItem(dsmDatai.GetDepend(j).name);
-					retData.GetItem(i).AddDepend(retDataji);
+				for(int j = 0 ; j < length ; j ++){
+					if(isDepend(dsmData,retData.GetItem(i).name, retData.GetItem(j).name)){
+						SetDependancy(retData, retData.GetItem(i).name, retData.GetItem(j).name);
+					}
 				}
 			}
+
 		} else {
+			System.out.println(CheckSameData(clsxData, dsmData) + "");
 			System.out.println("두 Data가 같은 .dsm을 사용하여 만들어지지 않았습니다");
 			retData.name = "null";
 		}
@@ -458,15 +454,21 @@ public class DataController {
 		int nodeNumber = clsxData.ItemCount();
 		int dataNumber = dsmData.ItemCount();
 		if (nodeNumber != dataNumber) {
+			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
 		}
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
-			for (int j = 0; j < dataNumber; j++)
-				if (clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name))
+			for (int j = 0; j < dataNumber; j++){
+				if (clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name)){
+					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).name);
 					ret = true;
-			if (!ret)
-				return false;
+				}
+			}
+			if (!ret){
+				//System.out.println("name1 : " + clsxData.GetItem(i).name );
+				//return false;
+			}
 		}
 		return true;
 	}
@@ -474,9 +476,7 @@ public class DataController {
 	/*
 	 * 생성자
 	 */
-	public DataController(){
-		readClsx = new ClsxService();
-		readDsm = new DsmService();
+	public DataController() {
 		data = new Data("root");
 	}
 
