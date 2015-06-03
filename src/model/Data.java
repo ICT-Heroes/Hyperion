@@ -110,6 +110,7 @@ public class Data {
 	
 	public int FindItemIndex(String name){
 		int length = ItemCount();
+		
 		for(int i = 0 ; i < length ; i ++){
 			if(isSameString(GetItem(i).name, name)){
 				return i;

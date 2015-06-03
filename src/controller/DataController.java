@@ -13,8 +13,6 @@ public class DataController {
 
 	public Data data;
 	
-	
-	
 	public void Sort(){
 		
 	}
@@ -315,22 +313,22 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file) {
 		Data dsmData;
-		DsmService dsm = new DsmService();
-		dsm.readFile(file);
+		DsmService dsmService = new DsmService();
+		Dsm dsm = dsmService.readFromeFile(file);
 
 		int nodeNumber = dsm.getNumber();
 		dsmData = new Data("root");
 
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
-			dsmData.AddChild(new Data(dsm.getDsm(i).getName()));
+			dsmData.AddChild(new Data(dsm.getName(i)));
 			
 		}
 
 		// dependancy 연결
 		for (int i = 0; i < nodeNumber; i++) {
 			for (int j = 0; j < nodeNumber; j++) {
-				if (dsm.getDsm(i).isDependent(j)) {
+				if (dsm.getDependency(i, j)) {
 					dsmData.GetChild(i).AddDepend(dsmData.GetChild(j));
 				}
 			}
@@ -423,24 +421,34 @@ public class DataController {
 	/*
 	 * Data 를 ArrayList<Dsm> 으로 바꾸는 함수 순서는 Data 의 item 순서 그대로 가져온다. write 전용
 	 */
-	private ArrayList<Dsm> MakeDataToDsm() {
+	private Dsm MakeDataToDsm() {
 		return MakeDataToDsm(data);
 	}
 
-	private ArrayList<Dsm> MakeDataToDsm(Data data) {
-		ArrayList<Dsm> retList = new ArrayList<Dsm>();
+	private Dsm MakeDataToDsm(Data data) {
+		Dsm dsm = new Dsm(data.ItemCount());
 		int length = data.ItemCount();
+		
 		for (int i = 0; i < length; i++)
-			retList.add(new Dsm(i, data.GetItem(i).name));
+			dsm.addName(data.GetItem(i).name);
+		
 		for (int i = 0; i < length; i++) {
-			int depLength = data.GetItem(i).GetDependLength();
+			Data data1 = data.GetItem(i);
+			int depLength = data1.GetDependLength();
+			
 			for (int j = 0; j < depLength; j++) {
-				int itemIndex = data
-						.FindItemIndex(data.GetItem(i).GetDepend(j).name);
-				retList.get(i).addModel(retList.get(itemIndex));
+				for (int k = 0; k < length; k++) {
+					Data data2 = data.GetItem(k);
+					
+					if (data2.name.equals(data1.GetDepend(j).name))
+						dsm.setDependency(true, i, data.FindItemIndex(data2.name));
+					else 
+						dsm.setDependency(false, i, data.FindItemIndex(data2.name));
+				}
+				
 			}
 		}
-		return retList;
+		return dsm;
 	}
 
 	/*
