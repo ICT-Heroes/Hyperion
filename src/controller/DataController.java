@@ -3,6 +3,8 @@ package controller;
 import java.io.File;
 import java.util.ArrayList;
 
+import service.ClsxService;
+import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
@@ -10,8 +12,8 @@ import model.Dsm;
 public class DataController {
 	
 	private Data data;
-	private ClsxController readClsx;
-	private DsmController readDsm;
+	private ClsxService readClsx;
+	private DsmService readDsm;
 	
 	
 	//private WriteClsxController writeClsx;
@@ -259,7 +261,7 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file){
 		Data dsmData;
-		readDsm = new DsmController();
+		readDsm = new DsmService();
 		readDsm.readFile(file);
 		
 		int nodeNumber = readDsm.getNumber();
@@ -402,8 +404,8 @@ public class DataController {
 	 * 생성자
 	 */
 	public DataController(){
-		readClsx = new ClsxController();
-		readDsm = new DsmController();
+		readClsx = new ClsxService();
+		readDsm = new DsmService();
 		
 		data = new Data("root");
 	}
