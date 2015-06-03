@@ -24,7 +24,7 @@ import javax.swing.table.TableColumnModel;
  *  This table must be added to the row header of the scrollpane that
  *  contains the main table.
  */
-public class RowNumberTable extends JTable 	implements ChangeListener, PropertyChangeListener, TableModelListener{
+public class TitanRowNumberTable extends JTable 	implements ChangeListener, PropertyChangeListener, TableModelListener{
 	private static final long serialVersionUID = 1L;
 	private JTable main;
 	private static String[] hdrName = new String[]{"Root"};
@@ -54,7 +54,7 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 		
 		return !showHeader;
 	}
-	public RowNumberTable(JTable table)
+	public TitanRowNumberTable(JTable table)
 	{
 		main = table;
 		main.addPropertyChangeListener( this );

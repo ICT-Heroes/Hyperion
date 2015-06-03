@@ -7,9 +7,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,32 +29,46 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import view.titan.deprecated.TitanWindowDeprecated;
+import model.Data;
+
+import com.ezware.dialog.task.TaskDialogs;
+
+import controller.DataController;
+
 
 public final class TitanTreeContainer{
-	private JPanel			container;
-	private JPanel			pnlToolbar;		//툴바 컨테이너
-	private JScrollPane	pnlTree;		//트리 컨테이너
-	private JToolBar		tbarTree;		//트리를 제어하는 데 사용할 툴바
-	private JTree			treeDSM;		//DSM 트리
-	private JPopupMenu	mnuTree;		//트리 메뉴
-	private EventHandler	evtObj;			//이벤트 처리기
+	private JPanel				container;
+	private JPanel				pnlToolbar;		//���� �����̳�
+	private JScrollPane		pnlTree;		//Ʈ�� �����̳�
+	private JToolBar			tbarTree;		//Ʈ���� �����ϴ� �� ����� ����
+	private JTree				treeDSM;		//DSM Ʈ��
+	private JPopupMenu		mnuTree;		//Ʈ�� �޴�
+	private EventHandler		evtObj;			//�̺�Ʈ ó����
+	private DataController	dc;
+	
+	void setDataController(DataController dc){
+		this.dc = dc;
+	}
 	
 	
 	{
 		init();
 	}
-	
-	private void init(){
-		//이벤트 처리기 생성
+	/**
+	 * @wbp.parser.entryPoint
+	 */
+	private void init(){		
+		//�̺�Ʈ ó���� ����
 		evtObj = new EventHandler();
 		
-		//컨테이너 생성
+		//�����̳� ����
 		container = new JPanel();
 		
-		//레이아웃 설정(hgap : 5, vgap : 1)
+		//���̾ƿ� ����(hgap : 5, vgap : 1)
 		container.setLayout(new BorderLayout(5, 1));
 		
-		//툴바 레이아웃 생성
+		//���� ���̾ƿ� ����
 		pnlToolbar = new JPanel(new FlowLayout());
 		pnlToolbar.setBorder(null);
 		
@@ -59,7 +78,7 @@ public final class TitanTreeContainer{
 		flToolbar.setAlignment(FlowLayout.LEFT);
 		container.add(pnlToolbar, BorderLayout.NORTH);
 			
-		//툴바 생성
+		//���� ����
 		tbarTree = new JToolBar();
 		tbarTree.setForeground(new Color(255, 255, 255));
 		tbarTree.setFloatable(false);
@@ -68,10 +87,14 @@ public final class TitanTreeContainer{
 		JButton btnTmp;		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Expand All");
+		btnTmp.setActionCommand("Expand All");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/expand.png")));
 		tbarTree.add(btnTmp);
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Collapse All");
+		btnTmp.setActionCommand("Collapse All");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/collapse.png")));
 		tbarTree.add(btnTmp);
 		tbarTree.addSeparator(new Dimension(2, 20));
@@ -113,6 +136,8 @@ public final class TitanTreeContainer{
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Add New DSM Row");
+		btnTmp.setActionCommand("Add New DSM Row");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/newrow.png")));
 		tbarTree.add(btnTmp);
 		
@@ -125,26 +150,61 @@ public final class TitanTreeContainer{
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Delete");
+		btnTmp.addActionListener(evtObj);
+		btnTmp.setActionCommand("Delete");
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/delete.png")));
 		tbarTree.add(btnTmp);
 		
-		//트리 레이아웃 생성
+		//Ʈ�� ���̾ƿ� ����
 		pnlTree = new JScrollPane();
 		container.add(pnlTree, BorderLayout.CENTER);
 		
-		//트리 생성
+		//Ʈ�� ����
 		treeDSM = new JTree();
 		treeDSM.setEditable(true);
+
 		treeDSM.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Root")));
 		
-		//뷰포트에 트리 추가
+		//����Ʈ�� Ʈ�� �߰�
 		pnlTree.setViewportView(treeDSM);
 		
-		//트리에 연결될 팝업 메뉴 생성
+		//Ʈ���� ����� �˾� �޴� ����
 		mnuTree = new JPopupMenu();
 		addPopup(treeDSM, mnuTree);
 		
-		//팝업 메뉴에 아이템 추가
+
+		KeyListener kl = new KeyAdapter(){
+			public void keyPressed(KeyEvent e){
+				int keycode = e.getKeyCode();
+				if(keycode == KeyEvent.VK_F2){
+					System.out.println(e.getKeyCode());
+					
+					//absorb the event and open dsm row editor
+					e.consume();
+				}
+				
+				
+			}
+		};
+		treeDSM.addKeyListener(kl);
+		MouseListener ml = new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        int selRow = treeDSM.getRowForLocation(e.getX(), e.getY());
+		        TreePath selPath = treeDSM.getPathForLocation(e.getX(), e.getY());
+		        if(selRow != -1){
+		        	if(e.getClickCount() == 2){
+		        		DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath.getLastPathComponent();
+		        		if(node.isRoot() == false){
+		        			System.out.println(((Data)node.getUserObject()).name);
+		        			editDSMNodeName((Data)node.getUserObject());
+		        		}
+		            }
+		        }
+		    }
+		};
+		treeDSM.addMouseListener(ml);
+		
+		//�˾� �޴��� ������ �߰�
 		JMenuItem mntmTmp = TitanUtil.buildMenuItem("Rename", evtObj);
 		mnuTree.add(mntmTmp);
 		mntmTmp = TitanUtil.buildMenuItem("Duplicate", evtObj);
@@ -153,22 +213,67 @@ public final class TitanTreeContainer{
 		mnuTree.add(mntmTmp);		
 	}
 	
+	void uiExpandRoot(){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		
+		TreeNode[] nodes = dtm.getPathToRoot((TreeNode)dtm.getRoot());
+		TreePath path = new TreePath(nodes);
+		treeDSM.expandPath(path);
+	}
+	void uiToolbarExpandAll(ActionEvent ae){
+		for(int i = 0 ; i < treeDSM.getRowCount(); i++){
+			treeDSM.expandRow(i);
+		}
+	}
+	
+	void uiToolbarCollapseAll(ActionEvent ae){
+		for(int i = 0 ; i < treeDSM.getRowCount(); i++){
+			treeDSM.collapseRow(i);
+		}
+	}
+	
+	private void editDSMNodeName(Data dm){
+		String currentDSMName = dm.name;
+		boolean loopFlag = true;
+		while(loopFlag){
+			String input = TaskDialogs.input(null, "Edit DSM name", "Current : " + currentDSMName, "");
+			
+			if(input == null){
+				//사용자가 취소를 눌렀음
+				loopFlag = false;
+			}else{
+				//취소를 누르지 않은 경우 이름이 적절한지 확인하고 적절치 않다면 취소를 누르기까지 
+				if(input.equals("")){
+					TaskDialogs.error(null, "DSM name cannot be empty. Enter valid name.", "");
+				}else{
+					//중복된 아이템이 존재하는지 확인
+					if(this.findNodeByName(input) != null){
+						TaskDialogs.error(null, "DSM name must be unique. Try another name.", "");
+					}else{
+						dc.SetName(dm, currentDSMName, input);
+					
+						//변경된 사항을 다시 그린다
+						treeDSM.repaint();
+						loopFlag = false;
+					}
+				}
+			}
+		}
+	}
+	
 	void uiToolbarRename(ActionEvent ae){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
 		
-		//node가 루트라면 자식노드만 소트		
+		//node�� ��Ʈ��� �ڽĳ�常 ��Ʈ		
 		if(node == null)
 			return;
 		
-		//노드를 편집가능 상태로 만듬
-		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
-		TreeNode[] nodes = dtm.getPathToRoot(node);
-		TreePath path = new TreePath(nodes);
-		treeDSM.startEditingAtPath(path);
+		//��带 �������� ���·� ����
+		editDSMNodeName((Data)node.getUserObject());
 	}
 	
 	void uiMnuDuplicate(ActionEvent ae){
-		//새로운 TitanWindow를 생성
+		//���ο� TitanWindow�� ����
 		TitanWindow dupWnd = new TitanWindow();
 		dupWnd.setTitle("TITAN - Duplicated");
 		//wnd.attachToolBar();
@@ -177,11 +282,38 @@ public final class TitanTreeContainer{
 	}
 
 	void uiMnuFork(ActionEvent ae){
-		//새로운 TitanWindow를 생성하되 DataSource를 동일한 것으로 제공
+		//���ο� TitanWindow�� �����ϵ� DataSource�� ������ ������ ����
 		TitanWindow forkWnd = new TitanWindow();
 		forkWnd.setTitle("TITAN - Fork");
 		forkWnd.pack();
 		forkWnd.setVisible(true);
+	}
+	
+	void uiToolbarAddNewRow(ActionEvent ae){
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		Data d = (Data)s.invoke("getData");
+		s.invoke("newDSM", new Object[]{d, "test"});
+		this.treeDSM.repaint();
+	}
+	
+	void uiToolbarDelete(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		
+		if(node.isLeaf()){
+			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
+			node.removeFromParent();			
+			model.reload();
+			dc.DeleteItem(data, data.toString());		
+			
+			treeDSM.repaint();
+		}else{
+			
+		}
 	}
 	
 	private void popupEvtHandler(MouseEvent e, JPopupMenu popup){
@@ -196,6 +328,8 @@ public final class TitanTreeContainer{
 		target.setSelectionPath(path);
 		popup.show(target, x, y);
 	}
+	
+	
 	
 	private void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
@@ -216,15 +350,47 @@ public final class TitanTreeContainer{
 		return this.container;
 	}
 	
+	void uiToolbarMoveUp(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data root = (Data)s.invoke("getData");
+		dc.MoveUp(root, data.name);
+		s.invoke("reloadDSM");
+	}
+	
+	void uiToolbarMoveDown(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data root = (Data)s.invoke("getData");
+		dc.MoveDown(root, data.name);
+		s.invoke("reloadDSM");
+	}
 	/*
-	 * 이벤트 처리용 내부 클래스(불필요하게 노출된 Public 메서드 제거)
+	 * �̺�Ʈ ó���� ���� Ŭ����(���ʿ��ϰ� ����� Public �޼��� ����)
 	 */
 	class EventHandler implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent ae){
 			switch(ae.getActionCommand()){
+			case "Expand All":
+				uiToolbarExpandAll(ae);
+				break;
+			case "Collapse All":
+				uiToolbarCollapseAll(ae);
+				break;
 			case "Rename":
-				//트리메뉴와 툴바의 Rename 동작 수행
 				uiToolbarRename(ae);
 				break;
 			case "Duplicate":
@@ -233,13 +399,82 @@ public final class TitanTreeContainer{
 			case "Fork":
 				uiMnuFork(ae);
 				break;
+			case "Delete":
+				uiToolbarDelete(ae);
+				break;
+			case "Sort":
+				uiToolbarSort(ae);
+				break;
+			case "Add New DSM Row":
+				uiToolbarAddNewRow(ae);
+				break;
+			case "Move Up":
+				uiToolbarMoveUp(ae);
+				break;
+			case "Move Down":
+				uiToolbarMoveDown(ae);
+				break;
+				
 			}
 		}		
 	}
 	
 	/////////////////////////////////////
-	//비공개 API
+	//����� API
 	/////////////////////////////////////
+	private DefaultMutableTreeNode _findNodeByName(String s){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(s.equals(((Data)node.getUserObject()).name) == true){
+				return node;
+			}
+		}
+		return null;
+	}
+	public void uiToolbarSort(ActionEvent ae){
+		System.out.println("sort method is called..");
+		
+		//정렬을 어떻게하려나...
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		//선택한 노드가 없다
+		if(node == null)
+			return;
+		
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)node.getRoot();
+		
+		if(root.equals(node)){
+			System.out.println("you select root node.");
+			//��Ʈ�� �����ߴٸ� ��Ʈ�� �ڽ��� �ִ��� Ȯ��
+			node = (DefaultMutableTreeNode)root.getFirstChild();
+			
+			if(node == null){
+				System.out.println("there are no childs.");
+				return ;
+			}
+		}
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)node.getParent();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		//데이터
+		
+		for(int i = 0; i < parent.getChildCount(); i++){
+			DefaultMutableTreeNode f1 = (DefaultMutableTreeNode)parent.getChildAt(i);
+			
+			for(int j =0; j < i; j++){
+				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
+				if(f1.toString().compareTo(f2.toString()) < 0){
+					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).name);
+					break;
+				}
+			}
+		}
+		s.invoke("reloadDSM");
+	}
+
 	private DefaultMutableTreeNode _findNode(Object o){
 		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
 		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
@@ -254,7 +489,7 @@ public final class TitanTreeContainer{
 	}
 	
 	/////////////////////////////////////
-	//공개 API
+	//���� API
 	/////////////////////////////////////
 	public void setRoot(Object o){
 		//get tree model
@@ -291,6 +526,40 @@ public final class TitanTreeContainer{
 		return node == null ? null : node.getUserObject();
 	}
 	
+	public Object findNodeByName(String item){
+		DefaultMutableTreeNode node = _findNodeByName(item);		
+		return node == null ? null : node.getUserObject();
+	}
+	
+	public int findNodeIndex(Object item){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		int i = 0;
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(item.equals(node.getUserObject()) == true){
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	public String[] getItemText(){
+		Vector<String> vc = new Vector<String>();
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			
+			if(node.isLeaf()){
+				vc.add(node.getUserObject().toString());
+			}
+		}
+		return vc.toArray(new String[0]);
+	}
 	public void clearTree(){
 		
 	}

@@ -3,6 +3,8 @@ package controller;
 import java.io.File;
 import java.util.ArrayList;
 
+import service.ClsxService;
+import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
@@ -15,14 +17,12 @@ public class DataController {
 	private ClsxService readClsx;
 	private DsmService readDsm;
 
-	// private WriteClsxController writeClsx;
-	// private WriteDsmController writeDsm;
-
-	public void MoveUp(String name) {
-		MoveUp(data, name);
-	}
-
-	public void MoveUp(Data data, String name) {
+	
+	//private WriteClsxController writeClsx;
+	//private WriteDsmController writeDsm;
+	
+	public void MoveUp(String name){	MoveUp(data, name);		}
+	public void MoveUp(Data data, String name){
 		Data parent = FindParent(data, name);
 		int index = 0;
 		for (; index < parent.GetChildLength(); index++) {
@@ -474,10 +474,9 @@ public class DataController {
 	/*
 	 * 생성자
 	 */
-	public DataController() {
+	public DataController(){
 		readClsx = new ClsxService();
 		readDsm = new DsmService();
-
 		data = new Data("root");
 	}
 

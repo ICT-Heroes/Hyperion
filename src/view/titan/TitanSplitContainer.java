@@ -9,7 +9,7 @@ public final class TitanSplitContainer{
 	private TitanTreeContainer		treeContainer;
 	private TitanTableContainer		tblContainer;
 	private JSplitPane				spltPane;
-	//ì´ˆê¸°í™”
+	//ÃÊ±âÈ­
 	{
 		init();
 	}
@@ -17,17 +17,17 @@ public final class TitanSplitContainer{
 	protected void init(){
 		spltPane = new JSplitPane();
 		
-		//ì›í´ë¦­ìœ¼ë¡œ ê° paneì„ ì—´ê³  ë‹«ê¸° ê°€ëŠ¥í•˜ê²Œ ë§Œë“¬
+		//¿øÅ¬¸¯À¸·Î °¢ paneÀ» ¿­°í ´İ±â °¡´ÉÇÏ°Ô ¸¸µë
 		spltPane.setOneTouchExpandable(true);
 		
-		//í¬í•¨ëœ ì»¨í…Œì´ë„ˆë“¤ì„ ì—°ì†ëœ ë°°ì¹˜ë¡œ ë³´ì´ê²Œ ë§Œë“¬
+		//Æ÷ÇÔµÈ ÄÁÅ×ÀÌ³ÊµéÀ» ¿¬¼ÓµÈ ¹èÄ¡·Î º¸ÀÌ°Ô ¸¸µë
 		spltPane.setContinuousLayout(true);
 
-		//ì»¨í…Œì´ë„ˆ ìƒì„± ë° ì´ˆê¸°í™”
+		//ÄÁÅ×ÀÌ³Ê »ı¼º ¹× ÃÊ±âÈ­
 		treeContainer = new TitanTreeContainer();
 		tblContainer = new TitanTableContainer();
 		
-		//splitpaneì— ë¶€ì°©
+		//splitpane¿¡ ºÎÂø
 		spltPane.setLeftComponent(treeContainer.getContainer());
 		spltPane.setRightComponent(tblContainer.getContainer());		
 		
