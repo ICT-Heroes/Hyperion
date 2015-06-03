@@ -36,6 +36,9 @@ public class ClsxController {
 		}
 	}
 
+	/**
+	 * readClsxFile
+	 */
 	public Clsx readFile(File file){
 		Clsx clsx;
 		try {

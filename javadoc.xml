@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="C:\Eclipse\Luna Eclipse\plugins\org.hamcrest.core_1.3.0.v201303031735.jar;task-dialog-1.3.5.jar;C:\Eclipse\Luna Eclipse\plugins\org.junit_4.11.0.v201303080030\junit.jar;miglayout-3.7.2.zip" destdir="doc" doctitle="Hyperion Documentation" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="model,view.titan,factory,controller,test.factory,main,test.controller" source="1.8" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
