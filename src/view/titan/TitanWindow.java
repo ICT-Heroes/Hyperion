@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -42,12 +43,17 @@ import controller.DataController;
  */
 
 public class TitanWindow implements ActionListener{
-	private TitanSplitContainer	view;
+	private TitanTreeContainer		treeContainer;
+	private TitanTableContainer		tblContainer;
+	private JSplitPane				spltPane;
+	
+	
 	private JMenuBar				mnuBar;
 	private JToolBar				toolBar;
 	private JFrame					frame;
 	private int					defCloseAction = WindowConstants.EXIT_ON_CLOSE;
 	private Data					currentData;
+	private TitanUIEventSurrogate	surrogate;
 	
 	
 	//사용자가 선택한 DSM파일을 나타낸다. 
@@ -64,6 +70,7 @@ public class TitanWindow implements ActionListener{
 	//클래스가 생성되면서 초기화 수행
 	{
 		init();
+		initSurrogate();
 		initMenuBar();
 		initToolBar();
 	}
@@ -160,24 +167,54 @@ public class TitanWindow implements ActionListener{
 		mnuTmp.add(TitanUtil.buildMenuItem("About", this));
 	}
 	
+	private void initSurrogate(){
+		TitanUIEventSurrogateManager.addSurrogate(this);
+		surrogate = TitanUIEventSurrogateManager.selectSurrogate(this);
+		TitanUIEventSurrogateManager.linkSurrogate(this.tblContainer, this);
+		TitanUIEventSurrogateManager.linkSurrogate(this.treeContainer, this);
+		
+		//메서드 서로게이트 추가 
+		surrogate.bind("addNewDSM", "newDSM", new Class[]{Data.class, String.class});
+		surrogate.bind("getDataController", "getDC");
+		surrogate.bind("getData", "getData");
+		surrogate.bind("loadDSMFromData", "reloadDSM");
+		//surrogate.invoke("newDSM", new Object[]{this.currentData, "tst"});
+	}
+	
+	private Data getData(){
+		return this.currentData;
+	}
+	private DataController getDataController(){
+		System.out.println("GDC");
+		return this.dc;
+	}
 	/*
 	 * 윈도우 초기화
 	 */
-	private void init(){
-		//이벤트 호출 대리자 추가
-		TitanUIEventSurrogateManager.addSurrogate(this);
-		TitanUIEventSurrogate sur = TitanUIEventSurrogateManager.selectSurrogate(this);
-		sur.bind("loadDSMFromData", "LoadDSM");
-		sur.call("LoadDSM", new Class[]{});
-		
+	private void init(){	
 		frame = new JFrame();
 		
 		//타이틀 설정
 		frame.setTitle("TITAN");
 		
 		//타이탄뷰어 생성
-		view = new TitanSplitContainer();
-		frame.getContentPane().add(view.getContainer(), BorderLayout.CENTER);
+		spltPane = new JSplitPane();
+		
+		//��Ŭ������ �� pane�� ���� �ݱ� �����ϰ� ����
+		spltPane.setOneTouchExpandable(true);
+		
+		//���Ե� �����̳ʵ��� ���ӵ� ��ġ�� ���̰� ����
+		spltPane.setContinuousLayout(true);
+
+		//�����̳� ���� �� �ʱ�ȭ
+		treeContainer = new TitanTreeContainer();
+		tblContainer = new TitanTableContainer();
+		
+		//splitpane�� ����
+		spltPane.setLeftComponent(treeContainer.getContainer());
+		spltPane.setRightComponent(tblContainer.getContainer());
+		
+		frame.getContentPane().add(spltPane, BorderLayout.CENTER);
 		
 		/*
 		 * Look And Feel을 OS에 따라 결정
@@ -203,10 +240,25 @@ public class TitanWindow implements ActionListener{
 	/*
 	 * 새로운 DSM을 생성
 	 */
+	private void addNewDSM(Data parent, String name){
+		dc.AddItem(parent, parent.name, name);
+		loadDSMFromData();
+	}
+	
 	private int lastNewDSMIndex = 0;
+	
+	Object invoke(String evtName, Object[] args){
+		return surrogate.invoke(evtName, args);
+	}
+	
+	Object invoke(String evtName){
+		return surrogate.invoke(evtName);
+	}
+	
+	
 	public void uiMnuNewDSM(ActionEvent ae){
 		while(true){
-			String value = TitanDialogs.BuildInputDlg("New DSM Row", "How many rows are added?", "");
+			String value = TitanUtil.BuildInputDlg("New DSM Row", "How many rows are added?", "");
 			int rowCount = 0;
 			
 			if(value != null){
@@ -225,7 +277,7 @@ public class TitanWindow implements ActionListener{
 					loadDSMFromData();
 					break;
 				}catch(NumberFormatException nfe){
-					TitanDialogs.BuildWarnDlg("Error", "Value must be integer. Try Again", "", null);
+					TitanUtil.BuildWarnDlg("Error", "Value must be integer. Try Again", "");
 				}
 			}else{
 				break;
@@ -238,10 +290,10 @@ public class TitanWindow implements ActionListener{
 		isModified = false;
 		
 		//트리 컨테이너 획득
-		TitanTreeContainer tc = this.getTitanTreeContainer();
+		TitanTreeContainer tc = this.treeContainer;
 		
 		//테이블 컨테이너 획득
-		TitanTableContainer tbc = this.getTitanTableContainer();
+		TitanTableContainer tbc = this.tblContainer;
 		
 		//트리의 모든 요소 삭제
 		tc.setRoot(currentData);
@@ -249,11 +301,11 @@ public class TitanWindow implements ActionListener{
 		//차일드 아이템 설정
 		Object root = tc.getRoot();
 		for(int i = 0; i < currentData.ItemCount(); i++){
-			tc.insertNode(root, currentData.child.get(i));
+			tc.insertNode(root, currentData.GetChild(i));
 		}
 		
 		//열 개수 설정
-		tbc.setColumnSize(currentData.child.size());
+		tbc.setColumnSize(currentData.GetChildLength());
 		
 		//의존도 정보를 셀에 표시
 		for(int i = 0; i < currentData.ItemCount(); i++){
@@ -269,10 +321,9 @@ public class TitanWindow implements ActionListener{
 			}
 			
 			//DSM 정보를 읽어서 배열에 채운다
-			Data dsmRelation = currentData.child.get(i);
-			
-			for(Data target : dsmRelation.depend){
-				int idx = tc.findNodeIndex(target);
+			Data dsmRelation = currentData.GetChild(i);
+			for(int c = 0; c < dsmRelation.GetDependLength(); c++){
+				int idx = tc.findNodeIndex(dsmRelation.GetDepend(c));
 				if(idx != -1)
 					vc.set(idx, "x");
 			}
@@ -386,7 +437,7 @@ public class TitanWindow implements ActionListener{
 	 * 행 레이블 보이기 토글
 	 */	
 	void uiMnuShowRowLable(ActionEvent ae){
-		boolean beforeState = this.getTitanTableContainer().toggleRowHeader();
+		boolean beforeState = this.tblContainer.toggleRowHeader();
 		JMenuItem itm = (JMenuItem)ae.getSource();
 		if(beforeState == true){
 			itm.setText("Show Row Lables");
@@ -489,15 +540,7 @@ public class TitanWindow implements ActionListener{
 			TaskDialogs.showException(ex);
 		}
 	}
-	
-	public TitanTreeContainer getTitanTreeContainer(){
-		return view.getTreeContainer();
-	}
-	
-	public TitanTableContainer getTitanTableContainer(){
-		return view.getTableContainer();
-	}
-	
+		
 	public void setTitle(String title){
 		frame.setTitle(title);
 	}
@@ -523,49 +566,12 @@ public class TitanWindow implements ActionListener{
 	public File getCLSXFile(){
 		return clsxFile;
 	}
-	public void setDataController(Data dsmData){
-		//������ �ε� ���� �� ��Ʈ ����
-		TitanTreeContainer tc = this.getTitanTreeContainer();
-		tc.setRoot(dsmData);
-		
-		//�� �о��
-		Object o = tc.getRoot();
-		for(int i = 0; i < dsmData.ItemCount(); i++){
-			tc.insertNode(o, dsmData.child.get(i));
-		}
-		
-		//�о�� �����ͷ� ���̺� �߰�
-		this.getTitanTableContainer().setColumnSize(dsmData.child.size());
-		
-		
-		//
-		for(int i = 0; i < dsmData.ItemCount(); i++){
-			Vector<String> vc = new Vector<String>();
-			
-			for(int j = 0; j < dsmData.ItemCount(); j++){
-				if(i == j)
-					vc.add(".");
-				else
-					vc.add("");
-			}
-			
-			Data d = dsmData.child.get(i);
-			for(Data target : d.depend){
-				int idx = tc.findNodeIndex(target);
-				if(idx != -1)
-					vc.set(idx, "x");
-			}
-			this.getTitanTableContainer().addNewRow(vc);
-		}
-		this.getTitanTableContainer().setRowHeaderTxt(tc.getItemText());
-		this.getTitanTableContainer().setColumnSizePref();	
-	}
-
+	
 	private DataController		dc;
 	
 	public void setDataController(DataController dc){
 		this.dc = dc;
-		this.getTitanTreeContainer().setDataController(dc);
+		this.treeContainer.setDataController(dc);
 	}
 	
 }

@@ -41,7 +41,7 @@ public final class TitanTableContainer{
 		tblDSM.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	
 		
 		//��� ���̺� ����
-		tblRowHdr = new RowNumberTable(tblDSM);
+		tblRowHdr = new TitanRowNumberTable(tblDSM);
 		tblRowHdr.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		container.setViewportView(tblDSM);
@@ -87,13 +87,13 @@ public final class TitanTableContainer{
 	}
 	
 	public void setRowHeaderTxt(String[] o){
-		((RowNumberTable)tblRowHdr).setHeaderName(o);
+		((TitanRowNumberTable)tblRowHdr).setHeaderName(o);
 	}
 	
 	/*
 	 * 반환값 : 토글 이전의 표시 여부를 반환
 	 */
 	public boolean toggleRowHeader(){
-		return ((RowNumberTable)tblRowHdr).toggleShowHeader();
+		return ((TitanRowNumberTable)tblRowHdr).toggleShowHeader();
 	}
 }

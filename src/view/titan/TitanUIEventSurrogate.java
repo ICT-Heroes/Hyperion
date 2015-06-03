@@ -23,44 +23,59 @@ public class TitanUIEventSurrogate{
 	
 	public void bind(String methodName, String evtName, Class<?>[] paramTypes){
 		try{
-			Method mtd = ownerClsInf.getMethod(methodName, paramTypes);
-			mthdList.put(evtName, mtd);
-		}catch(NoSuchMethodException | SecurityException e){
+			Method[] mtds = ownerClsInf.getDeclaredMethods();
+			
+			for(Method m : mtds){
+				System.out.println(m.getName());
+				if(m.getName().equals(methodName)){
+					Method mtd = ownerClsInf.getDeclaredMethod(methodName, paramTypes);
+					mtd.setAccessible(true);
+					mthdList.put(evtName, mtd);
+					break;
+				}
+			}
+		}catch(Exception e){
 			TaskDialogs.showException(e);
-		}
-		
+		}		
 	}
 	
 	public void bind(String methodName, String evtName){
 		try{
-			Method mtd = ownerClsInf.getMethod(methodName);
-			mthdList.put(evtName, mtd);
-		}catch(NoSuchMethodException | SecurityException e){
+			Method[] mtds = ownerClsInf.getDeclaredMethods();
+			
+			for(Method m : mtds){
+				if(m.getName().equals(methodName)){
+					if(m.isAccessible() == false){
+						m.setAccessible(true);
+					}
+					mthdList.put(evtName, m);
+					break;
+				}
+			}
+		}catch(Exception e){
 			TaskDialogs.showException(e);
 		}
 	}
 	
-	public void call(String name, Class[] params){
+	public Object invoke(String name, Object[] params){
 		Method mtd = mthdList.get(name);
 		try{
-			mtd.invoke(owner, params);
+			return mtd.invoke(owner, params);
 		}catch(IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e){
 			TaskDialogs.showException(e);
 		}
+		return null;
 	}
 	
-	public void call(String name){
+	public Object invoke(String name){
 		Method mtd = mthdList.get(name);
 		try{
-			mtd.invoke(owner);
+			return mtd.invoke(owner);
 		}catch(IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e){
 			TaskDialogs.showException(e);
 		}
-	}
-	
-	public TitanWindow getOwner(){
-		return owner;
+		return null;
 	}
 }

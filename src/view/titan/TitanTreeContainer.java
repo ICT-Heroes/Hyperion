@@ -7,6 +7,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,10 +29,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import view.titan.deprecated.TitanWindowDeprecated;
 import model.Data;
 
 import com.ezware.dialog.task.TaskDialogs;
-import com.ezware.dialog.task.TaskDialog.StandardIcon;
 
 import controller.DataController;
 
@@ -52,11 +55,10 @@ public final class TitanTreeContainer{
 	{
 		init();
 	}
-	
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	private void init(){
+	private void init(){		
 		//�̺�Ʈ ó���� ����
 		evtObj = new EventHandler();
 		
@@ -171,6 +173,20 @@ public final class TitanTreeContainer{
 		addPopup(treeDSM, mnuTree);
 		
 
+		KeyListener kl = new KeyAdapter(){
+			public void keyPressed(KeyEvent e){
+				int keycode = e.getKeyCode();
+				if(keycode == KeyEvent.VK_F2){
+					System.out.println(e.getKeyCode());
+					
+					//absorb the event and open dsm row editor
+					e.consume();
+				}
+				
+				
+			}
+		};
+		treeDSM.addKeyListener(kl);
 		MouseListener ml = new MouseAdapter() {
 		    public void mousePressed(MouseEvent e) {
 		        int selRow = treeDSM.getRowForLocation(e.getX(), e.getY());
@@ -274,6 +290,10 @@ public final class TitanTreeContainer{
 	}
 	
 	void uiToolbarAddNewRow(ActionEvent ae){
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		Data d = (Data)s.invoke("getData");
+		s.invoke("newDSM", new Object[]{d, "test"});
+		this.treeDSM.repaint();
 	}
 	
 	void uiToolbarDelete(ActionEvent ae){
@@ -330,6 +350,33 @@ public final class TitanTreeContainer{
 		return this.container;
 	}
 	
+	void uiToolbarMoveUp(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data root = (Data)s.invoke("getData");
+		dc.MoveUp(root, data.name);
+		s.invoke("reloadDSM");
+	}
+	
+	void uiToolbarMoveDown(ActionEvent ae){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		if(node == null)
+			return;
+		
+		Data data = (Data)node.getUserObject();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data root = (Data)s.invoke("getData");
+		dc.MoveDown(root, data.name);
+		s.invoke("reloadDSM");
+	}
 	/*
 	 * �̺�Ʈ ó���� ���� Ŭ����(���ʿ��ϰ� ����� Public �޼��� ����)
 	 */
@@ -355,8 +402,19 @@ public final class TitanTreeContainer{
 			case "Delete":
 				uiToolbarDelete(ae);
 				break;
-			case "Add New DSM Row":
+			case "Sort":
+				uiToolbarSort(ae);
 				break;
+			case "Add New DSM Row":
+				uiToolbarAddNewRow(ae);
+				break;
+			case "Move Up":
+				uiToolbarMoveUp(ae);
+				break;
+			case "Move Down":
+				uiToolbarMoveDown(ae);
+				break;
+				
 			}
 		}		
 	}
@@ -376,6 +434,47 @@ public final class TitanTreeContainer{
 		}
 		return null;
 	}
+	public void uiToolbarSort(ActionEvent ae){
+		System.out.println("sort method is called..");
+		
+		//정렬을 어떻게하려나...
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		//선택한 노드가 없다
+		if(node == null)
+			return;
+		
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)node.getRoot();
+		
+		if(root.equals(node)){
+			System.out.println("you select root node.");
+			//��Ʈ�� �����ߴٸ� ��Ʈ�� �ڽ��� �ִ��� Ȯ��
+			node = (DefaultMutableTreeNode)root.getFirstChild();
+			
+			if(node == null){
+				System.out.println("there are no childs.");
+				return ;
+			}
+		}
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)node.getParent();
+		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		//데이터
+		
+		for(int i = 0; i < parent.getChildCount(); i++){
+			DefaultMutableTreeNode f1 = (DefaultMutableTreeNode)parent.getChildAt(i);
+			
+			for(int j =0; j < i; j++){
+				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
+				if(f1.toString().compareTo(f2.toString()) < 0){
+					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).name);
+					break;
+				}
+			}
+		}
+		s.invoke("reloadDSM");
+	}
+
 	private DefaultMutableTreeNode _findNode(Object o){
 		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
 		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
