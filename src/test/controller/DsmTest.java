@@ -10,15 +10,15 @@ import model.Dsm;
 import org.junit.Before;
 import org.junit.Test;
 
-import controller.DsmController;
+import service.DsmService;
 
 public class DsmTest {
-	private DsmController dsmController;
+	private DsmService dsmController;
 	private File file;
 
 	@Before
 	public void setup() {
-		dsmController = new DsmController();
+		dsmController = new DsmService();
 		file = new File("src/res/titan.dsm");
 		dsmController.readFile(file);
 	}
