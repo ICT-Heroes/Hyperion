@@ -29,12 +29,16 @@ public class Main{
 		ReadDsmController controller = new ReadDsmController();
 		Partitioner partitioner;
 		
-		File file = new File("src/res/titan.dsm");
+		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
 		partitioner = new Partitioner();
 		partitioner.setDsm(dsm);
 		
 		partitioner.preProcessing();
+		partitioner.postProcessing();
+		for (int val : partitioner.getSizeList()) {
+			System.out.println(val);
+		}
 		dsm.print();
 	}
 }

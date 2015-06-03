@@ -89,21 +89,16 @@ public class Partitioner {
 	}
 	
 	public void pathSearching() {
-		
+		if (tail > head) {
+			
+		}
 	}
 	
 	public void postProcessing() {
-		int middleSize = dsm.getNumber();
-		
-		for (Integer val : aheads) {
-			middleSize -= val;
-		}
-		for (Integer val : atails) {
-			middleSize -= val;
-		}
-		
+		int middleSize = tail - head;
 		sizeList.addAll(aheads);
-		sizeList.add(middleSize);
+		if (middleSize > 0)
+			sizeList.add(middleSize);
 		sizeList.addAll(atails);
 	}
 }

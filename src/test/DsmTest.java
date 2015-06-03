@@ -21,7 +21,7 @@ public class DsmTest {
 	
 	@Before
 	public void setup() {
-		File file = new File("src/res/titan.dsm");
+		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
 		partitioner = new Partitioner();
 		partitioner.setDsm(dsm);
