@@ -425,7 +425,7 @@ public class DataController {
 		return MakeDataToDsm(data);
 	}
 
-	private Dsm MakeDataToDsm(Data data) {
+	public Dsm MakeDataToDsm(Data data) {
 		Dsm dsm = new Dsm(data.ItemCount());
 		int length = data.ItemCount();
 		
@@ -433,19 +433,17 @@ public class DataController {
 			dsm.addName(data.GetItem(i).name);
 		
 		for (int i = 0; i < length; i++) {
-			Data data1 = data.GetItem(i);
-			int depLength = data1.GetDependLength();
-			
-			for (int j = 0; j < depLength; j++) {
-				for (int k = 0; k < length; k++) {
-					Data data2 = data.GetItem(k);
-					
-					if (data2.name.equals(data1.GetDepend(j).name))
-						dsm.setDependency(true, i, data.FindItemIndex(data2.name));
-					else 
-						dsm.setDependency(false, i, data.FindItemIndex(data2.name));
+			for (int j = 0; j < length; j++) {
+				dsm.setDependency(false, i, j);
+			}
+		}
+		
+		for (int i = 0; i < length; i++) {
+			int depLength = data.GetItem(i).GetDependLength();
+			for (int j = 0; j < length; j++) {
+				for (int k = 0; k < depLength; k++) {
+					dsm.setDependency(true, i, data.FindItemIndex(data.GetItem(i).GetDepend(k).name));
 				}
-				
 			}
 		}
 		return dsm;
