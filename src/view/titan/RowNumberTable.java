@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -16,6 +17,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /*
  *	Use a JTable as a renderer for row numbers of a given main table.
@@ -25,7 +27,33 @@ import javax.swing.table.TableColumn;
 public class RowNumberTable extends JTable 	implements ChangeListener, PropertyChangeListener, TableModelListener{
 	private static final long serialVersionUID = 1L;
 	private JTable main;
-
+	private static String[] hdrName = new String[]{"Root"};
+	private static boolean showHeader = false;
+	
+	public void setHeaderName(String[] hdr){
+		hdrName = hdr;
+	}
+	public void resizeColumnWidth(JTable table) {
+	    final TableColumnModel columnModel = table.getColumnModel();
+	    int width = 50; // Min width
+	    for (int column = 0; column < table.getColumnCount(); column++) {
+	        
+	        for (int row = 0; row < table.getRowCount(); row++) {
+	            TableCellRenderer renderer = table.getCellRenderer(row, column);
+	            Component comp = table.prepareRenderer(renderer, row, column);
+	            width = Math.max(comp.getPreferredSize().width, width);
+	        }
+	        columnModel.getColumn(column).setPreferredWidth(width);
+	        setPreferredScrollableViewportSize(getPreferredSize());
+	    }
+	}
+	public boolean toggleShowHeader(){
+		showHeader = !showHeader;
+		resizeColumnWidth(this);
+		this.repaint();
+		
+		return !showHeader;
+	}
 	public RowNumberTable(JTable table)
 	{
 		main = table;
@@ -35,6 +63,7 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 		setFocusable( false );
 		setAutoCreateColumnsFromModel( false );
 		setSelectionModel( main.getSelectionModel() );
+		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 
 		TableColumn column = new TableColumn();
@@ -42,8 +71,9 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 		addColumn( column );
 		column.setCellRenderer(new RowNumberRenderer());
 
-		getColumnModel().getColumn(0).setPreferredWidth(50);
-		setPreferredScrollableViewportSize(getPreferredSize());
+		resizeColumnWidth(this);
+		//getColumnModel().getColumn(0).setPreferredWidth(250);
+		//setPreferredScrollableViewportSize(getPreferredSize());
 	}
 
 	@Override
@@ -173,8 +203,14 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 			
 			if(isSelected)
 				rdr.setFont(getFont().deriveFont(Font.BOLD));
+			
+			rdr.setHorizontalAlignment(SwingConstants.LEFT);
 			//
-			rdr.setHorizontalAlignment(JLabel.CENTER);			
+			if(hdrName != null && showHeader == true){
+				rdr.setText(row + " " + hdrName[row]);
+			}else{
+				rdr.setText(Integer.toString(row));
+			}	
 			return rdr;
 			
 			/*
