@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,12 +16,12 @@ import model.Dsm;
  * 
  * @param file
  */
-public class DsmController {
+public class DsmService {
 	private final String NEW_DSM_NAME = "entity";
 	private ArrayList<Dsm> dsms;
 
 	
-	public DsmController() {
+	public DsmService() {
 		dsms = new ArrayList<Dsm>();
 	}
 
