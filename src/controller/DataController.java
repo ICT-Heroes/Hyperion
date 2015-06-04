@@ -421,6 +421,19 @@ public class DataController {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @param data
+	 * @param visualIndexes : 현재 폴더가 열려서 보이는 트리의 번호들을 입력받는다.
+	 * @return 서로의 dependancy 를 이차원배열로 리턴한다.
+	 */
+
+	public boolean[][] getDependArray(Data data, int[] visualIndexes){
+		
+		
+		return null;
+	}
+	
 	
 	/**
 	 * 
