@@ -15,15 +15,15 @@ public class DataTest {
 		DataController dataController = new DataController();
 		File dsmFile = new File("C:\\Users\\hyobin\\Desktop\\titan\\titan\\data dir\\titan\\titan.dsm");
 		File clsxFile = new File("C:\\Users\\hyobin\\Desktop\\titan\\titan\\data dir\\ffff\\titan_ACDC.clsx");
-		Data dsmData = dataController.loadDsm(dsmFile);
-		Data clsxData = dataController.loadClsx(clsxFile);
-		System.out.println(dsmData.getItemCount());
-		System.out.println(clsxData.getItemCount());
+		Data dsmData = dataController.LoadDsm(dsmFile);
+		Data clsxData = dataController.LoadClsx(clsxFile);
+		System.out.println(dsmData.countItem());
+		System.out.println(clsxData.countItem());
 
 		
-		for(int i = 0 ; i < dsmData.getItemCount() ; i++){
+		for(int i = 0 ; i < dsmData.countItem() ; i++){
 			String ss = "";
-			for(int j = 0 ; j < dsmData.getItemCount() ; j++){
+			for(int j = 0 ; j < dsmData.countItem() ; j++){
 				boolean iii = false;
 				for(int k = 0 ; k < dsmData.getItem(i).getDependLength() ; k++){
 					if(dsmData.getItem(i).getDepend(k).getName().equals(dsmData.getItem(j).getName())){
@@ -42,11 +42,11 @@ public class DataTest {
 		
 		//Data sum = dd.LoadDsmClsx(dsmFile, clsxFile);
 		//System.out.println("itemcount : " + sum.ItemCount());
-		for(int i = 0 ; i < dsmData.getDataCount() ; i++){
+		for(int i = 0 ; i < dsmData.countData() ; i++){
 			//System.out.println(dsmData.GetData(i).getName());
 		}
 		
-		Dsm dsm = dataController.makeDataToDsm(dsmData);
+		Dsm dsm = dataController.MakeDataToDsm(dsmData);
 		System.out.println("number : " + dsm.getNumber());
 		for(int i = 0 ; i < dsm.getNumber() ; i++){
 			//System.out.println("name : " + dsm.getName(i));
