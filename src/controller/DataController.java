@@ -1,21 +1,22 @@
 package controller;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import service.ClsxService;
+import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
-import service.ClsxService;
-import service.DsmService;
 
 public class DataController {
 
 	public Data data;
-
-	public void Sort() {
-
+	
+	public void Sort(){
+		
 	}
-
+	
 	public void MoveUp(String name) {
 		MoveUp(data, name);
 	}
@@ -23,8 +24,8 @@ public class DataController {
 	public void MoveUp(Data data, String name) {
 		Data parent = FindParent(data, name);
 		int index = 0;
-		for (; index < parent.GetChildLength(); index++) {
-			if (parent.GetChild(index).isSameName(name)) {
+		for (; index < parent.getChildLength(); index++) {
+			if (parent.getChild(index).isSameName(name)) {
 				break;
 			}
 		}
@@ -32,10 +33,10 @@ public class DataController {
 		if (0 < index) {
 
 			Data cur, forward;
-			cur = parent.GetChild(index);
-			forward = parent.GetChild(index - 1);
-			parent.SetChild(index, forward);
-			parent.SetChild(index - 1, cur);
+			cur = parent.getChild(index);
+			forward = parent.getChild(index - 1);
+			parent.setChild(index, forward);
+			parent.setChild(index - 1, cur);
 		}
 	}
 
@@ -46,17 +47,17 @@ public class DataController {
 	public void MoveDown(Data data, String name) {
 		Data parent = FindParent(data, name);
 		int index = 0;
-		for (; index < parent.GetChildLength(); index++) {
-			if (parent.GetChild(index).isSameName(name)) {
+		for (; index < parent.getChildLength(); index++) {
+			if (parent.getChild(index).isSameName(name)) {
 				break;
 			}
 		}
-		if (index < parent.GetChildLength() - 1) {
+		if (index < parent.getChildLength() - 1) {
 			Data cur, back;
-			cur = parent.GetChild(index);
-			back = parent.GetChild(index + 1);
-			parent.SetChild(index, back);
-			parent.SetChild(index + 1, cur);
+			cur = parent.getChild(index);
+			back = parent.getChild(index + 1);
+			parent.setChild(index, back);
+			parent.setChild(index + 1, cur);
 		}
 	}
 
@@ -65,10 +66,10 @@ public class DataController {
 	}
 
 	private Data FindParent(Data data, String name) {
-		int dataIndex = data.FindDataIndex(name);
+		int dataIndex = data.findDataIndex(name);
 		for (int i = 1; i <= dataIndex; i++) {
-			Data fdata = data.FindData(data.GetData(dataIndex - i).name);
-			if (!fdata.FindData(name).isSameName("null")) {
+			Data fdata = data.findData(data.getData(dataIndex - i).getName());
+			if (!fdata.findData(name).isSameName("null")) {
 				return fdata;
 			}
 		}
@@ -79,19 +80,19 @@ public class DataController {
 	 * data의 어느 노드 객체의 이름을 바꾸는 함수
 	 */
 	public void SetName(Data data, String exName, String newName) {
-		data.FindData(exName).name = newName;
+		data.findData(exName).setName(newName);
 	}
 
 	public void SetName(Data data, int dataIndex, String newName) {
-		data.GetData(dataIndex).name = newName;
+		data.getData(dataIndex).setName(newName);
 	}
 
 	public void SetName(String exName, String newName) {
-		data.FindData(exName).name = newName;
+		data.findData(exName).setName(newName);
 	}
 
 	public void SetName(int dataIndex, String newName) {
-		data.GetData(dataIndex).name = newName;
+		data.getData(dataIndex).setName(newName);
 	}
 
 	/*
@@ -104,12 +105,12 @@ public class DataController {
 
 	public void SetDependancy(Data data, String itemName, String dependItemName) {
 		Data item, depItem;
-		item = data.FindItem(itemName);
-		depItem = data.FindItem(dependItemName);
+		item = data.findItem(itemName);
+		depItem = data.findItem(dependItemName);
 		if (isDepend(data, itemName, dependItemName)) {
-			item.RemoveDepend(depItem);
+			item.removeDepend(depItem);
 		} else {
-			item.AddDepend(depItem);
+			item.addDepend(depItem);
 		}
 	}
 
@@ -122,11 +123,11 @@ public class DataController {
 
 	public boolean isDepend(Data data, String itemName, String dependItemName) {
 		Data item, depItem;
-		item = data.FindItem(itemName);
-		depItem = data.FindItem(dependItemName);
-		int length = item.GetDependLength();
+		item = data.findItem(itemName);
+		depItem = data.findItem(dependItemName);
+		int length = item.getDependLength();
 		for (int i = 0; i < length; i++) {
-			if (item.GetDepend(i).isSameName(depItem.name)) {
+			if (item.getDepend(i).isSameName(depItem.getName())) {
 				return true;
 			}
 		}
@@ -151,7 +152,7 @@ public class DataController {
 	public void AddItem(Data data, String itemName, String newItemName) {
 		Data newData;
 		int i = 0;
-		while (!data.FindData(newItemName + i).isSameName("null")) {
+		while (!data.findData(newItemName + i).isSameName("null")) {
 			i++;
 			if (100000 < i) {
 				System.out.println("아이템 추가 실패, 너무 많은 아이템이 이름 변경 없이 추가되려 하고있다.");
@@ -163,11 +164,11 @@ public class DataController {
 		} else {
 			newData = new Data(newItemName + i);
 		}
-		if (0 < data.FindData(itemName).GetChildLength()) {
-			data.FindData(itemName).AddChild(newData);
+		if (0 < data.findData(itemName).getChildLength()) {
+			data.findData(itemName).addChild(newData);
 		} else {
 			Data parent = FindParent(data, itemName);
-			parent.AddChild(newData);
+			parent.addChild(newData);
 		}
 	}
 
@@ -180,20 +181,20 @@ public class DataController {
 
 	public void DeleteItem(Data data, String itemName) {
 		// 연결 지우기
-		for (int i = 0; i < data.ItemCount(); i++) {
-			int depLength = data.GetItem(i).GetDependLength();
+		for (int i = 0; i < data.countItem(); i++) {
+			int depLength = data.getItem(i).getDependLength();
 			for (int j = 0; j < depLength; j++) {
-				if (data.GetItem(i).GetDepend(j).isSameName(itemName)) {
-					data.GetItem(i).RemoveDepend(j);
+				if (data.getItem(i).getDepend(j).isSameName(itemName)) {
+					data.getItem(i).removeDepend(j);
 				}
 			}
 		}
 		// 직접적인 데이터 지우기
 		Data parent = FindParent(data, itemName);
-		for (int i = 0; i < parent.GetChildLength(); i++) {
-			if (parent.GetChild(i).GetChildLength() == 0) {
-				if (parent.GetChild(i).isSameName(itemName)) {
-					parent.RemoveChild(i);
+		for (int i = 0; i < parent.getChildLength(); i++) {
+			if (parent.getChild(i).getChildLength() == 0) {
+				if (parent.getChild(i).isSameName(itemName)) {
+					parent.removeChild(i);
 				}
 			}
 		}
@@ -218,7 +219,7 @@ public class DataController {
 	public void CreateGroup(Data data, String startName, String endName,
 			String groupName) {
 		int index = 0;
-		while (data.FindData(groupName + index).name != "null") {
+		while (data.findData(groupName + index).getName() != "null") {
 			index++;
 			if (100000 < index) {
 				System.out.println("그룹짓기 실패, 너무 많은 그룹이 비슷한 이름을 갖고 있다.");
@@ -227,15 +228,15 @@ public class DataController {
 		}
 		if (startName != endName) {
 			if (FindParent(data, startName).isSameName(
-					FindParent(data, endName).name)) {
+					FindParent(data, endName).getName())) {
 				int start, end;
 				start = end = 0;
 				Data parent = FindParent(data, startName);
-				for (int i = 0; i < parent.GetChildLength(); i++) {
-					if (parent.GetChild(i).isSameName(startName)) {
+				for (int i = 0; i < parent.getChildLength(); i++) {
+					if (parent.getChild(i).isSameName(startName)) {
 						start = i;
 					}
-					if (parent.GetChild(i).isSameName(endName)) {
+					if (parent.getChild(i).isSameName(endName)) {
 						end = i;
 					}
 				}
@@ -251,11 +252,11 @@ public class DataController {
 					newData = new Data(groupName + index);
 				}
 				for (int i = 0; i < end - start + 1; i++) {
-					newData.AddChild(parent.GetChild(start + i));
+					newData.addChild(parent.getChild(start + i));
 				}
-				parent.SetChild(start, newData);
+				parent.setChild(start, newData);
 				for (int i = 0; i < end - start; i++) {
-					parent.RemoveChild(start + 1);
+					parent.removeChild(start + 1);
 				}
 			}
 		}
@@ -270,13 +271,13 @@ public class DataController {
 
 	public void DeleteGroup(Data data, String groupName) {
 		Data parent = FindParent(data, groupName);
-		Data Group = data.FindData(groupName);
-		int index = parent.FindChildIndex(groupName);
-		int size = Group.GetChildLength();
+		Data Group = data.findData(groupName);
+		int index = parent.findChildIndex(groupName);
+		int size = Group.getChildLength();
 		for (int i = 0; i < size; i++) {
-			parent.AddChild(index + 1, Group.GetChild(size - i - 1));
+			parent.addChild(index + 1, Group.getChild(size - i - 1));
 		}
-		parent.RemoveChild(index);
+		parent.removeChild(index);
 	}
 
 	/*
@@ -289,17 +290,17 @@ public class DataController {
 	}
 
 	public Data Dupicate(Data data, String GroupName) {
-		Data exData = data.FindData(GroupName);
+		Data exData = data.findData(GroupName);
 		Data newData = new Data(exData);
 
-		int length = exData.ItemCount();
+		int length = exData.countItem();
 
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
-				if (isDepend(data, exData.GetItem(i).name,
-						exData.GetItem(j).name)) {
-					SetDependancy(newData, newData.GetItem(i).name,
-							newData.GetItem(j).name);
+				if (isDepend(data, exData.getItem(i).getName(),
+						exData.getItem(j).getName())) {
+					SetDependancy(newData, newData.getItem(i).getName(),
+							newData.getItem(j).getName());
 				}
 			}
 		}
@@ -320,15 +321,15 @@ public class DataController {
 
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
-			dsmData.AddChild(new Data(dsm.getName(i)));
-
+			dsmData.addChild(new Data(dsm.getName(i)));
+			
 		}
 
 		// dependancy 연결
 		for (int i = 0; i < nodeNumber; i++) {
 			for (int j = 0; j < nodeNumber; j++) {
 				if (dsm.getDependency(i, j)) {
-					dsmData.GetChild(i).AddDepend(dsmData.GetChild(j));
+					dsmData.getChild(i).addDepend(dsmData.getChild(j));
 				}
 			}
 		}
@@ -370,13 +371,11 @@ public class DataController {
 		if (CheckSameData(clsxData, dsmData)) {
 			retData = new Data(clsxData);
 
-			int length = retData.ItemCount();
+			int length = retData.countItem();
 			for (int i = 0; i < length; i++) {
-				for (int j = 0; j < length; j++) {
-					if (isDepend(dsmData, retData.GetItem(i).name,
-							retData.GetItem(j).name)) {
-						SetDependancy(retData, retData.GetItem(i).name,
-								retData.GetItem(j).name);
+				for(int j = 0 ; j < length ; j ++){
+					if(isDepend(dsmData,retData.getItem(i).getName(), retData.getItem(j).getName())){
+						SetDependancy(retData, retData.getItem(i).getName(), retData.getItem(j).getName());
 					}
 				}
 			}
@@ -384,7 +383,7 @@ public class DataController {
 		} else {
 			System.out.println(CheckSameData(clsxData, dsmData) + "");
 			System.out.println("두 Data가 같은 .dsm을 사용하여 만들어지지 않았습니다");
-			retData.name = "null";
+			retData.setName("null");
 		}
 		return retData;
 	}
@@ -396,7 +395,7 @@ public class DataController {
 		Data newData = new Data(c.getName());
 		if (c.item != null) {
 			for (int i = 0; i < c.item.length; i++) {
-				newData.AddChild(MakeClsxToData(c.item[i]));
+				newData.addChild(MakeClsxToData(c.item[i]));
 			}
 		}
 		return newData;
@@ -410,11 +409,11 @@ public class DataController {
 	}
 
 	private Clsx MakeDataToClsx(Data d) {
-		Clsx newClsx = new Clsx(d.name);
-		int length = d.GetChildLength();
+		Clsx newClsx = new Clsx(d.getName());
+		int length = d.getChildLength();
 		newClsx.item = new Clsx[length];
 		for (int i = 0; i < length; i++) {
-			newClsx.item[i] = MakeDataToClsx(d.GetChild(i));
+			newClsx.item[i] = MakeDataToClsx(d.getChild(i));
 		}
 		return newClsx;
 	}
@@ -427,24 +426,23 @@ public class DataController {
 	}
 
 	public Dsm MakeDataToDsm(Data data) {
-		Dsm dsm = new Dsm(data.ItemCount());
-		int length = data.ItemCount();
-
+		Dsm dsm = new Dsm(data.countItem());
+		int length = data.countItem();
+		
 		for (int i = 0; i < length; i++)
-			dsm.addName(data.GetItem(i).name);
-
+			dsm.addName(data.getItem(i).getName());
+		
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
 				dsm.setDependency(false, i, j);
 			}
 		}
-
+		
 		for (int i = 0; i < length; i++) {
-			int depLength = data.GetItem(i).GetDependLength();
+			int depLength = data.getItem(i).getDependLength();
 			for (int j = 0; j < length; j++) {
 				for (int k = 0; k < depLength; k++) {
-					dsm.setDependency(true, i, data.FindItemIndex(data.GetItem(
-							i).GetDepend(k).name));
+					dsm.setDependency(true, i, data.findItemIndex(data.getItem(i).getDepend(k).getName()));
 				}
 			}
 		}
@@ -459,24 +457,23 @@ public class DataController {
 	}
 
 	private boolean CheckSameData(Data clsxData, Data dsmData) {
-		int nodeNumber = clsxData.ItemCount();
-		int dataNumber = dsmData.ItemCount();
+		int nodeNumber = clsxData.countItem();
+		int dataNumber = dsmData.countItem();
 		if (nodeNumber != dataNumber) {
-			// System.out.println("number : " + nodeNumber + ", " + dataNumber);
+			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
 		}
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
-			for (int j = 0; j < dataNumber; j++) {
-				if (clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name)) {
-					// System.out.println("name : " + i + ",  " +
-					// dsmData.GetItem(j).name);
+			for (int j = 0; j < dataNumber; j++){
+				if (clsxData.getItem(i).isSameName(dsmData.getItem(j).getName())){
+					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).getName());
 					ret = true;
 				}
 			}
-			if (!ret) {
-				// System.out.println("name1 : " + clsxData.GetItem(i).name );
-				// return false;
+			if (!ret){
+				//System.out.println("name1 : " + clsxData.GetItem(i).getName() );
+				//return false;
 			}
 		}
 		return true;

@@ -10,13 +10,12 @@ import factory.DataControllerFactory;
 public class DataControllerFactoryTest {
 	
 	@Test
-	public void newDataController(){
+	public void getInstance(){
+		//Assert newDataController is not null
 		DataController dataInstance = DataControllerFactory.getInstance();
 		assertThat(dataInstance, notNullValue());
-	}
-	
-	@Test
-	public void sameInstance(){
+		
+		//Assert existsInstance is same instance with newInstance
 		DataController dataExistsInstance = DataControllerFactory.getInstance();
 		DataController dataNewInstance = DataControllerFactory.getInstance();
 		assertThat(dataExistsInstance, is(equalTo(dataNewInstance)));
