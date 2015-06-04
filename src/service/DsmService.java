@@ -10,6 +10,17 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Scanner;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Element;
+
+import model.Clsx;
 import model.Dsm;
 
 /**
@@ -18,11 +29,6 @@ import model.Dsm;
  * @param file
  */
 public class DsmService {
-	private final String NEW_DSM_NAME = "entity";
-	
-	public DsmService() {
-		
-	}
 
 	/**
 	 * Read dsm file and make Dsm list
@@ -72,18 +78,44 @@ public class DsmService {
 	}
 
 	/**
+	 * 파일을 읽어와 dsm 형식에 맞게 parsing 한 뒤 정해진 경로에 저장한다.
 	 * 
+	 * @param filePath
+	 *            파일 이름과 확장자를 포함한 절대 경로.
+	 * @param dsm
+	 *            저장할 dsm 파일
 	 */
-	public void writeFile() {
+	public void WriteFile(String filePath, Dsm dsm) {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
-			
-			out.close();
-			
-		} catch (IOException e) {
-			// TODO: handle exception
+            BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
+            int number = dsm.getNumber();
+            
+            out.write(number + "");
+            out.newLine();
+            
+            for (int i = 0; i < number; i++) {
+				for (int j = 0; j < number; j++) {
+					if (dsm.getDependency(i, j)) {
+						out.write("1 ");
+					}
+					else {
+						out.write("0 ");
+					}
+				}
+				out.newLine();
+			}
+            
+            for (String name : dsm.getNames()) {
+				out.write(name);
+				out.newLine();
+			}
+            
+            out.close();
+            
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
 }

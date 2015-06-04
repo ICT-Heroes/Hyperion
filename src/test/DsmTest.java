@@ -7,26 +7,41 @@ import model.Dsm;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.matchers.JUnitMatchers; 
+
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
 import service.DsmService;
 import controller.Partitioner;
 
+
 public class DsmTest {
 	Dsm dsm;
-	DsmService controller = new DsmService();
+	DsmService service = new DsmService();
 	Partitioner partitioner;
 
 	@Before
 	public void setup() {
 		File file = new File("src/res/moka.dsm");
-		dsm = controller.readFromeFile(file);
+		dsm = service.readFromeFile(file);
 	}
 	
 	@Test
-	public void readDsmTest() {
-		File file = new File("src/res/moka.dsm");
-		dsm = controller.readFromeFile(file);
+	public void writeDsmTest() {
+		String path = "src/res/titan.dsm";
+		File file = new File(path);
+		Dsm dsmOriginal = service.readFromeFile(file);
+		
+		String path2 = "src/res/writetest.dsm";
+		service.WriteFile(path2, dsmOriginal);
+		File file2 = new File(path2);
+		Dsm dsmTest = service.readFromeFile(file2);
+		
+		assertThat(dsmOriginal.equals(dsmTest), is(true));
 	}
-
+	
 	@Test
 	public void partitionTest() {
 		partitioner = new Partitioner();
