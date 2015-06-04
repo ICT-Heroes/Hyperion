@@ -1,18 +1,11 @@
 package test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.io.File;
 
 import model.Dsm;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import controller.Partitioner;
-import controller.ReadDsmController;
 
 import service.DsmService;
 import controller.Partitioner;
@@ -26,8 +19,23 @@ public class DsmTest {
 	public void setup() {
 		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
+	}
+	
+	@Test
+	public void readDsmTest() {
+		File file = new File("src/res/moka.dsm");
+		dsm = controller.readFromeFile(file);
+	}
+
+	@Test
+	public void partitionTest() {
 		partitioner = new Partitioner();
 		partitioner.setDsm(dsm);
+		
+		partitioner.preProcessing();
+		partitioner.pathSearching();
+	
+		printDependencies();
 	}
 	
 	public void printDependencies() {
@@ -51,19 +59,6 @@ public class DsmTest {
 	public void print() {
 		printDependencies();
 		printNames();
-	}
-	
-	
-	@Test
-	public void readDsmTest() {
-	}
-
-	@Test
-	public void partitionTest() {
-		partitioner.preProcessing();
-	
-		partitioner.pathSearching();
-	
 	}
 
 }

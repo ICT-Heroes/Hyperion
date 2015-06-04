@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -73,10 +74,6 @@ public class DsmService {
 	/**
 	 * 
 	 */
-	
-	/**
-	 * 
-	 */
 	public void writeFile() {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter("src/res/out.txt"));
@@ -88,6 +85,5 @@ public class DsmService {
 			e.printStackTrace();
 		}
 	}
-
 
 }
