@@ -1,4 +1,4 @@
-   package view.titan;
+  package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Vector;
 
@@ -25,6 +27,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import service.DsmService;
 import model.Data;
 
 import com.ezware.dialog.task.TaskDialogs;
@@ -80,6 +83,7 @@ public class TitanWindow implements ActionListener{
 	 */
 	public void setCloseAction(int action){
 		defCloseAction = action;
+		frame.setDefaultCloseOperation(defCloseAction);
 	}
 	
 	/*
@@ -180,12 +184,18 @@ public class TitanWindow implements ActionListener{
 		surrogate.bind("loadDSMFromData", "reloadDSM");
 		//surrogate.invoke("newDSM", new Object[]{this.currentData, "tst"});
 	}
-	
+	public void refresh(){
+		loadDSMFromData();
+		uiMnuRedraw(null);
+	}
 	private Data getData(){
 		return this.currentData;
 	}
+	void setData(Data d){
+		this.currentData = d;
+	}
 	private DataController getDataController(){
-		System.out.println("GDC");
+		
 		return this.dc;
 	}
 	/*
@@ -245,8 +255,6 @@ public class TitanWindow implements ActionListener{
 		loadDSMFromData();
 	}
 	
-	private int lastNewDSMIndex = 0;
-	
 	Object invoke(String evtName, Object[] args){
 		return surrogate.invoke(evtName, args);
 	}
@@ -267,13 +275,9 @@ public class TitanWindow implements ActionListener{
 					
 					//create new DSM
 					String _entity = "entity_";
-					
-					int lastIdx = 0;
-					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
-						dc.addItem(this.currentData, 0, _entity + (i + 1));
-						lastIdx = i;
+					for(int i = 0; i < rowCount; i++){
+						dc.addItem(this.currentData, currentData.getDataIndex(this.treeContainer.getSelectedNode()), _entity + (i + 1));
 					}
-					lastNewDSMIndex = lastIdx + 1;
 					loadDSMFromData();
 					break;
 				}catch(NumberFormatException nfe){
@@ -451,10 +455,11 @@ public class TitanWindow implements ActionListener{
 	}
 	
 	/*
-	 * 새로운 클러스터링 생성
+	 * 클러스터링 초기화
 	 */
 	void uiMnuNewClustering(ActionEvent ae){
-		JOptionPane.showMessageDialog(frame, "All grouped matrix are reverted...");
+		this.currentData = dc.loadDsm(dsmFile);
+		loadDSMFromData();
 	}
 	
 	/*
@@ -480,6 +485,7 @@ public class TitanWindow implements ActionListener{
 	 * 클러스터링 저장
 	 */
 	void uiMnuSaveClustering(ActionEvent ae){
+		//DsmService
 		JOptionPane.showMessageDialog(frame, "Clustering saved...");
 	}
 	
@@ -527,7 +533,8 @@ public class TitanWindow implements ActionListener{
 		buildTable(tblContainer, currentData);
 	}
 	void uiMnuRedraw(ActionEvent ae){
-		callTest();
+		//callTest();
+		loadDSMFromData();
 		//loadDSMFromData();
 	}
 	
@@ -651,25 +658,13 @@ public class TitanWindow implements ActionListener{
 		frame.pack();
 	}
 	
-	/*
-	 * DSM 파일 정보
-	 */
-	public File getDSMFile(){
-		return dsmFile;
-	}
-	
-	/*
-	 * CLSX 파일 정보
-	 */
-	public File getCLSXFile(){
-		return clsxFile;
-	}
-	
 	private DataController		dc;
 	
 	public void setDataController(DataController dc){
 		this.dc = dc;
+		this.currentData = dc.GetRoot();
 		this.treeContainer.setDataController(dc);
 	}
+	
 	
 }

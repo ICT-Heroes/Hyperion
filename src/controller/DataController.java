@@ -26,6 +26,7 @@ public class DataController {
 		int i = 0;
 		for (; i < parent.getChildLength(); i++) {
 			if (parent.getChild(i) == data.getData(index)) {
+				System.out.println("" + data.getData(index).getName());
 				break;
 			}
 		}
@@ -82,14 +83,29 @@ public class DataController {
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
 	 */
-	public void setDependancy(Data data, int dataIndex, int dependdataIndex) {
+	public void setDependancy(Data data, int dataIndex, int dependDataIndex) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
-		depItem = data.getData(dependdataIndex);
-		if (isDepend(data, dataIndex, dependdataIndex)) {
+		depItem = data.getData(dependDataIndex);
+		if (isDepend(data, dataIndex, dependDataIndex)) {
 			item.removeDepend(depItem);
 		} else {
 			item.addDepend(depItem);
+		}
+	}
+	
+	public void setDependancy(Data data, int dataIndex, int dependDataIndex, boolean depend) {
+		Data item, depItem;
+		item = data.getData(dataIndex);
+		depItem = data.getData(dependDataIndex);
+		if(depend){
+			if (!isDepend(data, dataIndex, dependDataIndex)) {
+				item.addDepend(depItem);
+			}
+		}else{
+			if (isDepend(data, dataIndex, dependDataIndex)) {
+				item.removeDepend(depItem);
+			}
 		}
 	}
 
@@ -104,7 +120,35 @@ public class DataController {
 		int length = item.getDependLength();
 		for (int i = 0; i < length; i++) {
 			if (item.getDepend(i) == depItem) {
+				System.out.println("isDepend : " + item.getName() + "  to  " + depItem.getName());
 				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isDependforItem(Data data, int itemIndex, int dependitemIndex) {
+		Data item, depItem;
+		item = data.getItem(itemIndex);
+		depItem = data.getItem(dependitemIndex);
+		int length = item.getDependLength();
+		for (int i = 0; i < length; i++) {
+			if (item.getDepend(i) == depItem) {
+				//System.out.println("isDepend : " + item.getName() + "  to  " + depItem.getName());
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isDependChilds(Data data, int dataIndex, int dependDataIndex) {
+		Data data1 = data.getData(dataIndex);
+		Data data2 = data.getData(dependDataIndex);
+		for(int i = 0 ; i < data1.getItemCount()  ; i ++){
+			for(int j = 0 ; j < data2.getItemCount()  ; j ++){
+				if(isDepend(data, data.getDataIndex(data1.getItem(i)), data.getDataIndex(data2.getItem(j)))){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -115,20 +159,7 @@ public class DataController {
 	 */
 	
 	public void addItem(Data data, int dataIndex, String newItemName) {
-		Data newData;
-		int i = 0;
-		while (!data.getData(i).getName().equals("" + newItemName + i)) {
-			i++;
-			if (100000 < i) {
-				System.out.println("아이템 추가 실패, 너무 많은 아이템이 이름 변경 없이 추가되려 하고있다.");
-				return;
-			}
-		}
-		if (i == 0) {
-			newData = new Data(newItemName);
-		} else {
-			newData = new Data(newItemName + i);
-		}
+		Data newData = new Data(newItemName);
 		if (0 < data.getData(dataIndex).getChildLength()) {
 			data.getData(dataIndex).addChild(newData);
 		} else {
@@ -147,6 +178,7 @@ public class DataController {
 			for (int j = 0; j < depLength; j++) {
 				if (data.getItem(i).getDepend(j) == data.getData(dataIndex)) {
 					data.getItem(i).removeDepend(j);
+					depLength--;
 				}
 			}
 		}
@@ -167,14 +199,6 @@ public class DataController {
 	 */
 	public void createGroup(Data data, int startIndex, int endIndex,
 			String groupName) {
-		int index = 0;
-		while (data.getData(index).getName().equals("" + groupName + index)) {
-			index++;
-			if (100000 < index) {
-				System.out.println("그룹짓기 실패, 너무 많은 그룹이 비슷한 이름을 갖고 있다.");
-				return;
-			}
-		}
 		Data start = data.getData(startIndex);
 		Data end = data.getData(endIndex);
 		if (start != end) {
@@ -195,12 +219,7 @@ public class DataController {
 					endCount = startCount;
 					startCount = a;
 				}
-				Data newData;
-				if (index == 0) {
-					newData = new Data(groupName);
-				} else {
-					newData = new Data(groupName + index);
-				}
+				Data newData = new Data(groupName);
 				for (int i = 0; i < endCount - startCount + 1; i++) {
 					newData.addChild(parent.getChild(startCount + i));
 				}
@@ -233,7 +252,7 @@ public class DataController {
 	 * 단순히 일부분만 따로 떼내서 복제한다면 null dependancy 를 갖고 올 수도 있으므로 일부분을 제외한 다른 곳과의
 	 * dependancy 는 무시하도록 복제한다.
 	 */
-	public Data dupicate(Data data, int DataIndex) {
+	public Data duplicate(Data data, int DataIndex) {
 		Data exData = data.getData(DataIndex);
 		Data newData = new Data(exData);
 
@@ -316,8 +335,8 @@ public class DataController {
 			int length = retData.getItemCount();
 			for (int i = 0; i < length; i++) {
 				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)))){
-						setDependancy(retData, retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)));
+					if(isDependforItem(dsmData, dsmData.getItemIndex(retData.getItem(i).getName()), dsmData.getItemIndex(retData.getItem(j).getName()))){
+						setDependancy(retData, retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)), true);
 					}
 				}
 			}
@@ -394,10 +413,6 @@ public class DataController {
 	/**
 	 * 두 Data 객체의 노드들의 이름들이 같은지를 조사. true면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리
 	 */
-	private boolean checkSameData(Data data) {
-		return checkSameData(data, this.data);
-	}
-
 	private boolean checkSameData(Data clsxData, Data dsmData) {
 		int nodeNumber = clsxData.getItemCount();
 		int dataNumber = dsmData.getItemCount();
@@ -429,9 +444,83 @@ public class DataController {
 	 */
 
 	public boolean[][] getDependArray(Data data, int[] visualIndexes){
-		
-		
-		return null;
+		System.out.println("start");
+		int count = data.getItemCount();
+		boolean[] drawIndex = new boolean[visualIndexes.length];
+		for(int i = 0 ; i < visualIndexes.length ; i ++){
+			Data local = data.getData(visualIndexes[i]);
+			drawIndex[i] = false;
+			for(int j = 0 ; j < local.getChildLength() ; j ++){
+				for(int k = i ; k < visualIndexes.length ; k++){
+					if(local.getChild(j) == data.getData(visualIndexes[k])){
+						drawIndex[i] = true;
+						break;
+					}
+				}
+			}
+			if(!drawIndex[i]){
+				count -= (local.getItemCount() -1);
+			}
+		}
+		System.out.println("last Count : " + count);
+		boolean[][] ret = new boolean[count][count];
+		int locali = 0;
+		int localj = 0;
+		for(int i = 0 ; i < count ; i ++){
+			for(; locali < visualIndexes.length; locali++){
+				if(!drawIndex[i + locali])break;
+			}
+			
+			for(int j = 0 ; j < count ; j ++){
+				for(; localj < visualIndexes.length; localj++){
+					if(!drawIndex[j + localj])break;
+				}
+				if(i==j){
+					ret[i][j] = false;
+				}else{
+					boolean localret = isDependChilds(data, visualIndexes[i+locali], visualIndexes[j+localj]);
+					if(localret){
+						ret[i][j] = localret;
+					}
+					/*
+					if(data.getData(visualIndexes[i]).getChildLength() == 0){
+						if(data.getData(visualIndexes[j]).getChildLength() == 0){
+							ret[i][j] = isDepend(data, visualIndexes[i], visualIndexes[j]);
+						}else{
+							Data local = data.getData(visualIndexes[j]);
+							boolean localret = false;
+							for(int l2 = 0; l2 < local.getDependLength() ; l2 ++){
+								if(!localret){
+									localret = isDepend(data, visualIndexes[i], data.getDataIndex(local.getDepend(l2)));
+								}
+							}
+							ret[i][j] = localret;
+						}
+					}else{
+						if(data.getData(visualIndexes[j]).getChildLength() == 0){
+							Data local = data.getData(visualIndexes[i]);
+							boolean localret = false;
+							for(int l = 0; l < local.getDependLength() ; l ++){
+								if(!localret){
+									localret = isDepend(data, data.getDataIndex(local.getDepend(l)), visualIndexes[j]);
+								}
+							}
+							ret[i][j] = localret;
+						}else{
+							Data local = data.getData(visualIndexes[i]);
+							Data local2 = data.getData(visualIndexes[j]);
+							boolean localret = isDependChilds(data, visualIndexes[i], visualIndexes[j]);
+							if(localret){
+								System.out.println("local : " + data.getData(visualIndexes[i]).getName() + ", local2 : " + local2.getName());
+								ret[i][j] = localret;
+							}
+						}
+					}
+					*/
+				}
+			}
+		}
+		return ret;
 	}
 	
 	

@@ -25,6 +25,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -102,11 +103,15 @@ public final class TreeContainer{
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Group");
+		btnTmp.setActionCommand("Group");
+		btnTmp.addActionListener(evtObj);
 		tbarTree.add(btnTmp);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/group.png")));
 		
 		btnTmp = new JButton("");
 		btnTmp.setToolTipText("Ungroup");
+		btnTmp.setActionCommand("UnGroup");
+		btnTmp.addActionListener(evtObj);
 		btnTmp.setIcon(new ImageIcon(TitanWindowDeprecated.class.getResource("/res/ungroup.png")));
 		tbarTree.add(btnTmp);
 		
@@ -216,8 +221,9 @@ public final class TreeContainer{
 		
 		TreeNode[] nodes = dtm.getPathToRoot((TreeNode)dtm.getRoot());
 		TreePath path = new TreePath(nodes);
-		treeDSM.expandPath(path);
+		treeDSM.expandPath(path);		
 	}
+	
 	void uiToolbarExpandAll(ActionEvent ae){
 		for(int i = 0 ; i < treeDSM.getRowCount(); i++){
 			treeDSM.expandRow(i);
@@ -272,19 +278,37 @@ public final class TreeContainer{
 	
 	void uiMnuDuplicate(ActionEvent ae){
 		//���ο� TitanWindow�� ����
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
+		DataController d = (DataController)s.invoke("getDC");
+		Data ds = (Data)s.invoke("getData");
 		TitanWindow dupWnd = new TitanWindow();
 		dupWnd.setTitle("TITAN - Duplicated");
-		//wnd.attachToolBar();
+		dupWnd.setDataController(d);
+		dupWnd.setData(ds);
+		dupWnd.attachToolBar();
+		dupWnd.attachMenuBar();
 		dupWnd.pack();
 		dupWnd.setVisible(true);
+		dupWnd.refresh();
+		dupWnd.setCloseAction(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
 	void uiMnuFork(ActionEvent ae){
 		//���ο� TitanWindow�� �����ϵ� DataSource�� ������ ������ ����
-		TitanWindow forkWnd = new TitanWindow();
-		forkWnd.setTitle("TITAN - Fork");
-		forkWnd.pack();
-		forkWnd.setVisible(true);
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
+		DataController d = (DataController)s.invoke("getDC");
+		Data ds = (Data)s.invoke("getData");
+		TitanWindow dupWnd = new TitanWindow();
+		ds = d.duplicate(ds, 0);
+		dupWnd.setTitle("TITAN - fork");
+		dupWnd.setDataController(d);
+		dupWnd.setData(ds);
+		dupWnd.attachToolBar();
+		dupWnd.attachMenuBar();
+		dupWnd.pack();
+		dupWnd.setVisible(true);
+		dupWnd.refresh();
+		dupWnd.setCloseAction(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 	
 	void uiToolbarAddNewRow(ActionEvent ae){
@@ -302,16 +326,12 @@ public final class TreeContainer{
 		
 		Data data = (Data)node.getUserObject();
 		
-		if(node.isLeaf()){
-			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
-			node.removeFromParent();			
-			model.reload();
-			dc.deleteItem(data, 0);		
-			
-			treeDSM.repaint();
-		}else{
-			
-		}
+		DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
+		model.removeNodeFromParent(node);
+		
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
+		Data root = (Data)s.invoke("getData");
+		dc.deleteItem(root, root.getDataIndex(data));
 	}
 	
 	private void popupEvtHandler(MouseEvent e, JPopupMenu popup){
@@ -360,6 +380,11 @@ public final class TreeContainer{
 		Data root = (Data)s.invoke("getData");
 		dc.moveUp(root, root.getDataIndex(data));
 		s.invoke("reloadDSM");
+		
+		DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
+		TreePath path = new TreePath(model.getPathToRoot(_findNode(data).getParent()));		
+		treeDSM.expandPath(path);
+		treeDSM.setSelectionPath(new TreePath(model.getPathToRoot(_findNode(data))));
 	}
 	
 	void uiToolbarMoveDown(ActionEvent ae){
@@ -374,6 +399,11 @@ public final class TreeContainer{
 		Data root = (Data)s.invoke("getData");
 		dc.moveDown(root, data);
 		s.invoke("reloadDSM");
+		
+		DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
+		TreePath path = new TreePath(model.getPathToRoot(_findNode(data).getParent()));		
+		treeDSM.expandPath(path);
+		treeDSM.setSelectionPath(new TreePath(model.getPathToRoot(_findNode(data))));
 	}
 	/*
 	 * �̺�Ʈ ó���� ���� Ŭ����(���ʿ��ϰ� ����� Public �޼��� ����)
@@ -412,9 +442,36 @@ public final class TreeContainer{
 			case "Move Down":
 				uiToolbarMoveDown(ae);
 				break;
+			case "Group":
+				uiToolbarGroup(ae);
+				break;
+			case "UnGroup":
+				uiToolbarUnGroup(ae);
+				break;
 				
 			}
 		}		
+	}
+	void uiToolbarGroup(ActionEvent ae){
+		TreePath[] paths = treeDSM.getSelectionPaths();
+		
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data data = (Data)s.invoke("getData");
+		
+		for(TreePath p : paths){
+			DefaultMutableTreeNode m = ((DefaultMutableTreeNode)p.getLastPathComponent());
+			System.out.println(((Data)m.getUserObject()).getName());
+			//dc.createGroup(dc, startIndex, endIndex, groupName);
+		}
+	}
+	
+	void uiToolbarUnGroup(ActionEvent ae){
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
+		DataController dc = (DataController)s.invoke("getDC");
+		Data data = (Data)s.invoke("getData");
+		
+		dc.deleteGroup(data, data.getDataIndex(this.getSelectedNode()));
 	}
 	
 	/////////////////////////////////////
@@ -569,7 +626,7 @@ public final class TreeContainer{
 			return false;
 		TreeNode[] nodes = dtm.getPathToRoot(target);
 		TreePath path = new TreePath(nodes);
-		System.out.println("PATH : " + ((Data)target.getUserObject()).getName() + ", vis : " + treeDSM.isVisible(path) + ", expand? " + treeDSM.isExpanded(path));
+		//System.out.println("PATH : " + ((Data)target.getUserObject()).getName() + ", vis : " + treeDSM.isVisible(path) + ", expand? " + treeDSM.isExpanded(path));
 		return treeDSM.isVisible(path);
 	}
 	
@@ -604,17 +661,25 @@ public final class TreeContainer{
 		while(e.hasMoreElements()){
 			DefaultMutableTreeNode node = e.nextElement();
 			if(isVisible(node.getUserObject()) == false){
-				System.out.println("접혀진 노드 : " + ((Data)node.getUserObject()).getName());
+				//System.out.println("접혀진 노드 : " + ((Data)node.getUserObject()).getName());
 			}else{
 				//펼쳐진 모듈이면 카운트 안함
 				//카운트 조건 : 보여지면서 펼쳐진 것이 아닌 것
 				if(isExpanded(node.getUserObject()) == false || node.isLeaf()){
-					System.out.println("펼쳐진 노드 : " + ((Data)node.getUserObject()).getName());
+					//System.out.println("펼쳐진 노드 : " + ((Data)node.getUserObject()).getName());
 					count++;
 				}
 			}
 		}		
 		return count;
+	}
+	
+	public Data getSelectedNode(){
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
+		
+		Data dm = (Data)node.getUserObject();
+		System.out.println(dm);
+		return dm;
 	}
 	
 	public String[] getItemText(){
@@ -630,8 +695,5 @@ public final class TreeContainer{
 			}
 		}
 		return vc.toArray(new String[0]);
-	}
-	public void clearTree(){
-		
 	}
 }
