@@ -1,9 +1,3 @@
-/factory/
-/service/
-/view.zip
-/controller/
-/model/
-/test/
-/model2/
-/view/
-/main/
+/res
+/test
+/controller

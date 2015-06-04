@@ -1,88 +1,63 @@
 package test.controller;
 
-import java.io.File;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 
 import model.Clsx;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.junit.Before;
+import org.junit.Test;
+
+import service.ClsxService;
+import controller.DataController;
 
 public class ClsxTest {
 
-	public static void main(String argv[]) {
+	Clsx clsx;
+	File readFile;
+	String writeFilePath;
+	DataController dataController;
 
-		{
-			try {
-				// clsx파일을 읽어온다.
-				File file = new File("src/res/titan_DRH+ACDC.clsx");
-				DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
-						.newInstance();
-				DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-				Document doc = docBuild.parse(file);
-				doc.getDocumentElement().normalize();
-
-				// clsx 객체를 만든다.
-				Clsx clsx = new Clsx();
-
-				// 함수를 통해 트리 구조를 만든다. doc.getFirstChild() 는 cluster 이다.
-
-				Node node = doc.getFirstChild().getChildNodes().item(1);
-				NodeList nodeList = doc.getElementsByTagName("item");
-				for (int i = 0; i < nodeList.getLength(); i++) {
-					System.out.println("Root node' item : "
-							+ nodeList.item(i).getAttributes().item(0)
-									.getTextContent());
-				}
-
-				NodeList nodeList2 = doc.getFirstChild().getChildNodes();
-
-				for (int i = 0; i < nodeList2.getLength(); i++) {
-					System.out.println("Root node' item : "
-							+ nodeList2.item(i).getNodeName());
-				}
-
-				System.out.println("Root node: "
-						+ doc.getFirstChild().getNodeName());
-
-				makeNode(clsx, node);
-
-				for (int i = 0; i < clsx.item.length; i++) {
-					System.out.println("Cluster's Nodes's name "
-							+ clsx.item[i].getName());
-				}
-
-				for (int i = 0; i < clsx.item[0].item.length; i++) {
-					System.out.println("Cluster's L0's node's name "
-							+ clsx.item[0].item[i].getName());
-				}
-
-			} catch (Exception e) {
-				System.out.println("파일을 읽을 수가 없습니다");
-				e.printStackTrace();
-			}
-		}
+	@Before
+	public void setup() {
+		clsx = new Clsx();
+		dataController = new DataController();
+		readFile = new File("src/res/testReadFile.clsx");
+		writeFilePath = "src/res/testWriteFile.clsx";
+		dataController.loadClsx(readFile);
 	}
 
-	private static void makeNode(Clsx clsx, Node node) {
-		// node의 이름과 item의 크기를 할당
-		clsx.setName(node.getAttributes().item(0).getTextContent());
-		for (int i = 0; i < node.getChildNodes().getLength() / 2; i++) {
-			makeNextNode(clsx, node.getChildNodes());
-		}
+	@Test
+	public void readClsxTest() {
+		clsx = ClsxService.getInstance().readFile(readFile);
+		// 원하는 데이터가 정확하게 들어갔는가
+		assertThat("root", is(clsx.getName()));
+		assertThat("First Group", is(clsx.item[0].getName()));
+		assertThat("First Group's First Item",
+				is(clsx.item[0].item[0].getName()));
+		assertThat("Second Group", is(clsx.item[1].getName()));
 	}
 
-	private static void makeNextNode(Clsx clsx, NodeList nodeList) {
-		clsx.item = new Clsx[nodeList.getLength() / 2];
-		for (int k = 0; k < nodeList.getLength() / 2; k++) {
-			clsx.item[k] = new Clsx();
-		}
-		for (int i = 0; i < nodeList.getLength() / 2; i++) {
-			makeNode(clsx.item[i], nodeList.item(2 * i + 1));
-		}
+	@Test(expected = ArrayIndexOutOfBoundsException.class)
+	public void readClsxErrorTest() {
+		clsx = ClsxService.getInstance().readFile(readFile);
+		// 인덱스를 벗어난 이상한 데이터가 들어오지 않았는가
+		clsx.item[3].getName();
+		clsx.item[1].item[3].getName();
+		// item의 item에 접근할 때 익셉션이 발생해야 정상
+		clsx.item[0].item[0].item[0].getName();
+	}
+
+	@Test
+	public void writeClsxTest() {
+
+		clsx = ClsxService.getInstance().readFile(readFile);
+		ClsxService.getInstance().WriteFile(writeFilePath + "2", clsx);
+
+		dataController.saveClsx(writeFilePath);
+
 	}
 
 }

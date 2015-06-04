@@ -1,26 +1,25 @@
 package controller;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import service.ClsxService;
-import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
+import service.ClsxService;
+import service.DsmService;
 
 public class DataController {
 
 	public Data data;
-	
-	public void sort(){
-		
+
+	public void sort() {
+
 	}
 
 	public void moveUp(Data data, Data leafData) {
 		moveUp(data, data.getDataIndex(leafData));
 	}
-	
+
 	public void moveUp(Data data, int index) {
 		Data parent = findParent(data, index);
 		int i = 0;
@@ -37,11 +36,11 @@ public class DataController {
 			parent.setChild(i - 1, cur);
 		}
 	}
-	
+
 	public void moveDown(Data data, Data leafData) {
 		moveDown(data, data.getDataIndex(leafData));
 	}
-	
+
 	public void moveDown(Data data, int dataIndex) {
 		Data parent = findParent(data, dataIndex);
 		int i = 0;
@@ -58,12 +57,12 @@ public class DataController {
 			parent.setChild(i + 1, cur);
 		}
 	}
-	
+
 	private Data findParent(Data data, int index) {
 		Data indexData = data.getData(index);
 		for (int i = 1; i <= data.getDataCount(); i++) {
 			Data fdata = data.getData(index - i);
-			for(int j = 0 ; j <fdata.getChildLength() ; j++){
+			for (int j = 0; j < fdata.getChildLength(); j++) {
 				if (fdata.getChild(j) == indexData) {
 					return fdata;
 				}
@@ -78,6 +77,7 @@ public class DataController {
 	public void setName(Data data, int dataIndex, String newName) {
 		data.getData(dataIndex).setName(newName);
 	}
+
 	/**
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
@@ -96,7 +96,7 @@ public class DataController {
 	/**
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
-	
+
 	public boolean isDepend(Data data, int dataIndex, int dependDataIndex) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
@@ -113,7 +113,7 @@ public class DataController {
 	/**
 	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면 그 자리에 newData 라는 이름으로 아이템을 추가한다.
 	 */
-	
+
 	public void addItem(Data data, int dataIndex, String newItemName) {
 		Data newData;
 		int i = 0;
@@ -178,7 +178,7 @@ public class DataController {
 		Data start = data.getData(startIndex);
 		Data end = data.getData(endIndex);
 		if (start != end) {
-			if (findParent(data, startIndex) ==	findParent(data, endIndex)) {
+			if (findParent(data, startIndex) == findParent(data, endIndex)) {
 				int startCount, endCount;
 				startCount = endCount = 0;
 				Data parent = findParent(data, startIndex);
@@ -214,7 +214,7 @@ public class DataController {
 
 	/**
 	 * 그룹풀기 그룹의 이름을 두번째 인자로 넣으면 그 그룹을 푼다.
-	 */	
+	 */
 	public void deleteGroup(Data data, int groupIndex) {
 		Data parent = findParent(data, groupIndex);
 		Data Group = data.getData(groupIndex);
@@ -225,8 +225,6 @@ public class DataController {
 		}
 		parent.removeChild(index);
 	}
-	
-	
 
 	/**
 	 * data 내의 GroupName 만을 따로 떼내서 새로 복제해 만든다. data 내의 dependancy 가 복잡하게 얽혀있는데,
@@ -241,8 +239,11 @@ public class DataController {
 
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
-				if (isDepend(data, data.getDataIndex(exData.getItem(i)), data.getDataIndex(exData.getItem(j)))) {
-					setDependancy(newData, newData.getDataIndex(newData.getItem(i)),newData.getDataIndex(newData.getItem(j)));
+				if (isDepend(data, data.getDataIndex(exData.getItem(i)),
+						data.getDataIndex(exData.getItem(j)))) {
+					setDependancy(newData,
+							newData.getDataIndex(newData.getItem(i)),
+							newData.getDataIndex(newData.getItem(j)));
 				}
 			}
 		}
@@ -264,7 +265,7 @@ public class DataController {
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
 			dsmData.addChild(new Data(dsm.getName(i)));
-			
+
 		}
 
 		// dependancy 연결
@@ -308,6 +309,10 @@ public class DataController {
 		return sumData(clsxData, dsmData);
 	}
 
+	public void saveClsx(String filePath) {
+		ClsxService.getInstance().WriteFile(filePath, makeDataToClsx(data));
+	}
+
 	private Data sumData(Data clsxData, Data dsmData) {
 		Data retData = new Data("root");
 		if (checkSameData(clsxData, dsmData)) {
@@ -315,9 +320,13 @@ public class DataController {
 
 			int length = retData.getItemCount();
 			for (int i = 0; i < length; i++) {
-				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)))){
-						setDependancy(retData, retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)));
+				for (int j = 0; j < length; j++) {
+					if (isDepend(dsmData,
+							retData.getDataIndex(retData.getItem(i)),
+							retData.getDataIndex(retData.getItem(j)))) {
+						setDependancy(retData,
+								retData.getDataIndex(retData.getItem(i)),
+								retData.getDataIndex(retData.getItem(j)));
 					}
 				}
 			}
@@ -334,13 +343,13 @@ public class DataController {
 	 * Clsx를 Data 로 바꾸는 함수 Dsm 정보는 없고 Clsx 의 트리구조만 갖는 Data가 리턴된다 read 전용
 	 */
 	private Data makeClsxToData(Clsx c) {
-		Data newData = new Data(c.getName());
+		data = new Data(c.getName());
 		if (c.item != null) {
 			for (int i = 0; i < c.item.length; i++) {
-				newData.addChild(makeClsxToData(c.item[i]));
+				data.addChild(makeClsxToData(c.item[i]));
 			}
 		}
-		return newData;
+		return data;
 	}
 
 	/**
@@ -350,14 +359,20 @@ public class DataController {
 		return makeDataToClsx(data);
 	}
 
-	private Clsx makeDataToClsx(Data d) {
-		Clsx newClsx = new Clsx(d.getName());
-		int length = d.getChildLength();
-		newClsx.item = new Clsx[length];
-		for (int i = 0; i < length; i++) {
-			newClsx.item[i] = makeDataToClsx(d.getChild(i));
+	private Clsx makeDataToClsx(Data data) {
+		int length = data.getChildLength();
+
+		Clsx clsx = new Clsx();
+		clsx.setName(data.getName());
+		clsx.item = new Clsx[length];
+
+		if (length != 0) {
+			for (int i = 0; i < length; i++) {
+				clsx.item[i] = makeDataToClsx(data.getChild(i));
+			}
 		}
-		return newClsx;
+
+		return clsx;
 	}
 
 	/**
@@ -370,21 +385,25 @@ public class DataController {
 	public Dsm makeDataToDsm(Data data) {
 		Dsm dsm = new Dsm(data.getItemCount());
 		int length = data.getItemCount();
-		
+
 		for (int i = 0; i < length; i++)
 			dsm.addName(data.getItem(i).getName());
-		
+
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
 				dsm.setDependency(false, i, j);
 			}
 		}
-		
+
 		for (int i = 0; i < length; i++) {
 			int depLength = data.getItem(i).getDependLength();
 			for (int j = 0; j < length; j++) {
 				for (int k = 0; k < depLength; k++) {
-					dsm.setDependency(true, i, data.getItemIndex(data.getItem(i).getDepend(k).getName()));
+					dsm.setDependency(
+							true,
+							i,
+							data.getItemIndex(data.getItem(i).getDepend(k)
+									.getName()));
 				}
 			}
 		}
@@ -402,56 +421,58 @@ public class DataController {
 		int nodeNumber = clsxData.getItemCount();
 		int dataNumber = dsmData.getItemCount();
 		if (nodeNumber != dataNumber) {
-			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
+			// System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
 		}
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
-			for (int j = 0; j < dataNumber; j++){
-				if (clsxData.getItem(i).getName().equals(dsmData.getItem(j).getName())){
-					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).name);
+			for (int j = 0; j < dataNumber; j++) {
+				if (clsxData.getItem(i).getName()
+						.equals(dsmData.getItem(j).getName())) {
+					// System.out.println("name : " + i + ",  " +
+					// dsmData.GetItem(j).name);
 					ret = true;
 				}
 			}
-			if (!ret){
-				//System.out.println("name1 : " + clsxData.GetItem(i).name );
-				//return false;
+			if (!ret) {
+				// System.out.println("name1 : " + clsxData.GetItem(i).name );
+				// return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 
 	 * @param data
-	 * @param visualIndexes : 현재 폴더가 열려서 보이는 트리의 번호들을 입력받는다.
+	 * @param visualIndexes
+	 *            : 현재 폴더가 열려서 보이는 트리의 번호들을 입력받는다.
 	 * @return 서로의 dependancy 를 이차원배열로 리턴한다.
 	 */
 
-	public boolean[][] getDependArray(Data data, int[] visualIndexes){
-		
-		
+	public boolean[][] getDependArray(Data data, int[] visualIndexes) {
+
 		return null;
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param front : 첫번째 데이타와
-	 * @param back : 두번째 데이터의
-	 * @return String name 을 비교하여 front 가  앞에 있으면 true, 뒤에 있으면 false
+	 * @param front
+	 *            : 첫번째 데이타와
+	 * @param back
+	 *            : 두번째 데이터의
+	 * @return String name 을 비교하여 front 가 앞에 있으면 true, 뒤에 있으면 false
 	 */
-	private boolean compareString(Data front, Data back){
+	private boolean compareString(Data front, Data back) {
 		int frontLength = front.getName().length();
 		int backLength = back.getName().length();
 		/*
-		if(int i = 0 ; i < 10 ; i ++){
-			if((int)front.name.charAt(i) < (int)back.name.charAt(i)){
-				
-			}
-		}
-		*/
-		
+		 * if(int i = 0 ; i < 10 ; i ++){ if((int)front.name.charAt(i) <
+		 * (int)back.name.charAt(i)){
+		 * 
+		 * } }
+		 */
+
 		return true;
 	}
 
