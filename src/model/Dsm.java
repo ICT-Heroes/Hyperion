@@ -103,29 +103,4 @@ public class Dsm {
 		dep[a1][b1] = dep[a2][b2];
 		dep[a2][b2] = temp;
 	}
-	
-	public void printDependencies() {
-		for (int i = 0; i < number; i++) {
-			for (int j = 0; j < number; j++) {
-				if (dep[i][j])
-					System.out.print("O ");
-				else
-					System.out.print("X ");	
-			}
-			System.out.println("");
-		}
-	}
-	
-	public void printNames() {
-		for (String name : names) {
-			System.out.println(name);
-		}
-	}
-	
-	public void print() {
-		printDependencies();
-		printNames();
-	}
-	
-	
 }

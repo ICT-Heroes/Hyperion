@@ -8,16 +8,19 @@ public class Partitioner {
 	private Dsm dsm;
 	private int head, faketail, fakehead, tail;
 	private ArrayList<Integer> heads, tails;
-	private ArrayList<Integer> aheads, atails;
-	private ArrayList<Integer> sizeList;
+	private ArrayList<Integer> aheads, atails, abody;
 	
 	public void setDsm(Dsm dsm) {
 		this.dsm = dsm;
 	}
 	
 	public ArrayList<Integer> getSizeList() {
-		return sizeList;
+		return abody;
 	}
+
+    /**
+     * Pre proccess for partitioning
+     */
 
 	public void preProcessing() {
 		head = 0;
@@ -28,17 +31,15 @@ public class Partitioner {
 
 		aheads = new ArrayList<Integer>();
 		atails = new ArrayList<Integer>();
-		sizeList = new ArrayList<Integer>();
 		
-		while(true) {
-			heads = new ArrayList<Integer>();
+		// column이 0인 것들을 tail쪽으로 보냄
+		while (true) {
 			tails = new ArrayList<Integer>();
 			
-			// row가 0인 것들을 tail쪽으로 보냄
 			for (int i = fakehead; i < tail; i++) {
 				boolean result = true;
 				for (int j = fakehead; j < tail; j++) {
-					if (dsm.getDependency(i, j)) {
+					if (dsm.getDependency(j, i)) {
 						result = false;
 						continue;
 					}
@@ -50,16 +51,27 @@ public class Partitioner {
 			}
 			
 			for (int i = 0; i < tails.size(); i++) {
-				int row = tails.get(i);
-				dsm.changeOrder(row, tail-1);
+				int column = tails.get(i);
+				dsm.changeOrder(column, tail-1);
 				tail -= 1;
 			}
 			
-			// column이 0인 것들을 head쪽으로 보냄
+			if (tails.size() == 0)
+				break;
+			
+			atails.add(tails.size());
+		}
+		
+		faketail = tail;
+
+		// row가 0인 것들을 head쪽으로 보냄
+		while (true) {
+			heads = new ArrayList<Integer>();
+			
 			for (int i = head; i < faketail; i++) {
 				boolean result = true;
 				for (int j = head; j < faketail; j++) {
-					if (dsm.getDependency(j, i)) {
+					if (dsm.getDependency(i, j)) {
 						result = false;
 						continue;
 					}
@@ -71,34 +83,55 @@ public class Partitioner {
 			}
 			
 			for (int i = 0; i < heads.size(); i++) {
-				int column = heads.get(i);
-				dsm.changeOrder(column, head);
+				int row = heads.get(i);
+				dsm.changeOrder(row, head);
 				head += 1;
 			}
 			
-			// 범위 축소
-			fakehead = head;
-			faketail = tail;
-			
-			if (heads.size() == 0 && tails.size() == 0)
+			if (heads.size() == 0)
 				break;
 			
 			aheads.add(heads.size());
-			atails.add(tails.size());
 		}
+		
+		fakehead = head;
 	}
 	
+    /**
+     * Path Searching Algorithm for partitioning There is no empty row or column
+     * between head and tail
+     */
+
 	public void pathSearching() {
-		if (tail > head) {
-			
-		}
+		abody = new ArrayList<Integer>();
+    	while (head < tail) {
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+
+            temp.add(head);
+            for (int i = head;;) {
+
+                for (int j = head; j < tail; j++) {
+                    if (dsm.getDependency(i, j)) {
+                        i = j;
+                        break;
+                    }
+                }
+
+                if (temp.contains(i)) {
+                    break;
+                } else {
+                    temp.add(i);
+                }
+            }
+
+            for (Integer val : temp) {
+                dsm.changeOrder(head, val);
+                head++;
+            }
+
+            abody.add(temp.size());
+    	}
+
 	}
 	
-	public void postProcessing() {
-		int middleSize = tail - head;
-		sizeList.addAll(aheads);
-		if (middleSize > 0)
-			sizeList.add(middleSize);
-		sizeList.addAll(atails);
-	}
 }

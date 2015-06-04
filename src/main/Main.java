@@ -35,10 +35,20 @@ public class Main{
 		partitioner.setDsm(dsm);
 		
 		partitioner.preProcessing();
-		partitioner.postProcessing();
-		for (int val : partitioner.getSizeList()) {
-			System.out.println(val);
+		partitioner.pathSearching();
+		//partitioner.postProcessing();
+		
+		for (int i = 0; i < dsm.getNumber(); i++) {
+			for (int j = 0; j < dsm.getNumber(); j++) {
+				if (dsm.getDependency(i, j))
+					System.out.print("O ");
+				else if(i==j) {
+					System.out.print(". ");
+				}
+				else
+					System.out.print("X ");	
+			}
+			System.out.println("");
 		}
-		dsm.print();
 	}
 }
