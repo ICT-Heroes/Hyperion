@@ -16,61 +16,57 @@ public class DataController {
 	public void sort(){
 		
 	}
+
+	public void moveUp(Data data, Data leafData) {
+		moveUp(data, data.getDataIndex(leafData));
+	}
 	
-	public void moveUp(String name) {
-		moveUp(data, name);
-	}
-
-	public void moveUp(Data data, String name) {
-		Data parent = findParent(data, name);
-		int index = 0;
-		for (; index < parent.getChildLength(); index++) {
-			if (parent.getChild(index).getName().equals(name)) {
+	public void moveUp(Data data, int index) {
+		Data parent = findParent(data, index);
+		int i = 0;
+		for (; i < parent.getChildLength(); i++) {
+			if (parent.getChild(i) == data.getData(index)) {
 				break;
 			}
 		}
-		System.out.println(index);
-		if (0 < index) {
-
+		if (0 < i) {
 			Data cur, forward;
-			cur = parent.getChild(index);
-			forward = parent.getChild(index - 1);
-			parent.setChild(index, forward);
-			parent.setChild(index - 1, cur);
+			cur = parent.getChild(i);
+			forward = parent.getChild(i - 1);
+			parent.setChild(i, forward);
+			parent.setChild(i - 1, cur);
 		}
 	}
-
-	public void moveDown(String name) {
-		moveDown(data, name);
+	
+	public void moveDown(Data data, Data leafData) {
+		moveDown(data, data.getDataIndex(leafData));
 	}
-
-	public void moveDown(Data data, String name) {
-		Data parent = findParent(data, name);
-		int index = 0;
-		for (; index < parent.getChildLength(); index++) {
-			if (parent.getChild(index).getName().equals(name)) {
+	
+	public void moveDown(Data data, int dataIndex) {
+		Data parent = findParent(data, dataIndex);
+		int i = 0;
+		for (; i < parent.getChildLength(); i++) {
+			if (parent.getChild(i) == data.getData(dataIndex)) {
 				break;
 			}
 		}
-		if (index < parent.getChildLength() - 1) {
+		if (i < parent.getChildLength() - 1) {
 			Data cur, back;
-			cur = parent.getChild(index);
-			back = parent.getChild(index + 1);
-			parent.setChild(index, back);
-			parent.setChild(index + 1, cur);
+			cur = parent.getChild(i);
+			back = parent.getChild(i + 1);
+			parent.setChild(i, back);
+			parent.setChild(i + 1, cur);
 		}
 	}
-
-	private Data findParent(String name) {
-		return findParent(data, name);
-	}
-
-	private Data findParent(Data data, String name) {
-		int dataIndex = data.getDataIndex(name);
-		for (int i = 1; i <= dataIndex; i++) {
-			Data fdata = data.getData(data.getData(dataIndex - i).getName());
-			if (!fdata.getData(name).getName().equals("null")) {
-				return fdata;
+	
+	private Data findParent(Data data, int index) {
+		Data indexData = data.getData(index);
+		for (int i = 1; i <= data.getDataCount(); i++) {
+			Data fdata = data.getData(index - i);
+			for(int j = 0 ; j <fdata.getChildLength() ; j++){
+				if (fdata.getChild(j) == indexData) {
+					return fdata;
+				}
 			}
 		}
 		return new Data();
@@ -79,35 +75,18 @@ public class DataController {
 	/**
 	 * data의 어느 노드 객체의 이름을 바꾸는 함수
 	 */
-	public void setName(Data data, String exName, String newName) {
-		data.getData(exName).setName(newName);
-	}
-
 	public void setName(Data data, int dataIndex, String newName) {
 		data.getData(dataIndex).setName(newName);
 	}
-
-	public void setName(String exName, String newName) {
-		data.getData(exName).setName(newName);
-	}
-
-	public void setName(int dataIndex, String newName) {
-		data.getData(dataIndex).setName(newName);
-	}
-
 	/**
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
 	 */
-	public void setDependancy(String itemName, String dependItemName) {
-		setDependancy(data, itemName, dependItemName);
-	}
-
-	public void setDependancy(Data data, String itemName, String dependItemName) {
+	public void setDependancy(Data data, int dataIndex, int dependdataIndex) {
 		Data item, depItem;
-		item = data.getItem(itemName);
-		depItem = data.getItem(dependItemName);
-		if (isDepend(data, itemName, dependItemName)) {
+		item = data.getData(dataIndex);
+		depItem = data.getData(dependdataIndex);
+		if (isDepend(data, dataIndex, dependdataIndex)) {
 			item.removeDepend(depItem);
 		} else {
 			item.addDepend(depItem);
@@ -117,17 +96,14 @@ public class DataController {
 	/**
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
-	public boolean isDepend(String itemName, String dependItemName) {
-		return isDepend(data, itemName, dependItemName);
-	}
-
-	public boolean isDepend(Data data, String itemName, String dependItemName) {
+	
+	public boolean isDepend(Data data, int dataIndex, int dependDataIndex) {
 		Data item, depItem;
-		item = data.getItem(itemName);
-		depItem = data.getItem(dependItemName);
+		item = data.getData(dataIndex);
+		depItem = data.getData(dependDataIndex);
 		int length = item.getDependLength();
 		for (int i = 0; i < length; i++) {
-			if (item.getDepend(i).getName().equals(depItem.getName())) {
+			if (item.getDepend(i) == depItem) {
 				return true;
 			}
 		}
@@ -137,22 +113,11 @@ public class DataController {
 	/**
 	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면 그 자리에 newData 라는 이름으로 아이템을 추가한다.
 	 */
-	public void addItem(String itemName) {
-		addItem(itemName, "newData");
-	}
-
-	public void addItem(String itemName, String newItemName) {
-		addItem(data, itemName, newItemName);
-	}
-
-	public void addItem(Data data, String itemName) {
-		addItem(data, itemName, "newData");
-	}
-
-	public void addItem(Data data, String itemName, String newItemName) {
+	
+	public void addItem(Data data, int dataIndex, String newItemName) {
 		Data newData;
 		int i = 0;
-		while (!data.getData(newItemName + i).getName().equals("null")) {
+		while (!data.getData(i).getName().equals("" + newItemName + i)) {
 			i++;
 			if (100000 < i) {
 				System.out.println("아이템 추가 실패, 너무 많은 아이템이 이름 변경 없이 추가되려 하고있다.");
@@ -164,10 +129,10 @@ public class DataController {
 		} else {
 			newData = new Data(newItemName + i);
 		}
-		if (0 < data.getData(itemName).getChildLength()) {
-			data.getData(itemName).addChild(newData);
+		if (0 < data.getData(dataIndex).getChildLength()) {
+			data.getData(dataIndex).addChild(newData);
 		} else {
-			Data parent = findParent(data, itemName);
+			Data parent = findParent(data, dataIndex);
 			parent.addChild(newData);
 		}
 	}
@@ -175,25 +140,21 @@ public class DataController {
 	/**
 	 * data 내의 아이템을 지운다.
 	 */
-	public void deleteItem(String itemName) {
-		deleteItem(data, itemName);
-	}
-
-	public void deleteItem(Data data, String itemName) {
+	public void deleteItem(Data data, int dataIndex) {
 		// 연결 지우기
 		for (int i = 0; i < data.getItemCount(); i++) {
 			int depLength = data.getItem(i).getDependLength();
 			for (int j = 0; j < depLength; j++) {
-				if (data.getItem(i).getDepend(j).getName().equals(itemName)) {
+				if (data.getItem(i).getDepend(j) == data.getData(dataIndex)) {
 					data.getItem(i).removeDepend(j);
 				}
 			}
 		}
 		// 직접적인 데이터 지우기
-		Data parent = findParent(data, itemName);
+		Data parent = findParent(data, dataIndex);
 		for (int i = 0; i < parent.getChildLength(); i++) {
 			if (parent.getChild(i).getChildLength() == 0) {
-				if (parent.getChild(i).getName().equals(itemName)) {
+				if (parent.getChild(i) == data.getData(dataIndex)) {
 					parent.removeChild(i);
 				}
 			}
@@ -204,46 +165,35 @@ public class DataController {
 	 * 같은 부모를 가진 노드들 끼리만 결합할 수 있다. startName 은 그룹을 시작하는 노드, endName 은 그룹을 끝내는 노드
 	 * startName, endName 모두 그룹 안에 들어간다.
 	 */
-	public void createGroup(String startName, String endName) {
-		createGroup(data, startName, endName);
-	}
-
-	public void createGroup(String startName, String endName, String groupName) {
-		createGroup(data, startName, endName, groupName);
-	}
-
-	public void createGroup(Data data, String startName, String endName) {
-		createGroup(data, startName, endName, "newGroup");
-	}
-
-	public void createGroup(Data data, String startName, String endName,
+	public void createGroup(Data data, int startIndex, int endIndex,
 			String groupName) {
 		int index = 0;
-		while (data.getData(groupName + index).getName() != "null") {
+		while (data.getData(index).getName().equals("" + groupName + index)) {
 			index++;
 			if (100000 < index) {
 				System.out.println("그룹짓기 실패, 너무 많은 그룹이 비슷한 이름을 갖고 있다.");
 				return;
 			}
 		}
-		if (startName != endName) {
-			if (findParent(data, startName).getName().equals(
-					findParent(data, endName).getName())) {
-				int start, end;
-				start = end = 0;
-				Data parent = findParent(data, startName);
+		Data start = data.getData(startIndex);
+		Data end = data.getData(endIndex);
+		if (start != end) {
+			if (findParent(data, startIndex) ==	findParent(data, endIndex)) {
+				int startCount, endCount;
+				startCount = endCount = 0;
+				Data parent = findParent(data, startIndex);
 				for (int i = 0; i < parent.getChildLength(); i++) {
-					if (parent.getChild(i).getName().equals(startName)) {
-						start = i;
+					if (parent.getChild(i) == data.getData(startIndex)) {
+						startCount = i;
 					}
-					if (parent.getChild(i).getName().equals(endName)) {
-						end = i;
+					if (parent.getChild(i) == data.getData(endIndex)) {
+						endCount = i;
 					}
 				}
-				if (end < start) {
-					int a = end;
-					end = start;
-					start = a;
+				if (endCount < startCount) {
+					int a = endCount;
+					endCount = startCount;
+					startCount = a;
 				}
 				Data newData;
 				if (index == 0) {
@@ -251,12 +201,12 @@ public class DataController {
 				} else {
 					newData = new Data(groupName + index);
 				}
-				for (int i = 0; i < end - start + 1; i++) {
-					newData.addChild(parent.getChild(start + i));
+				for (int i = 0; i < endCount - startCount + 1; i++) {
+					newData.addChild(parent.getChild(startCount + i));
 				}
-				parent.setChild(start, newData);
-				for (int i = 0; i < end - start; i++) {
-					parent.removeChild(start + 1);
+				parent.setChild(startCount, newData);
+				for (int i = 0; i < endCount - startCount; i++) {
+					parent.removeChild(startCount + 1);
 				}
 			}
 		}
@@ -264,43 +214,35 @@ public class DataController {
 
 	/**
 	 * 그룹풀기 그룹의 이름을 두번째 인자로 넣으면 그 그룹을 푼다.
-	 */
-	public void deleteGroup(String groupName) {
-		deleteGroup(groupName);
-	}
-
-	public void deleteGroup(Data data, String groupName) {
-		Data parent = findParent(data, groupName);
-		Data Group = data.getData(groupName);
-		int index = parent.getChildIndex(groupName);
+	 */	
+	public void deleteGroup(Data data, int groupIndex) {
+		Data parent = findParent(data, groupIndex);
+		Data Group = data.getData(groupIndex);
+		int index = parent.getChildIndex(data.getData(groupIndex).getName());
 		int size = Group.getChildLength();
 		for (int i = 0; i < size; i++) {
 			parent.addChild(index + 1, Group.getChild(size - i - 1));
 		}
 		parent.removeChild(index);
 	}
+	
+	
 
 	/**
 	 * data 내의 GroupName 만을 따로 떼내서 새로 복제해 만든다. data 내의 dependancy 가 복잡하게 얽혀있는데,
 	 * 단순히 일부분만 따로 떼내서 복제한다면 null dependancy 를 갖고 올 수도 있으므로 일부분을 제외한 다른 곳과의
 	 * dependancy 는 무시하도록 복제한다.
 	 */
-	public Data dupicate(String GroupName) {
-		return dupicate(GroupName);
-	}
-
-	public Data dupicate(Data data, String GroupName) {
-		Data exData = data.getData(GroupName);
+	public Data dupicate(Data data, int DataIndex) {
+		Data exData = data.getData(DataIndex);
 		Data newData = new Data(exData);
 
 		int length = exData.getItemCount();
 
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
-				if (isDepend(data, exData.getItem(i).getName(),
-						exData.getItem(j).getName())) {
-					setDependancy(newData, newData.getItem(i).getName(),
-							newData.getItem(j).getName());
+				if (isDepend(data, data.getDataIndex(exData.getItem(i)), data.getDataIndex(exData.getItem(j)))) {
+					setDependancy(newData, newData.getDataIndex(newData.getItem(i)),newData.getDataIndex(newData.getItem(j)));
 				}
 			}
 		}
@@ -374,8 +316,8 @@ public class DataController {
 			int length = retData.getItemCount();
 			for (int i = 0; i < length; i++) {
 				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.getItem(i).getName(), retData.getItem(j).getName())){
-						setDependancy(retData, retData.getItem(i).getName(), retData.getItem(j).getName());
+					if(isDepend(dsmData,retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)))){
+						setDependancy(retData, retData.getDataIndex(retData.getItem(i)), retData.getDataIndex(retData.getItem(j)));
 					}
 				}
 			}

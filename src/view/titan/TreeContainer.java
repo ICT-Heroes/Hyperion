@@ -248,7 +248,7 @@ public final class TreeContainer{
 					if(this.findNodeByName(input) != null){
 						TaskDialogs.error(null, "DSM name must be unique. Try another name.", "");
 					}else{
-						dc.setName(dm, currentDSMName, input);
+						dc.setName(dm, 0, input);
 					
 						//변경된 사항을 다시 그린다
 						treeDSM.repaint();
@@ -306,7 +306,7 @@ public final class TreeContainer{
 			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
 			node.removeFromParent();			
 			model.reload();
-			dc.deleteItem(data, data.toString());		
+			dc.deleteItem(data, 0);		
 			
 			treeDSM.repaint();
 		}else{
@@ -358,7 +358,7 @@ public final class TreeContainer{
 		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.moveUp(root, data.getName());
+		dc.moveUp(root, root.getDataIndex(data));
 		s.invoke("reloadDSM");
 	}
 	
@@ -372,7 +372,7 @@ public final class TreeContainer{
 		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.moveDown(root, data.getName());
+		dc.moveDown(root, data);
 		s.invoke("reloadDSM");
 	}
 	/*
@@ -461,7 +461,7 @@ public final class TreeContainer{
 			for(int j =0; j < i; j++){
 				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
 				if(f1.toString().compareTo(f2.toString()) < 0){
-					dc.moveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).getName());
+					dc.moveUp((Data)parent.getUserObject(), (Data)f2.getUserObject());
 					break;
 				}
 			}

@@ -40,21 +40,6 @@ public class Data {
 		return name;
 	}
 	
-	
-	/*
-	 * 이름을 통해 Data를 찾는 함수
-	 */
-	public Data getData(String name){
-		Data retData = new Data("null");
-		int length = getDataCount();
-		for(int i = 0 ; i < length ; i ++){
-			if(getData(i).name.equals(name)){
-				return getData(i);
-			}
-		}
-		return retData;
-	}
-	
 	/*
 	 * 이름을 통해 Item을 찾는 함수
 	 */
@@ -68,9 +53,6 @@ public class Data {
 		}
 		return retData;
 	}
-	
-
-	
 	
 	/**
 	 * 자신을 포함한 자기 밑의 모든 데이터의 갯수를 리턴한다.
@@ -105,11 +87,11 @@ public class Data {
 		}
 		return new Data("");
 	}
-
-	public int getDataIndex(String name){
+	
+	public int getDataIndex(Data d){
 		int length = getDataCount();
-		for(int i = 0 ; i < length ; i ++){
-			if(getData(i).name.equals(name)){
+		for(int i = 1 ; i < length ; i ++){
+			if(getData(i) == d){
 				return i;
 			}
 		}
@@ -127,10 +109,32 @@ public class Data {
 		return -1;
 	}
 	
+	public int getItemIndex(Data itemData){
+		int length = getItemCount();
+		
+		for(int i = 0 ; i < length ; i ++){
+			if(getItem(i) == itemData){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public int getChildIndex(String name){
 		int index = -1;
 		for(int i = 0 ; i < child.size() ; i ++){
 			if(child.get(i).name.equals(name)){
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+	
+	public int getChildIndex(Data childData){
+		int index = -1;
+		for(int i = 0 ; i < child.size() ; i ++){
+			if(child.get(i) == childData){
 				index = i;
 				break;
 			}

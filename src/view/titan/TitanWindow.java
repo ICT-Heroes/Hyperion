@@ -1,4 +1,4 @@
-  package view.titan;
+   package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -241,7 +241,7 @@ public class TitanWindow implements ActionListener{
 	 * 새로운 DSM을 생성
 	 */
 	private void addNewDSM(Data parent, String name){
-		dc.addItem(parent, parent.getName(), name);
+		dc.addItem(parent, 0, name);
 		loadDSMFromData();
 	}
 	
@@ -270,7 +270,7 @@ public class TitanWindow implements ActionListener{
 					
 					int lastIdx = 0;
 					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
-						dc.addItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
+						dc.addItem(this.currentData, 0, _entity + (i + 1));
 						lastIdx = i;
 					}
 					lastNewDSMIndex = lastIdx + 1;
