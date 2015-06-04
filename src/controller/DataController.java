@@ -61,10 +61,10 @@ public class DataController {
 	private Data findParent(int dataIndex) {
 		Data indexData = data.getData(dataIndex);
 		for (int i = 1; i <= data.getDataCount(); i++) {
-			Data fdata = data.getData(dataIndex - i);
-			for (int j = 0; j < fdata.getChildLength(); j++) {
-				if (fdata.getChild(j) == indexData) {
-					return fdata;
+			Data parentData = data.getData(dataIndex - i);
+			for (int j = 0; j < parentData.getChildLength(); j++) {
+				if (parentData.getChild(j) == indexData) {
+					return parentData;
 				}
 			}
 		}
@@ -74,7 +74,7 @@ public class DataController {
 	/**
 	 * data의 어느 노드 객체의 이름을 바꾸는 함수
 	 */
-	public void setName(int dataIndex, String newName) {
+	public void changeNodeName(int dataIndex, String newName) {
 		data.getData(dataIndex).setName(newName);
 	}
 
@@ -82,7 +82,7 @@ public class DataController {
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
 	 */
-	public void setDependancy(int dataIndex, int dependDataIndex) {
+	private void setDependancy(int dataIndex, int dependDataIndex) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
 		depItem = data.getData(dependDataIndex);
@@ -93,7 +93,8 @@ public class DataController {
 		}
 	}
 
-	public void setDependancy(int dataIndex, int dependDataIndex, boolean depend) {
+	private void setDependancy(int dataIndex, int dependDataIndex,
+			boolean depend) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
 		depItem = data.getData(dependDataIndex);
@@ -112,7 +113,7 @@ public class DataController {
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
 
-	public boolean isDepend(int dataIndex, int dependDataIndex) {
+	private boolean isDepend(int dataIndex, int dependDataIndex) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
 		depItem = data.getData(dependDataIndex);
@@ -188,6 +189,16 @@ public class DataController {
 	}
 
 	/**
+	 * DSM만 Load한 뒤 추가할 수 있는기 기능 구현
+	 * 
+	 * @param newDsmName
+	 */
+	public void addDsm(String newDsmName) {
+		Data newData = new Data(newDsmName);
+		data.addChild(newData);
+	}
+
+	/**
 	 * 데이터 내의 아이템을 지운다
 	 * 
 	 * @param dataIndex
@@ -213,6 +224,10 @@ public class DataController {
 				}
 			}
 		}
+	}
+
+	public void deleteDsm(int dataIndex) {
+		data.removeChild(dataIndex - 1);
 	}
 
 	/**
@@ -307,20 +322,20 @@ public class DataController {
 	 */
 	public Data duplicate(int DataIndex) {
 		Data exData = data.getData(DataIndex);
-		Data newData = new Data(exData);
+		Data newData = new Data(exData, "root");
 
 		int length = exData.getItemCount();
-
-		for (int i = 0; i < length; i++) {
-			for (int j = 0; j < length; j++) {
-				if (isDepend(data.getDataIndex(exData.getItem(i)),
-						data.getDataIndex(exData.getItem(j)))) {
-					setDependancy(newData.getDataIndex(newData.getItem(i)),
-							newData.getDataIndex(newData.getItem(j)));
+		if (length > 0) {
+			for (int i = 0; i < length; i++) {
+				for (int j = 0; j < length; j++) {
+					if (isDepend(data.getDataIndex(exData.getItem(i)),
+							data.getDataIndex(exData.getItem(j)))) {
+						setDependancy(newData.getDataIndex(newData.getItem(i)),
+								newData.getDataIndex(newData.getItem(j)));
+					}
 				}
 			}
 		}
-
 		return newData;
 	}
 

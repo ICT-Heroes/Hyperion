@@ -1,4 +1,4 @@
-package test;
+package test.service;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ public class DsmTest {
 		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
 	}
-	
+
 	@Test
 	public void readDsmTest() {
 		File file = new File("src/res/moka.dsm");
@@ -31,31 +31,31 @@ public class DsmTest {
 	public void partitionTest() {
 		partitioner = new Partitioner();
 		partitioner.setDsm(dsm);
-		
+
 		partitioner.preProcessing();
 		partitioner.pathSearching();
-	
+
 		printDependencies();
 	}
-	
+
 	public void printDependencies() {
 		for (int i = 0; i < dsm.getNumber(); i++) {
 			for (int j = 0; j < dsm.getNumber(); j++) {
 				if (dsm.getDependency(i, j))
 					System.out.print("O ");
 				else
-					System.out.print("X ");	
+					System.out.print("X ");
 			}
 			System.out.println("");
 		}
 	}
-	
+
 	public void printNames() {
-		for (int i=0; i<dsm.getNumber(); i++) {
+		for (int i = 0; i < dsm.getNumber(); i++) {
 			System.out.println(dsm.getName(i));
 		}
 	}
-	
+
 	public void print() {
 		printDependencies();
 		printNames();

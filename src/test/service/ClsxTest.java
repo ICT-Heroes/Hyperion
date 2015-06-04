@@ -1,4 +1,4 @@
-package test.controller;
+package test.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
