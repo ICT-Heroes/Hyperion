@@ -1,4 +1,4 @@
-package view.titan;
+  package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -43,8 +43,8 @@ import controller.DataController;
  */
 
 public class TitanWindow implements ActionListener{
-	private TitanTreeContainer		treeContainer;
-	private TitanTableContainer		tblContainer;
+	private TreeContainer		treeContainer;
+	private TableContainer		tblContainer;
 	private JSplitPane				spltPane;
 	
 	
@@ -53,7 +53,7 @@ public class TitanWindow implements ActionListener{
 	private JFrame					frame;
 	private int					defCloseAction = WindowConstants.EXIT_ON_CLOSE;
 	private Data					currentData;
-	private TitanUIEventSurrogate	surrogate;
+	private EventSurrogate	surrogate;
 	
 	
 	//사용자가 선택한 DSM파일을 나타낸다. 
@@ -116,16 +116,16 @@ public class TitanWindow implements ActionListener{
 	private void initToolBar(){
 		toolBar = new JToolBar();
 		
-		toolBar.add(TitanUtil.buildImgButton("Open DSM", this, TitanWindow.class.getResource("/res/open-dsm.png")));		
-		toolBar.add(TitanUtil.buildImgButton("Redraw", this, TitanWindow.class.getResource("/res/redraw.png")));
+		toolBar.add(UIHelper.buildImgButton("Open DSM", this, TitanWindow.class.getResource("/res/open-dsm.png")));		
+		toolBar.add(UIHelper.buildImgButton("Redraw", this, TitanWindow.class.getResource("/res/redraw.png")));
 		
 		//툴바 버튼 사이에 분리자 추가
 		toolBar.addSeparator(new Dimension(2, 20));
 		
-		toolBar.add(TitanUtil.buildImgButton("New Clustering", this, TitanWindow.class.getResource("/res/new-clsx.png")));
-		toolBar.add(TitanUtil.buildImgButton("Load Clustering", this, TitanWindow.class.getResource("/res/open-clsx.png")));
-		toolBar.add(TitanUtil.buildImgButton("Save Clustering", this, TitanWindow.class.getResource("/res/save-clsx.png")));
-		toolBar.add(TitanUtil.buildImgButton("Save Clustering As...", this, TitanWindow.class.getResource("/res/save-clsx-as.png")));
+		toolBar.add(UIHelper.buildImgButton("New Clustering", this, TitanWindow.class.getResource("/res/new-clsx.png")));
+		toolBar.add(UIHelper.buildImgButton("Load Clustering", this, TitanWindow.class.getResource("/res/open-clsx.png")));
+		toolBar.add(UIHelper.buildImgButton("Save Clustering", this, TitanWindow.class.getResource("/res/save-clsx.png")));
+		toolBar.add(UIHelper.buildImgButton("Save Clustering As...", this, TitanWindow.class.getResource("/res/save-clsx-as.png")));
 	}
 	
 	/*
@@ -136,42 +136,42 @@ public class TitanWindow implements ActionListener{
 		
 		mnuBar = new JMenuBar();	
 		
-		mnuTmp = TitanUtil.buildMenu("File", 'F');
+		mnuTmp = UIHelper.buildMenu("File", 'F');
 		mnuBar.add(mnuTmp);
 		
-		mnuTmp.add(TitanUtil.buildMenuItem("New DSM", this, KeyEvent.VK_N, InputEvent.CTRL_MASK));		
+		mnuTmp.add(UIHelper.buildMenuItem("New DSM", this, KeyEvent.VK_N, InputEvent.CTRL_MASK));		
 		mnuTmp.add(new JSeparator());
 		
-		mnuTmp.add(TitanUtil.buildMenuItem("Open DSM", this, KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		mnuTmp.add(UIHelper.buildMenuItem("Open DSM", this, KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mnuTmp.add(new JSeparator());
 		
-		mnuTmp.add(TitanUtil.buildMenuItem("New Clustering", this, KeyEvent.VK_N, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
-		mnuTmp.add(TitanUtil.buildMenuItem("Load Clustering", this, KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnuTmp.add(UIHelper.buildMenuItem("New Clustering", this, KeyEvent.VK_N, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnuTmp.add(UIHelper.buildMenuItem("Load Clustering", this, KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnuTmp.add(new JSeparator());
 
-		mnuTmp.add(TitanUtil.buildMenuItem("Save Clustering", this, KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		mnuTmp.add(TitanUtil.buildMenuItem("Save Clustering As...", this, KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnuTmp.add(UIHelper.buildMenuItem("Save Clustering", this, KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		mnuTmp.add(UIHelper.buildMenuItem("Save Clustering As...", this, KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnuTmp.add(new JSeparator());
 		
-		mnuTmp.add(TitanUtil.buildMenuItem("Exit", this, KeyEvent.VK_F4, InputEvent.ALT_MASK));
-		mnuTmp = TitanUtil.buildMenu("View", 'V');
+		mnuTmp.add(UIHelper.buildMenuItem("Exit", this, KeyEvent.VK_F4, InputEvent.ALT_MASK));
+		mnuTmp = UIHelper.buildMenu("View", 'V');
 		mnuBar.add(mnuTmp);
-		mnuTmp.add(TitanUtil.buildMenuItem("Redraw", this, KeyEvent.VK_F5, 0));
+		mnuTmp.add(UIHelper.buildMenuItem("Redraw", this, KeyEvent.VK_F5, 0));
 		mnuTmp.add(new JSeparator());
 		
-		mnuTmp.add(TitanUtil.buildMenuItem("Show Row Lables", this, KeyEvent.VK_F6, 0));
-		mnuTmp.add(TitanUtil.buildMenuItem("Change UI Theme", this));
+		mnuTmp.add(UIHelper.buildMenuItem("Show Row Lables", this, KeyEvent.VK_F6, 0));
+		mnuTmp.add(UIHelper.buildMenuItem("Change UI Theme", this));
 		
-		mnuTmp = TitanUtil.buildMenu("Help", 'H');
+		mnuTmp = UIHelper.buildMenu("Help", 'H');
 		mnuBar.add(mnuTmp);
-		mnuTmp.add(TitanUtil.buildMenuItem("About", this));
+		mnuTmp.add(UIHelper.buildMenuItem("About", this));
 	}
 	
 	private void initSurrogate(){
-		TitanUIEventSurrogateManager.addSurrogate(this);
-		surrogate = TitanUIEventSurrogateManager.selectSurrogate(this);
-		TitanUIEventSurrogateManager.linkSurrogate(this.tblContainer, this);
-		TitanUIEventSurrogateManager.linkSurrogate(this.treeContainer, this);
+		EventSurrogateManager.addSurrogate(this);
+		surrogate = EventSurrogateManager.selectSurrogate(this);
+		EventSurrogateManager.linkSurrogate(this.tblContainer, this);
+		EventSurrogateManager.linkSurrogate(this.treeContainer, this);
 		
 		//메서드 서로게이트 추가 
 		surrogate.bind("addNewDSM", "newDSM", new Class[]{Data.class, String.class});
@@ -207,8 +207,8 @@ public class TitanWindow implements ActionListener{
 		spltPane.setContinuousLayout(true);
 
 		//�����̳� ���� �� �ʱ�ȭ
-		treeContainer = new TitanTreeContainer();
-		tblContainer = new TitanTableContainer();
+		treeContainer = new TreeContainer();
+		tblContainer = new TableContainer();
 		
 		//splitpane�� ����
 		spltPane.setLeftComponent(treeContainer.getContainer());
@@ -241,7 +241,7 @@ public class TitanWindow implements ActionListener{
 	 * 새로운 DSM을 생성
 	 */
 	private void addNewDSM(Data parent, String name){
-		dc.AddItem(parent, parent.getName(), name);
+		dc.addItem(parent, parent.getName(), name);
 		loadDSMFromData();
 	}
 	
@@ -258,7 +258,7 @@ public class TitanWindow implements ActionListener{
 	
 	public void uiMnuNewDSM(ActionEvent ae){
 		while(true){
-			String value = TitanUtil.BuildInputDlg("New DSM Row", "How many rows are added?", "");
+			String value = UIHelper.BuildInputDlg("New DSM Row", "How many rows are added?", "");
 			int rowCount = 0;
 			
 			if(value != null){
@@ -270,14 +270,14 @@ public class TitanWindow implements ActionListener{
 					
 					int lastIdx = 0;
 					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
-						dc.AddItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
+						dc.addItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
 						lastIdx = i;
 					}
 					lastNewDSMIndex = lastIdx + 1;
 					loadDSMFromData();
 					break;
 				}catch(NumberFormatException nfe){
-					TitanUtil.BuildWarnDlg("Error", "Value must be integer. Try Again", "");
+					UIHelper.BuildWarnDlg("Error", "Value must be integer. Try Again", "");
 				}
 			}else{
 				break;
@@ -285,57 +285,147 @@ public class TitanWindow implements ActionListener{
 		}
 	}
 	
-	public void loadDSMFromData(){		
-		//변경사항이 없음을 알림
-		isModified = false;
-		
-		//트리 컨테이너 획득
-		TitanTreeContainer tc = this.treeContainer;
-		
-		//테이블 컨테이너 획득
-		TitanTableContainer tbc = this.tblContainer;
-		
-		//트리의 모든 요소 삭제
-		tc.setRoot(currentData);
-		
-		//차일드 아이템 설정
-		Object root = tc.getRoot();
-		for(int i = 0; i < currentData.countItem(); i++){
-			tc.insertNode(root, currentData.getChild(i));
+	int _insertChild(TreeContainer tc, Data parent){
+		Data local;
+		//아이템을 얻어온다
+		int totalAdd = 0;
+		for(int i = 0; i < parent.getChildLength(); i++){
+			//추가한다.
+			if(parent.getItemCount() == 1 && parent.getChildLength() > 0){
+				tc.insertNode(parent, parent);
+				break;
+			}
+				
+			//System.out.println(parent.ItemCount() + "@ i : " + i);
+			local = parent.getChild(i);
+			tc.insertNode(parent, local);
+			
+			//추가한 노드에 차일드가 존재하는지 확인한다.
+			if(local.getChildLength() > 0){
+				int add = _insertChild(tc, local);
+				i += local.getChildLength();
+			}
+			totalAdd = i;
 		}
-		
+		return totalAdd;
+	}
+	
+	void buildTree(TreeContainer tc, Data parent){
+		for(int i = 0; i < parent.getChildLength(); i++){
+			Data inner = parent.getChild(i);
+			
+			if(inner.getChildLength() > 0){
+				//현재 트리가 보여지는지 확인, 보여지지 않는다면 더 그리기를 중단
+				tc.insertNode(parent, inner);
+				buildTree(tc, inner);
+			}else{
+				tc.insertNode(parent, inner);
+			}
+		}
+	}
+	int depth = 0;
+	void _buildTable(TableContainer tbl, Data parent){
+		for(int i = 0; i < parent.getChildLength(); i++){
+			Data inner = parent.getChild(i);
+			
+			if(inner.getChildLength() > 0){
+				buildTable(tbl, inner);
+			}else{
+				Vector<String> vc = new Vector<String>();
+				
+				for(int j = 0; j < currentData.getItemCount(); j++){
+					//대각성분은 .으로 표시
+					if(depth == j){
+						vc.add(".");
+					}else{
+						vc.add("");
+					}
+				}
+				
+				//DSM 정보를 읽어서 배열에 채운다
+				Data dsmRelation = inner;
+				
+				if(treeContainer.isExpanded(dsmRelation) == false){
+					System.out.println("접혀있습니다. 이 레코드는 축소될 것입니다." + dsmRelation.getName());
+				}
+				for(int c = 0; c < dsmRelation.getDependLength(); c++){
+					int idx = treeContainer.findNodeIndex(dsmRelation.getDepend(c));
+					if(idx != -1)
+						vc.set(idx, "x");
+				}
+				//새로운 행 추가
+				tbl.addNewRow(vc);
+				depth++;
+			}
+		}
+	}
+	
+	/*
+	 * 전략을 다르게 할 것이다.
+	 * 어떻게 할 거냐면
+	 * 트리에서 읽어서 데이터를 구축해야함 씨발 ㅠㅠ
+	 * 와... 감격씨발
+	 * 
+	 * 
+	 */
+	void buildTable(TableContainer tbl, Data parent){
+		System.out.println("LeafCount : " + treeContainer.getVisibleLeafCount());
 		//열 개수 설정
-		tbc.setColumnSize(currentData.getChildLength());
+		tbl.setColumnSize(treeContainer.getVisibleLeafCount());
 		
-		//의존도 정보를 셀에 표시
-		for(int i = 0; i < currentData.countItem(); i++){
+		//현재 보여지는 아이템만 추려냄
+		Data[] dts = treeContainer.getVisibleNodes();
+		String[] rowHdrNames = new String[dts.length];
+		int i = 0;
+		Data d;
+		for(int k = 0; k < dts.length; k++){
 			Vector<String> vc = new Vector<String>();
 			
-			for(int j = 0; j < currentData.countItem(); j++){
+			for(int j = 0; j < currentData.getItemCount(); j++){
 				//대각성분은 .으로 표시
-				if(i == j){
+				if(k == j){
 					vc.add(".");
 				}else{
 					vc.add("");
 				}
-			}
-			
-			//DSM 정보를 읽어서 배열에 채운다
-			Data dsmRelation = currentData.getChild(i);
-			for(int c = 0; c < dsmRelation.getDependLength(); c++){
-				int idx = tc.findNodeIndex(dsmRelation.getDepend(c));
+			}		
+			for(int c = 0; c < dts[k].getDependLength(); c++){
+				int idx = treeContainer.findNodeIndex(dts[k].getDepend(c));
 				if(idx != -1)
 					vc.set(idx, "x");
 			}
-			
-			//새로운 행 추가
-			tbc.addNewRow(vc);
+			rowHdrNames[i++] = dts[k].getName();
+			tbl.addNewRow(vc);
 		}
-		tbc.setRowHeaderTxt(tc.getItemText());
-		tbc.setColumnSizePref();
+		
+		tbl.setRowHeaderTxt(rowHdrNames);
+		tbl.setColumnSizePref();
+	}
+	
+	public void loadDSMFromData(){
+		//변경사항이 없음을 알림
+		isModified = false;
+		
+		//트리 컨테이너 획득
+		TreeContainer tc = this.treeContainer;
+		
+		//테이블 컨테이너 획득
+		TableContainer tbc = this.tblContainer;
+		
+		//트리의 모든 요소 삭제
+		tc.setRoot(currentData);
+				
+		//차일드 아이템 설정
+		Object root = tc.getRoot();
+		
+		buildTree(tc, currentData);
 		
 		//트리의 첫 번째 수준까지 expand
 		tc.uiExpandRoot();
+		
+		//의존도 정보를 셀에 표시
+		depth = 0;
+		buildTable(tblContainer, currentData);
 	}
 	
 	/*
@@ -353,7 +443,7 @@ public class TitanWindow implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION){
 			dsmFile = jfc.getSelectedFile();
-			currentData = dc.LoadDsm(dsmFile);
+			currentData = dc.loadDsm(dsmFile);
 			loadDSMFromData();
 		}else{
 			dsmFile = null;
@@ -377,6 +467,10 @@ public class TitanWindow implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION){
 			clsxFile = jfc.getSelectedFile();
+			Data clsx = dc.loadClsx(clsxFile);
+			Data newData = dc.loadDsmClsx(currentData, clsx);
+			currentData = newData;
+			loadDSMFromData();
 		}else{
 			clsxFile = null;
 		}
@@ -429,8 +523,12 @@ public class TitanWindow implements ActionListener{
 	/*
 	 * 다시 그리기
 	 */	
+	void callTest(){
+		buildTable(tblContainer, currentData);
+	}
 	void uiMnuRedraw(ActionEvent ae){
-		loadDSMFromData();
+		callTest();
+		//loadDSMFromData();
 	}
 	
 	/*

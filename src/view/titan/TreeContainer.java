@@ -1,4 +1,4 @@
-package view.titan;
+  package view.titan;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -37,7 +38,7 @@ import com.ezware.dialog.task.TaskDialogs;
 import controller.DataController;
 
 
-public final class TitanTreeContainer{
+public final class TreeContainer{
 	private JPanel				container;
 	private JPanel				pnlToolbar;		//���� �����̳�
 	private JScrollPane		pnlTree;		//Ʈ�� �����̳�
@@ -177,8 +178,6 @@ public final class TitanTreeContainer{
 			public void keyPressed(KeyEvent e){
 				int keycode = e.getKeyCode();
 				if(keycode == KeyEvent.VK_F2){
-					System.out.println(e.getKeyCode());
-					
 					//absorb the event and open dsm row editor
 					e.consume();
 				}
@@ -195,7 +194,6 @@ public final class TitanTreeContainer{
 		        	if(e.getClickCount() == 2){
 		        		DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath.getLastPathComponent();
 		        		if(node.isRoot() == false){
-		        			System.out.println(((Data)node.getUserObject()).getName());
 		        			editDSMNodeName((Data)node.getUserObject());
 		        		}
 		            }
@@ -205,11 +203,11 @@ public final class TitanTreeContainer{
 		treeDSM.addMouseListener(ml);
 		
 		//�˾� �޴��� ������ �߰�
-		JMenuItem mntmTmp = TitanUtil.buildMenuItem("Rename", evtObj);
+		JMenuItem mntmTmp = UIHelper.buildMenuItem("Rename", evtObj);
 		mnuTree.add(mntmTmp);
-		mntmTmp = TitanUtil.buildMenuItem("Duplicate", evtObj);
+		mntmTmp = UIHelper.buildMenuItem("Duplicate", evtObj);
 		mnuTree.add(mntmTmp);
-		mntmTmp = TitanUtil.buildMenuItem("Fork", evtObj);
+		mntmTmp = UIHelper.buildMenuItem("Fork", evtObj);
 		mnuTree.add(mntmTmp);		
 	}
 	
@@ -250,7 +248,7 @@ public final class TitanTreeContainer{
 					if(this.findNodeByName(input) != null){
 						TaskDialogs.error(null, "DSM name must be unique. Try another name.", "");
 					}else{
-						dc.SetName(dm, currentDSMName, input);
+						dc.setName(dm, currentDSMName, input);
 					
 						//변경된 사항을 다시 그린다
 						treeDSM.repaint();
@@ -290,7 +288,7 @@ public final class TitanTreeContainer{
 	}
 	
 	void uiToolbarAddNewRow(ActionEvent ae){
-		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		Data d = (Data)s.invoke("getData");
 		s.invoke("newDSM", new Object[]{d, "test"});
 		this.treeDSM.repaint();
@@ -308,7 +306,7 @@ public final class TitanTreeContainer{
 			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
 			node.removeFromParent();			
 			model.reload();
-			dc.DeleteItem(data, data.toString());		
+			dc.deleteItem(data, data.toString());		
 			
 			treeDSM.repaint();
 		}else{
@@ -357,10 +355,10 @@ public final class TitanTreeContainer{
 			return;
 		
 		Data data = (Data)node.getUserObject();
-		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.MoveUp(root, data.getName());
+		dc.moveUp(root, data.getName());
 		s.invoke("reloadDSM");
 	}
 	
@@ -371,10 +369,10 @@ public final class TitanTreeContainer{
 			return;
 		
 		Data data = (Data)node.getUserObject();
-		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.MoveDown(root, data.getName());
+		dc.moveDown(root, data.getName());
 		s.invoke("reloadDSM");
 	}
 	/*
@@ -434,9 +432,7 @@ public final class TitanTreeContainer{
 		}
 		return null;
 	}
-	public void uiToolbarSort(ActionEvent ae){
-		System.out.println("sort method is called..");
-		
+	public void uiToolbarSort(ActionEvent ae){	
 		//정렬을 어떻게하려나...
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treeDSM.getLastSelectedPathComponent();
 		
@@ -447,17 +443,15 @@ public final class TitanTreeContainer{
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)node.getRoot();
 		
 		if(root.equals(node)){
-			System.out.println("you select root node.");
 			//��Ʈ�� �����ߴٸ� ��Ʈ�� �ڽ��� �ִ��� Ȯ��
 			node = (DefaultMutableTreeNode)root.getFirstChild();
 			
 			if(node == null){
-				System.out.println("there are no childs.");
 				return ;
 			}
 		}
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)node.getParent();
-		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
+		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		//데이터
 		
@@ -467,7 +461,7 @@ public final class TitanTreeContainer{
 			for(int j =0; j < i; j++){
 				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
 				if(f1.toString().compareTo(f2.toString()) < 0){
-					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).getName());
+					dc.moveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).getName());
 					break;
 				}
 			}
@@ -538,12 +532,89 @@ public final class TitanTreeContainer{
 		int i = 0;
 		while(e.hasMoreElements()){
 			DefaultMutableTreeNode node = e.nextElement();
+			
 			if(item.equals(node.getUserObject()) == true){
 				return i;
 			}
-			i++;
+			if(((Data)node.getUserObject()).getChildLength() == 0)
+				i++;
 		}
 		return -1;
+	}
+	
+	public boolean isExpanded(Object item){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)dtm.getRoot();
+		DefaultMutableTreeNode target = _findNode(item);
+		if(target == null)
+			return false;
+		TreeNode[] nodes = dtm.getPathToRoot(target);
+		TreePath path = new TreePath(nodes);
+		
+		//부모노드가 접혀있으면 리프노드여도 false
+		if(target.getParent() != null){
+			
+			Data dm = (Data)((DefaultMutableTreeNode)target.getParent()).getUserObject();
+			if(isExpanded(dm) == true && target.isLeaf())
+				return true;
+		}
+		//System.out.println("look for path, is expanded?" + treeDSM.isExpanded(path));
+		return treeDSM.isExpanded(path);
+	}
+	
+	public boolean isVisible(Object item){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		DefaultMutableTreeNode target = _findNode(item);
+		if(target == null)
+			return false;
+		TreeNode[] nodes = dtm.getPathToRoot(target);
+		TreePath path = new TreePath(nodes);
+		System.out.println("PATH : " + ((Data)target.getUserObject()).getName() + ", vis : " + treeDSM.isVisible(path) + ", expand? " + treeDSM.isExpanded(path));
+		return treeDSM.isVisible(path);
+	}
+	
+	public Data[] getVisibleNodes(){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		ArrayList<Data> vc = new ArrayList<Data>();
+		int count = 0;
+
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(isVisible(node.getUserObject()) != false){
+				//펼쳐진 모듈이면 카운트 안함
+				//카운트 조건 : 보여지면서 펼쳐진 것이 아닌 것
+				if(isExpanded(node.getUserObject()) == false || node.isLeaf()){
+					vc.add((Data)node.getUserObject());
+				}
+			}
+		}		
+		return vc.toArray(new Data[]{});
+	}
+	
+	
+	//부모가 열려있으면서 비져블인 경우
+	public int getVisibleLeafCount(){
+		DefaultTreeModel dtm = (DefaultTreeModel)treeDSM.getModel();
+		Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)dtm.getRoot()).depthFirstEnumeration();
+		
+		int count = 0;
+
+		while(e.hasMoreElements()){
+			DefaultMutableTreeNode node = e.nextElement();
+			if(isVisible(node.getUserObject()) == false){
+				System.out.println("접혀진 노드 : " + ((Data)node.getUserObject()).getName());
+			}else{
+				//펼쳐진 모듈이면 카운트 안함
+				//카운트 조건 : 보여지면서 펼쳐진 것이 아닌 것
+				if(isExpanded(node.getUserObject()) == false || node.isLeaf()){
+					System.out.println("펼쳐진 노드 : " + ((Data)node.getUserObject()).getName());
+					count++;
+				}
+			}
+		}		
+		return count;
 	}
 	
 	public String[] getItemText(){

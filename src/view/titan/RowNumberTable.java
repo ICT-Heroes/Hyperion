@@ -1,4 +1,4 @@
-package view.titan;
+  package view.titan;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -20,7 +20,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 /*
- *	Use a JTable as a renderer for row numbers of a given main table.
+ *	Use a JTable as a renderer for row snumbers of a given main table.
  *  This table must be added to the row header of the scrollpane that
  *  contains the main table.
  */
