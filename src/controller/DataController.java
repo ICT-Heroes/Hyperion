@@ -1,22 +1,21 @@
 package controller;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import service.ClsxService;
-import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
+import service.ClsxService;
+import service.DsmService;
 
 public class DataController {
 
 	public Data data;
-	
-	public void Sort(){
-		
+
+	public void Sort() {
+
 	}
-	
+
 	public void MoveUp(String name) {
 		MoveUp(data, name);
 	}
@@ -29,9 +28,8 @@ public class DataController {
 				break;
 			}
 		}
-		System.out.println(index);
-		if (0 < index) {
 
+		if (0 < index) {
 			Data cur, forward;
 			cur = parent.getChild(index);
 			forward = parent.getChild(index - 1);
@@ -313,8 +311,7 @@ public class DataController {
 	 */
 	public Data LoadDsm(File file) {
 		Data dsmData;
-		DsmService dsmService = new DsmService();
-		Dsm dsm = dsmService.readFromeFile(file);
+		Dsm dsm = DsmService.getInstance().readFromeFile(file);
 
 		int nodeNumber = dsm.getNumber();
 		dsmData = new Data("root");
@@ -322,7 +319,7 @@ public class DataController {
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
 			dsmData.addChild(new Data(dsm.getName(i)));
-			
+
 		}
 
 		// dependancy 연결
@@ -337,7 +334,7 @@ public class DataController {
 	}
 
 	public Data LoadClsx(File file) {
-		return MakeClsxToData(new ClsxService().readFile(file));
+		return MakeClsxToData(ClsxService.getInstance().readFile(file));
 	}
 
 	public Data LoadClsx(Clsx c) {
@@ -373,9 +370,11 @@ public class DataController {
 
 			int length = retData.countItem();
 			for (int i = 0; i < length; i++) {
-				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.getItem(i).getName(), retData.getItem(j).getName())){
-						SetDependancy(retData, retData.getItem(i).getName(), retData.getItem(j).getName());
+				for (int j = 0; j < length; j++) {
+					if (isDepend(dsmData, retData.getItem(i).getName(), retData
+							.getItem(j).getName())) {
+						SetDependancy(retData, retData.getItem(i).getName(),
+								retData.getItem(j).getName());
 					}
 				}
 			}
@@ -428,21 +427,25 @@ public class DataController {
 	public Dsm MakeDataToDsm(Data data) {
 		Dsm dsm = new Dsm(data.countItem());
 		int length = data.countItem();
-		
+
 		for (int i = 0; i < length; i++)
 			dsm.addName(data.getItem(i).getName());
-		
+
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
 				dsm.setDependency(false, i, j);
 			}
 		}
-		
+
 		for (int i = 0; i < length; i++) {
 			int depLength = data.getItem(i).getDependLength();
 			for (int j = 0; j < length; j++) {
 				for (int k = 0; k < depLength; k++) {
-					dsm.setDependency(true, i, data.findItemIndex(data.getItem(i).getDepend(k).getName()));
+					dsm.setDependency(
+							true,
+							i,
+							data.findItemIndex(data.getItem(i).getDepend(k)
+									.getName()));
 				}
 			}
 		}
@@ -460,20 +463,23 @@ public class DataController {
 		int nodeNumber = clsxData.countItem();
 		int dataNumber = dsmData.countItem();
 		if (nodeNumber != dataNumber) {
-			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
+			// System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
 		}
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
-			for (int j = 0; j < dataNumber; j++){
-				if (clsxData.getItem(i).isSameName(dsmData.getItem(j).getName())){
-					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).getName());
+			for (int j = 0; j < dataNumber; j++) {
+				if (clsxData.getItem(i)
+						.isSameName(dsmData.getItem(j).getName())) {
+					// System.out.println("name : " + i + ",  " +
+					// dsmData.GetItem(j).getName());
 					ret = true;
 				}
 			}
-			if (!ret){
-				//System.out.println("name1 : " + clsxData.GetItem(i).getName() );
-				//return false;
+			if (!ret) {
+				// System.out.println("name1 : " + clsxData.GetItem(i).getName()
+				// );
+				// return false;
 			}
 		}
 		return true;

@@ -22,7 +22,16 @@ import org.w3c.dom.NodeList;
  *
  */
 public class ClsxService {
-	static Document doc;
+	Document doc;
+
+	private static ClsxService instance;
+
+	public static ClsxService getInstance() {
+		if (instance == null) {
+			instance = new ClsxService();
+		}
+		return instance;
+	}
 
 	/**
 	 * clsx형식의 파일을 읽어온 뒤 clsx모델에 맞게 parsing 하여 clsx모델을 만든다.
@@ -126,7 +135,7 @@ public class ClsxService {
 	 * @param element
 	 *            clsx에서 꺼낸 노드
 	 */
-	private static void makeWriteNode(Clsx clsx, Element element) {
+	private void makeWriteNode(Clsx clsx, Element element) {
 		if (rightItem(clsx)) {
 			Element item = doc.createElement("item");
 			item.setAttribute("name", clsx.getName());
@@ -148,7 +157,7 @@ public class ClsxService {
 	 *            확인할 clsx
 	 * @return item이면 true, group이면 false
 	 */
-	private static boolean rightItem(Clsx clsx) {
+	private boolean rightItem(Clsx clsx) {
 		if (clsx.item == null) {
 			return true;
 		} else
