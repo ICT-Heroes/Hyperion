@@ -14,11 +14,14 @@ import org.junit.Test;
 import controller.Partitioner;
 import controller.ReadDsmController;
 
+import service.DsmService;
+import controller.Partitioner;
+
 public class DsmTest {
 	Dsm dsm;
-	ReadDsmController controller = new ReadDsmController();
+	DsmService controller = new DsmService();
 	Partitioner partitioner;
-	
+
 	@Before
 	public void setup() {
 		File file = new File("src/res/moka.dsm");
@@ -54,14 +57,13 @@ public class DsmTest {
 	@Test
 	public void readDsmTest() {
 	}
-	
+
 	@Test
 	public void partitionTest() {
 		partitioner.preProcessing();
 	
 		partitioner.pathSearching();
 	
-		partitioner.postProcessing();
 	}
 
 }

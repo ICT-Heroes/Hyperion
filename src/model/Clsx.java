@@ -1,15 +1,18 @@
 package model;
 
+/**
+ * Clsx 모델 클래스 트리 구조를 위해 자기 자신을 게속 가지고 있는 구조로 만들었다. 각 clsx는 이름을 가지고 있고, 만약
+ * group이라면 (하위 노드가 있다면) item을 하위 노드 갯수만큼 가지고 있다.
+ */
 public class Clsx {
 	private String name;
 	public Clsx[] item;
 
-	public Clsx[] getItem() {
-		return item;
+	public Clsx() {
 	}
 
-	public void setItem(Clsx[] item) {
-		this.item = item;
+	public Clsx(String name) {
+		this.name = name;
 	}
 
 	public String getName() {

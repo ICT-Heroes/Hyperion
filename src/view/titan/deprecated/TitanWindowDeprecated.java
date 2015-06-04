@@ -1,4 +1,4 @@
-package view.titan;
+package view.titan.deprecated;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -48,6 +48,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.ListSelectionModel;
+
+import view.titan.RowNumberTable;
 
 public class TitanWindowDeprecated extends JFrame implements ActionListener{
 
@@ -333,6 +336,10 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		spltPan.setRightComponent(scrpanTbl);
 		
 		tblDSMMatrix = new JTable();
+		tblDSMMatrix.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		tblDSMMatrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblDSMMatrix.setCellSelectionEnabled(true);
+		tblDSMMatrix.setColumnSelectionAllowed(true);
 		tblDSMMatrix.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null, null, null, null},
@@ -362,7 +369,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	
 	private void changeLaF(Component c, String className){
 		try{
-			//룩앤필 설정 및 연관된 모든 컴포넌트의 테마를 재설정 후 뷰 영역 리팩
+			//����� ���� �� ������ ��� ������Ʈ�� �׸��� �缳�� �� �� ���� ����
 			UIManager.setLookAndFeel(className);
 			SwingUtilities.updateComponentTreeUI(c);
 			this.pack();
@@ -374,26 +381,26 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	
 	public void uiMnuChangeLafHandler(ActionEvent e){
-		//UI관리자로부터 현재 JRE환경에 설치된 기본 LaF클래스를 조사
+		//UI�����ڷκ��� ���� JREȯ�濡 ��ġ�� �⺻ LaFŬ������ ����
 		UIManager.LookAndFeelInfo[] lafs = UIManager.getInstalledLookAndFeels();
 		
-		//LaF조사 실패시 아무런 동작을 하지 않는다
+		//LaF���� ���н� �ƹ��� ������ ���� �ʴ´�
 		if(lafs == null || lafs.length == 0){
 			return ;
 		}
 		
-		//콤보박스에 표시할 LaF이름을 조사
+		//�޺��ڽ��� ǥ���� LaF�̸��� ����
 		String[] lafName = new String[lafs.length];
 		for(int i = 0; i < lafs.length; i++){
 			lafName[i] = lafs[i].getName();
 		}
 		
 		String selLaFName = (String)JOptionPane.showInputDialog(
-								null, "시스템 UI테마를 선택하세요.", "UI 테마 변경", 
+								null, "�ý��� UI�׸��� �����ϼ���.", "UI �׸� ����", 
 								JOptionPane.PLAIN_MESSAGE, null,
 								lafName, lafName[0]);
 		
-		//선택된 LaF Name을 UI Manager에게 통보하고 전체 시스템 UI Theme 변경
+		//���õ� LaF Name�� UI Manager���� �뺸�ϰ� ��ü �ý��� UI Theme ����
 		for(UIManager.LookAndFeelInfo laf : lafs){
 			if(laf.getName().equals(selLaFName) == true){
 				changeLaF(this, laf.getClassName());
@@ -402,14 +409,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	
 	public void uiMnuNewDSM(ActionEvent e){
-		//텍스트 필드 생성
+		//�ؽ�Ʈ �ʵ� ����
 		final JTextField txt = new JTextField(10);
 		
-		//구성요소 생성
+		//������� ����
 		Object[] bodyAndTxtField = {"How many rows added?\n", txt};
 		Object[] btnTxt = {"OK", "Cancel"};
 		
-		//옵션패널 생성
+		//�ɼ��г� ����
 		final JOptionPane optionPane = new JOptionPane(
 													bodyAndTxtField,
 													JOptionPane.QUESTION_MESSAGE,
@@ -419,14 +426,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 													btnTxt[0]
 												);
 		
-		//다이얼로그 생성
+		//���̾�α� ����
 		final JDialog dialog = new JDialog(this, "New DSM", true);
 		dialog.setContentPane(optionPane);
 		
-		//다이얼로그가 자동으로 닫히지 않게 설정
+		//���̾�αװ� �ڵ����� ������ �ʰ� ����
 		dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		
-		//다이얼로그가 열리면 텍스트필드로 포커스가 이동하도록 이벤트 핸들러 설정 
+		//���̾�αװ� ������ �ؽ�Ʈ�ʵ�� ��Ŀ���� �̵��ϵ��� �̺�Ʈ �ڵ鷯 ���� 
 		dialog.addComponentListener(new ComponentAdapter(){
 			@Override
 			public void componentShown(ComponentEvent ce){
@@ -434,15 +441,15 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 			}
 		});
 		
-		//X버튼을 눌렀을 때 처리를 위해 이벤트 핸들러 추가 
+		//X��ư�� ������ �� ó���� ���� �̺�Ʈ �ڵ鷯 �߰� 
 		dialog.addWindowListener(new WindowAdapter(){
 		    public void windowClosing(WindowEvent we){
-		    	//X버튼을 눌렀다면 그냥 종료해주자
+		    	//X��ư�� �����ٸ� �׳� ����������
 		    	dialog.dispose();
 		    }
 		});
 		
-		//속성(예를 들어 버튼이 눌렸다던지)이 변경된 경우를 확인
+		//�Ӽ�(���� ��� ��ư�� ���ȴٴ���)�� ����� ��츦 Ȯ��
 		optionPane.addPropertyChangeListener(
 		    new PropertyChangeListener() {
 		        public void propertyChange(PropertyChangeEvent e) {
@@ -461,8 +468,8 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		            		return;
 		            	}
 		            	
-		            	//이 값을 설정하지 않으면 다음번에 유저가 이벤트를 발생시키더라도
-		            	//프로퍼티 변경 이벤트가 발생하지 않게 된다.
+		            	//�� ���� �������� ������ �������� ������ �̺�Ʈ�� �߻���Ű����
+		            	//������Ƽ ���� �̺�Ʈ�� �߻����� �ʰ� �ȴ�.
 		            	optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 		            	
 		            	if("OK".equals(value)){
@@ -483,16 +490,16 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		            }
 		        }
 		    });
-		//다이얼로그 요소를 적절하게 배치
+		//���̾�α� ��Ҹ� �����ϰ� ��ġ
 		dialog.pack();
 		
-		//부모 윈도우의 중앙에 오도록 조정
+		//�θ� �������� �߾ӿ� ������ ����
 		dialog.setLocationRelativeTo(this);
 		
-		//다이얼로그 전시
+		//���̾�α� ����
 		dialog.setVisible(true);
 		
-		//여기에 필요한 코드 작성
+		//���⿡ �ʿ��� �ڵ� �ۼ�
 	}
 	
 	void uiMnuOpenDSM(ActionEvent e){
@@ -502,7 +509,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "엑셀 파일로 내보냈습니다.");
+			//JOptionPane.showMessageDialog(null, "���� ���Ϸ� �����½��ϴ�.");
 		}
 	}
 	
@@ -513,7 +520,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "엑셀 파일로 내보냈습니다.");
+			//JOptionPane.showMessageDialog(null, "���� ���Ϸ� �����½��ϴ�.");
 		}
 	}
 	
@@ -528,7 +535,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION){
 			//File out = jfc.getSelectedFile();			
-			//JOptionPane.showMessageDialog(null, "엑셀 파일로 내보냈습니다.");
+			//JOptionPane.showMessageDialog(null, "���� ���Ϸ� �����½��ϴ�.");
 		}
 	}
 	
@@ -595,7 +602,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	void uiToolbarSort(ActionEvent e){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treDSM.getLastSelectedPathComponent();
 		
-		//node가 루트라면 한정적으로 자식노드만 소트		
+		//node�� ��Ʈ��� ���������� �ڽĳ�常 ��Ʈ		
 		if(node == null)
 			return;
 		
@@ -603,14 +610,14 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 		
 		if(root.equals(node)){
 			System.out.println("you select root node.");
-			//루트를 선택했다면 루트에 자식이 있는지 확인
+			//��Ʈ�� �����ߴٸ� ��Ʈ�� �ڽ��� �ִ��� Ȯ��
 			node = (DefaultMutableTreeNode)root.getFirstChild();
 			
 			if(node == null){
 				System.out.println("there are no childs.");
 				return ;
 			}
-			//자식노드가 있다면 해당 노드를 선택하고 정렬 수행....
+			//�ڽĳ�尡 �ִٸ� �ش� ��带 �����ϰ� ���� ����....
 		}
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)node.getParent();
 		
@@ -635,7 +642,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	void uiToolbarRename(ActionEvent e){
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)treDSM.getLastSelectedPathComponent();
 		
-		//node가 루트라면 한정적으로 자식노드만 소트		
+		//node�� ��Ʈ��� ���������� �ڽĳ�常 ��Ʈ		
 		if(node == null)
 			return;
 		
@@ -647,7 +654,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e){
-		//이벤트를 받은 UI 요소를 파악하고 적절한 이벤트 핸들러 호출
+		//�̺�Ʈ�� ���� UI ��Ҹ� �ľ��ϰ� ������ �̺�Ʈ �ڵ鷯 ȣ��
 		System.out.println(e.getActionCommand());
 		System.out.println("event triggered.");
 		switch(e.getActionCommand()){
