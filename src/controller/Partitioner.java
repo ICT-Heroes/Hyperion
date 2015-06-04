@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import model.Dsm;
 
@@ -108,7 +109,7 @@ public class Partitioner {
 
 			for (int i = 0; i < tails.size(); i++) {
 				int column = tails.get(i);
-				dsm.changeOrder(column, tail - 1);
+				changeOrder(column, tail - 1);
 				tail -= 1;
 			}
 
@@ -140,7 +141,7 @@ public class Partitioner {
 
 			for (int i = 0; i < heads.size(); i++) {
 				int row = heads.get(i);
-				dsm.changeOrder(row, head);
+				changeOrder(row, head);
 				head += 1;
 			}
 
@@ -154,7 +155,7 @@ public class Partitioner {
 	}
 
 	/**
-	 * <b>Path Searching Algorithm </b><br>
+	 * <b> Path Searching Algorithm </b><br>
 	 * 이 메소드를 수행하기 전에 head와 tail사이에 dependency가 없는 행, 열은 존재하면 안된다. 
 	 */
 	public void pathSearching() {
@@ -180,13 +181,53 @@ public class Partitioner {
 			}
 
 			for (Integer val : temp) {
-				dsm.changeOrder(head, val);
+				changeOrder(head, val);
 				head++;
 			}
 
 			abody.add(temp.size());
 		}
 
+	}
+	
+	/**
+	 * a와 b 노드의 순서를 바꾼다.
+	 * @param a 노드 a
+	 * @param b 노드 b
+	 */
+	public void changeOrder(int a, int b) {
+		// (a,a)와 (b,b) 성분을 바꾼다.
+		swapElement(a, a, b, b);
+		
+		// (a,b)와 (b,a) 성분을 바꾼다.
+		swapElement(a, b, b, a);
+		
+		// 나머지 행과 열을 바꾼다.
+		for (int i = 0; i < dsm.getNumber(); i++) {
+			if (i == a || i == b) 
+				continue;
+			
+			swapElement(a, i, b, i);
+			
+			swapElement(i, a, i, b);
+		}
+		
+		Collections.swap(dsm.getNames(), a, b);
+	}
+	
+	/**
+	 * (a1, b1)과 (a2, b2) 성분을 바꾼다.
+	 * @param a1 첫 번째 노드의 행
+	 * @param b1 첫 번째 노드의 열
+	 * @param a2 두 번째 노드의 행
+	 * @param b2 두 번째 노드의 열
+	 */
+	private void swapElement(int a1, int b1, int a2, int b2)
+	{
+		boolean val1 = dsm.getDependency(a1, b1);
+		boolean val2 = dsm.getDependency(a2, b2);
+		dsm.setDependency(val2, a1, b1);
+		dsm.setDependency(val1, a2, b2);
 	}
 
 }
