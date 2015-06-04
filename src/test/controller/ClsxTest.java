@@ -1,6 +1,7 @@
 package test.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,14 +51,14 @@ public class ClsxTest {
 
 				makeNode(clsx, node);
 
-				for (int i = 0; i < clsx.item.length; i++) {
+				for (int i = 0; i < clsx.getItem().size(); i++) {
 					System.out.println("Cluster's Nodes's name "
-							+ clsx.item[i].getName());
+							+ clsx.getItem().get(i).getName());
 				}
 
-				for (int i = 0; i < clsx.item[0].item.length; i++) {
+				for (int i = 0; i < clsx.getItem().get(0).getItem().size(); i++) {
 					System.out.println("Cluster's L0's node's name "
-							+ clsx.item[0].item[i].getName());
+							+ clsx.getItem().get(0).getName());
 				}
 
 			} catch (Exception e) {
@@ -76,12 +77,12 @@ public class ClsxTest {
 	}
 
 	private static void makeNextNode(Clsx clsx, NodeList nodeList) {
-		clsx.item = new Clsx[nodeList.getLength() / 2];
+		clsx.setItem(new ArrayList<>());
 		for (int k = 0; k < nodeList.getLength() / 2; k++) {
-			clsx.item[k] = new Clsx();
+			clsx.getItem().set(k,new Clsx());
 		}
 		for (int i = 0; i < nodeList.getLength() / 2; i++) {
-			makeNode(clsx.item[i], nodeList.item(2 * i + 1));
+			makeNode(clsx.getItem().get(i), nodeList.item(2 * i + 1));
 		}
 	}
 

@@ -59,7 +59,6 @@
 <item name="edu.drexel.cs.rise.titan.action.ExportMatrixAction" />
 </group>
 <group name="edu.drexel.cs.rise.titan.ui.ClusterViewer">
-<group name="edu.drexel.cs.rise.titan.ui.ClusterViewer">
 <item name="edu.drexel.cs.rise.titan.action.cluster.UpAction" />
 <item name="edu.drexel.cs.rise.titan.ui.ClusterViewer$Listener" />
 <item name="edu.drexel.cs.rise.titan.action.cluster.UngroupAction" />
@@ -73,7 +72,6 @@
 <item name="edu.drexel.cs.rise.titan.action.cluster.GroupAction" />
 <item name="edu.drexel.cs.rise.titan.action.cluster.ExpandAllAction" />
 <item name="edu.drexel.cs.rise.titan.action.RedrawAction" />
-</group>
 </group>
 <group name="_edu.drexel.cs.rise.titan.Project">
 <item name="edu.drexel.cs.rise.titan.action.DependencyStrengthAction" />

@@ -241,7 +241,7 @@ public class TitanWindow implements ActionListener{
 	 * 새로운 DSM을 생성
 	 */
 	private void addNewDSM(Data parent, String name){
-		dc.AddItem(parent, parent.getName(), name);
+		dc.addItem(parent, parent.getName(), name);
 		loadDSMFromData();
 	}
 	
@@ -270,7 +270,7 @@ public class TitanWindow implements ActionListener{
 					
 					int lastIdx = 0;
 					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
-						dc.AddItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
+						dc.addItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
 						lastIdx = i;
 					}
 					lastNewDSMIndex = lastIdx + 1;
@@ -301,7 +301,7 @@ public class TitanWindow implements ActionListener{
 		//차일드 아이템 설정
 		Object root = tc.getRoot();
 		for(int i = 0; i < currentData.countItem(); i++){
-			tc.insertNode(root, currentData.getChild(i));
+			tc.insertNode(root, currentData.getChildData(i));
 		}
 		
 		//열 개수 설정
@@ -321,9 +321,9 @@ public class TitanWindow implements ActionListener{
 			}
 			
 			//DSM 정보를 읽어서 배열에 채운다
-			Data dsmRelation = currentData.getChild(i);
-			for(int c = 0; c < dsmRelation.getDependLength(); c++){
-				int idx = tc.findNodeIndex(dsmRelation.getDepend(c));
+			Data dsmRelation = currentData.getChildData(i);
+			for(int c = 0; c < dsmRelation.getDependencyLength(); c++){
+				int idx = tc.findNodeIndex(dsmRelation.getDependencyData(c));
 				if(idx != -1)
 					vc.set(idx, "x");
 			}
@@ -353,7 +353,8 @@ public class TitanWindow implements ActionListener{
 		jfc.setFileFilter(flt);
 		if(jfc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION){
 			dsmFile = jfc.getSelectedFile();
-			currentData = dc.LoadDsm(dsmFile);
+			dc.loadDsm(dsmFile);
+			currentData = dc.getRootData();
 			loadDSMFromData();
 		}else{
 			dsmFile = null;

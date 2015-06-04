@@ -82,14 +82,14 @@ public class WriteClsxTest {
 			Element group = doc.createElement("group");
 			group.setAttribute("name", clsx.getName());
 			element.appendChild(group);
-			for (int i = 0; i < clsx.item.length; i++) {
-				makeWriteNode(clsx.item[i], group);
+			for (int i = 0; i < clsx.getItem().size(); i++) {
+				makeWriteNode(clsx.getItem().get(i), group);
 			}
 		}
 	}
 
 	private static boolean rightItem(Clsx clsx) {
-		if (clsx.item == null) {
+		if (clsx.getItem() == null) {
 			return true;
 		} else
 			return false;

@@ -2,6 +2,8 @@ package controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import service.ClsxService;
 import service.DsmService;
@@ -10,88 +12,67 @@ import model.Data;
 import model.Dsm;
 
 public class DataController {
-
 	public Data data;
 	
-	public void Sort(){
-		
-	}
-	
-	public void MoveUp(String name) {
-		MoveUp(data, name);
+	public void sort(String name){
+		Data parent = findParent(name);
+		Collections.sort(parent.getChild(), new NameDescCompare());
 	}
 
-	public void MoveUp(Data data, String name) {
-		Data parent = FindParent(data, name);
+	public void moveUp(String name) {
+		Data parent = findParent(name);
 		int index = 0;
 		for (; index < parent.getChildLength(); index++) {
-			if (parent.getChild(index).isSameName(name)) {
+			if (parent.getChildData(index).isSameName(name)) {
 				break;
 			}
 		}
 		System.out.println(index);
 		if (0 < index) {
-
 			Data cur, forward;
-			cur = parent.getChild(index);
-			forward = parent.getChild(index - 1);
-			parent.setChild(index, forward);
-			parent.setChild(index - 1, cur);
+			cur = parent.getChildData(index);
+			forward = parent.getChildData(index - 1);
+			parent.setChildData(index, forward);
+			parent.setChildData(index - 1, cur);
 		}
 	}
 
-	public void MoveDown(String name) {
-		MoveDown(data, name);
-	}
-
-	public void MoveDown(Data data, String name) {
-		Data parent = FindParent(data, name);
+	public void moveDown(String name) {
+		Data parent = findParent(name);
 		int index = 0;
 		for (; index < parent.getChildLength(); index++) {
-			if (parent.getChild(index).isSameName(name)) {
+			if (parent.getChildData(index).isSameName(name)) {
 				break;
 			}
 		}
 		if (index < parent.getChildLength() - 1) {
 			Data cur, back;
-			cur = parent.getChild(index);
-			back = parent.getChild(index + 1);
-			parent.setChild(index, back);
-			parent.setChild(index + 1, cur);
+			cur = parent.getChildData(index);
+			back = parent.getChildData(index + 1);
+			parent.setChildData(index, back);
+			parent.setChildData(index + 1, cur);
 		}
 	}
 
-	private Data FindParent(String name) {
-		return FindParent(data, name);
-	}
-
-	private Data FindParent(Data data, String name) {
+	private Data findParent(String name) {
 		int dataIndex = data.findDataIndex(name);
 		for (int i = 1; i <= dataIndex; i++) {
-			Data fdata = data.findData(data.getData(dataIndex - i).getName());
-			if (!fdata.findData(name).isSameName("null")) {
-				return fdata;
+			Data findParentData = data.findData(data.getData(dataIndex - i).getName());
+			if (!findParentData.findData(name).isSameName("null")) {
+				return findParentData;
 			}
 		}
 		return new Data();
 	}
 
-	/*
-	 * data의 어느 노드 객체의 이름을 바꾸는 함수
+	/**
+	 * data의 특정 노드 객체의 이름을 바꾸는 함수
 	 */
-	public void SetName(Data data, String exName, String newName) {
+	public void setName(String exName, String newName) {
 		data.findData(exName).setName(newName);
 	}
 
-	public void SetName(Data data, int dataIndex, String newName) {
-		data.getData(dataIndex).setName(newName);
-	}
-
-	public void SetName(String exName, String newName) {
-		data.findData(exName).setName(newName);
-	}
-
-	public void SetName(int dataIndex, String newName) {
+	public void setName(int dataIndex, String newName) {
 		data.getData(dataIndex).setName(newName);
 	}
 
@@ -99,35 +80,35 @@ public class DataController {
 	 * data 의 itemName 에 해당하는 Data객체의 depend 중 dependItemName 과 동일한 이름을 가진 Data
 	 * 객체를 추가하거나 삭제함. 이미 의존성을 갖고 있으면 삭제 의존성이 없으면 추가 toggle
 	 */
-	public void SetDependancy(String itemName, String dependItemName) {
-		SetDependancy(data, itemName, dependItemName);
+	public void setDependancy(String itemName, String dependItemName) {
+		setDependancy(data, itemName, dependItemName);
 	}
 
-	public void SetDependancy(Data data, String itemName, String dependItemName) {
+	public void setDependancy(Data data, String itemName, String dependItemName) {
 		Data item, depItem;
 		item = data.findItem(itemName);
 		depItem = data.findItem(dependItemName);
-		if (isDepend(data, itemName, dependItemName)) {
-			item.removeDepend(depItem);
+		if (isDependent(data, itemName, dependItemName)) {
+			item.removeDependencyData(depItem);
 		} else {
-			item.addDepend(depItem);
+			item.addDependencyData(depItem);
 		}
 	}
 
 	/*
 	 * data 의 itemName 이 dependItemName 에게 의존하고 있는가?
 	 */
-	public boolean isDepend(String itemName, String dependItemName) {
-		return isDepend(data, itemName, dependItemName);
+	public boolean isDependent(String itemName, String dependItemName) {
+		return isDependent(data, itemName, dependItemName);
 	}
 
-	public boolean isDepend(Data data, String itemName, String dependItemName) {
+	public boolean isDependent(Data data, String itemName, String dependItemName) {
 		Data item, depItem;
 		item = data.findItem(itemName);
 		depItem = data.findItem(dependItemName);
-		int length = item.getDependLength();
+		int length = item.getDependencyLength();
 		for (int i = 0; i < length; i++) {
-			if (item.getDepend(i).isSameName(depItem.getName())) {
+			if (item.getDependencyData(i).isSameName(depItem.getName())) {
 				return true;
 			}
 		}
@@ -137,19 +118,19 @@ public class DataController {
 	/*
 	 * data 내의 아이템 중 추가하고싶은 자리의 이름을 두번째 인수로 적으면 그 자리에 newData 라는 이름으로 아이템을 추가한다.
 	 */
-	public void AddItem(String itemName) {
-		AddItem(itemName, "newData");
+	public void addItem(String itemName) {
+		addItem(itemName, "newData");
 	}
 
-	public void AddItem(String itemName, String newItemName) {
-		AddItem(data, itemName, newItemName);
+	public void addItem(String itemName, String newItemName) {
+		addItem(data, itemName, newItemName);
 	}
 
-	public void AddItem(Data data, String itemName) {
-		AddItem(data, itemName, "newData");
+	public void addItem(Data data, String itemName) {
+		addItem(data, itemName, "newData");
 	}
 
-	public void AddItem(Data data, String itemName, String newItemName) {
+	public void addItem(Data data, String itemName, String newItemName) {
 		Data newData;
 		int i = 0;
 		while (!data.findData(newItemName + i).isSameName("null")) {
@@ -165,36 +146,36 @@ public class DataController {
 			newData = new Data(newItemName + i);
 		}
 		if (0 < data.findData(itemName).getChildLength()) {
-			data.findData(itemName).addChild(newData);
+			data.findData(itemName).addChildData(newData);
 		} else {
-			Data parent = FindParent(data, itemName);
-			parent.addChild(newData);
+			Data parent = findParent(itemName);
+			parent.addChildData(newData);
 		}
 	}
 
 	/*
 	 * data 내의 아이템을 지운다.
 	 */
-	public void DeleteItem(String itemName) {
-		DeleteItem(data, itemName);
+	public void deleteItem(String itemName) {
+		deleteItem(data, itemName);
 	}
 
-	public void DeleteItem(Data data, String itemName) {
+	public void deleteItem(Data data, String itemName) {
 		// 연결 지우기
 		for (int i = 0; i < data.countItem(); i++) {
-			int depLength = data.getItem(i).getDependLength();
+			int depLength = data.getItem(i).getDependencyLength();
 			for (int j = 0; j < depLength; j++) {
-				if (data.getItem(i).getDepend(j).isSameName(itemName)) {
-					data.getItem(i).removeDepend(j);
+				if (data.getItem(i).getDependencyData(j).isSameName(itemName)) {
+					data.getItem(i).removeDependencyData(j);
 				}
 			}
 		}
 		// 직접적인 데이터 지우기
-		Data parent = FindParent(data, itemName);
+		Data parent = findParent(itemName);
 		for (int i = 0; i < parent.getChildLength(); i++) {
-			if (parent.getChild(i).getChildLength() == 0) {
-				if (parent.getChild(i).isSameName(itemName)) {
-					parent.removeChild(i);
+			if (parent.getChildData(i).getChildLength() == 0) {
+				if (parent.getChildData(i).isSameName(itemName)) {
+					parent.removeChildData(i);
 				}
 			}
 		}
@@ -204,19 +185,19 @@ public class DataController {
 	 * 같은 부모를 가진 노드들 끼리만 결합할 수 있다. startName 은 그룹을 시작하는 노드, endName 은 그룹을 끝내는 노드
 	 * startName, endName 모두 그룹 안에 들어간다.
 	 */
-	public void CreateGroup(String startName, String endName) {
-		CreateGroup(data, startName, endName);
+	public void createGroup(String startName, String endName) {
+		createGroup(data, startName, endName);
 	}
 
-	public void CreateGroup(String startName, String endName, String groupName) {
-		CreateGroup(data, startName, endName, groupName);
+	public void createGroup(String startName, String endName, String groupName) {
+		createGroup(data, startName, endName, groupName);
 	}
 
-	public void CreateGroup(Data data, String startName, String endName) {
-		CreateGroup(data, startName, endName, "newGroup");
+	public void createGroup(Data data, String startName, String endName) {
+		createGroup(data, startName, endName, "newGroup");
 	}
 
-	public void CreateGroup(Data data, String startName, String endName,
+	public void createGroup(Data data, String startName, String endName,
 			String groupName) {
 		int index = 0;
 		while (data.findData(groupName + index).getName() != "null") {
@@ -227,16 +208,16 @@ public class DataController {
 			}
 		}
 		if (startName != endName) {
-			if (FindParent(data, startName).isSameName(
-					FindParent(data, endName).getName())) {
+			if (findParent(startName).isSameName(
+					findParent(endName).getName())) {
 				int start, end;
 				start = end = 0;
-				Data parent = FindParent(data, startName);
+				Data parent = findParent(startName);
 				for (int i = 0; i < parent.getChildLength(); i++) {
-					if (parent.getChild(i).isSameName(startName)) {
+					if (parent.getChildData(i).isSameName(startName)) {
 						start = i;
 					}
-					if (parent.getChild(i).isSameName(endName)) {
+					if (parent.getChildData(i).isSameName(endName)) {
 						end = i;
 					}
 				}
@@ -252,11 +233,11 @@ public class DataController {
 					newData = new Data(groupName + index);
 				}
 				for (int i = 0; i < end - start + 1; i++) {
-					newData.addChild(parent.getChild(start + i));
+					newData.addChildData(parent.getChildData(start + i));
 				}
-				parent.setChild(start, newData);
+				parent.setChildData(start, newData);
 				for (int i = 0; i < end - start; i++) {
-					parent.removeChild(start + 1);
+					parent.removeChildData(start + 1);
 				}
 			}
 		}
@@ -265,19 +246,15 @@ public class DataController {
 	/*
 	 * 그룹풀기 그룹의 이름을 두번째 인자로 넣으면 그 그룹을 푼다.
 	 */
-	public void DeleteGroup(String groupName) {
-		DeleteGroup(groupName);
-	}
-
-	public void DeleteGroup(Data data, String groupName) {
-		Data parent = FindParent(data, groupName);
+	public void deleteGroup(String groupName) {
+		Data parent = findParent(groupName);
 		Data Group = data.findData(groupName);
 		int index = parent.findChildIndex(groupName);
 		int size = Group.getChildLength();
 		for (int i = 0; i < size; i++) {
-			parent.addChild(index + 1, Group.getChild(size - i - 1));
+			parent.addChildData(index + 1, Group.getChildData(size - i - 1));
 		}
-		parent.removeChild(index);
+		parent.removeChildData(index);
 	}
 
 	/*
@@ -285,11 +262,11 @@ public class DataController {
 	 * 단순히 일부분만 따로 떼내서 복제한다면 null dependancy 를 갖고 올 수도 있으므로 일부분을 제외한 다른 곳과의
 	 * dependancy 는 무시하도록 복제한다.
 	 */
-	public Data Dupicate(String GroupName) {
-		return Dupicate(GroupName);
+	public Data duplicate(String GroupName) {
+		return duplicate(GroupName);
 	}
 
-	public Data Dupicate(Data data, String GroupName) {
+	public Data duplicate(Data data, String GroupName) {
 		Data exData = data.findData(GroupName);
 		Data newData = new Data(exData);
 
@@ -297,9 +274,9 @@ public class DataController {
 
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
-				if (isDepend(data, exData.getItem(i).getName(),
+				if (isDependent(data, exData.getItem(i).getName(),
 						exData.getItem(j).getName())) {
-					SetDependancy(newData, newData.getItem(i).getName(),
+					setDependancy(newData, newData.getItem(i).getName(),
 							newData.getItem(j).getName());
 				}
 			}
@@ -311,109 +288,99 @@ public class DataController {
 	/*
 	 * File 을 받으면 Dsm 정보를 읽고 Data로 변환하여 Data 를 리턴
 	 */
-	public Data LoadDsm(File file) {
-		Data dsmData;
+	public void loadDsm(File file) {
 		DsmService dsmService = new DsmService();
 		Dsm dsm = dsmService.readFromeFile(file);
 
 		int nodeNumber = dsm.getNumber();
-		dsmData = new Data("root");
+		data = new Data("root");
 
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
-			dsmData.addChild(new Data(dsm.getName(i)));
-			
+			data.addChildData(new Data(dsm.getName(i)));
 		}
 
 		// dependancy 연결
 		for (int i = 0; i < nodeNumber; i++) {
 			for (int j = 0; j < nodeNumber; j++) {
 				if (dsm.getDependency(i, j)) {
-					dsmData.getChild(i).addDepend(dsmData.getChild(j));
+					data.getChildData(i).addDependencyData(data.getChildData(j));
 				}
 			}
 		}
-		return dsmData;
 	}
 
-	public Data LoadClsx(File file) {
-		return MakeClsxToData(new ClsxService().readFile(file));
+	public void loadClsx(File file) {
+		makeClsxToData(new ClsxService().readFile(file));
 	}
 
-	public Data LoadClsx(Clsx c) {
-		return MakeClsxToData(c);
+	public void loadClsx(Clsx c) {
+		makeClsxToData(c);
 	}
 
 	/*
-	 * 두 파일 정보를 다 갖고 있을 때 사용할 수 있다. 두 파일 정보가 꼭 dsm 을 로드하였거나 clsx 파일을 로드하지 않아도
+	 * 두 파일 정보가 꼭 dsm 을 로드하였거나 clsx 파일을 로드하지 않아도
 	 * 동작한다. 적당히 조작된 Data 구조를 넣어줘도 동작한다.
 	 * 
-	 * 리턴되어 나오는 Data 는 두번째 인자의 트리구조를 따라하며, 첫번재 인자의 dependancy 정보를 가져온다.
+	 * Data 는 clsxData의 트리구조를 따라하며, dependancy 정보는 data에서 가져온다.
 	 */
-	public Data LoadDsmClsx(File dsmFile, File clsxFile) {
-		return SumData(LoadClsx(clsxFile), LoadDsm(dsmFile));
+	public void loadDsmClsx(File clsxFile) {
+		mergeData(makeClsxToData(new ClsxService().readFile(clsxFile)));
 	}
 
-	public Data LoadDsmClsx(Data dsmData, File clsxFile) {
-		return SumData(LoadClsx(clsxFile), dsmData);
+	public void loadDsmClsx(Data clsxData) {
+		mergeData(clsxData);
 	}
-
-	public Data LoadDsmClsx(File dsmFile, Data clsxData) {
-		return SumData(clsxData, LoadDsm(dsmFile));
-	}
-
-	public Data LoadDsmClsx(Data dsmData, Data clsxData) {
-		return SumData(clsxData, dsmData);
-	}
-
-	private Data SumData(Data clsxData, Data dsmData) {
+	
+	/**
+	 * clsxData정보가 날라오면 기존 dsmData와 병합한다.
+	 * @param clsxData
+	 */
+	private void mergeData(Data clsxData) {
 		Data retData = new Data("root");
-		if (CheckSameData(clsxData, dsmData)) {
+		if (checkSameData(clsxData)) {
 			retData = new Data(clsxData);
 
 			int length = retData.countItem();
 			for (int i = 0; i < length; i++) {
 				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.getItem(i).getName(), retData.getItem(j).getName())){
-						SetDependancy(retData, retData.getItem(i).getName(), retData.getItem(j).getName());
+					if(isDependent(data,retData.getItem(i).getName(), retData.getItem(j).getName())){
+						setDependancy(retData, retData.getItem(i).getName(), retData.getItem(j).getName());
 					}
 				}
 			}
 
 		} else {
-			System.out.println(CheckSameData(clsxData, dsmData) + "");
+			System.out.println(checkSameData(clsxData) + "");
 			System.out.println("두 Data가 같은 .dsm을 사용하여 만들어지지 않았습니다");
 			retData.setName("null");
 		}
-		return retData;
+		this.data = retData;
 	}
 
-	/*
-	 * Clsx를 Data 로 바꾸는 함수 Dsm 정보는 없고 Clsx 의 트리구조만 갖는 Data가 리턴된다 read 전용
+	/**
+	 * Clsx를 Data 로 바꾸는 함수이다. Dsm 정보는 없고 Clsx 의 트리구조만 갖는 Data가 리턴된다 read 전용
 	 */
-	private Data MakeClsxToData(Clsx c) {
-		Data newData = new Data(c.getName());
-		if (c.item != null) {
-			for (int i = 0; i < c.item.length; i++) {
-				newData.addChild(MakeClsxToData(c.item[i]));
+	private Data makeClsxToData(Clsx c) {
+		Data data = new Data(c.getName());		
+		if (c.getItem() != null) {
+			for (int i = 0; i < c.getItem().size(); i++) {
+				data.addChildData(makeClsxToData(c.getItem().get(i)));
 			}
 		}
-		return newData;
+		return data;
 	}
 
 	/*
 	 * 데이터를 clsx 로 바꾸는 함수 데이터의 Dsm 정보는 빼고 저장하여 리턴한다. write 전용
 	 */
-	private Clsx MakeDataToClsx() {
-		return MakeDataToClsx(data);
-	}
 
-	private Clsx MakeDataToClsx(Data d) {
-		Clsx newClsx = new Clsx(d.getName());
-		int length = d.getChildLength();
-		newClsx.item = new Clsx[length];
+	public Clsx makeDataToClsx(Data data) {
+		Clsx newClsx = new Clsx(data.getName());
+		int length = data.getChildLength();
+		newClsx.setItem(new ArrayList<>());
 		for (int i = 0; i < length; i++) {
-			newClsx.item[i] = MakeDataToClsx(d.getChild(i));
+			newClsx.addItem(makeDataToClsx(data.getChildData(i)));
 		}
 		return newClsx;
 	}
@@ -421,11 +388,8 @@ public class DataController {
 	/*
 	 * Data 를 ArrayList<Dsm> 으로 바꾸는 함수 순서는 Data 의 item 순서 그대로 가져온다. write 전용
 	 */
-	private Dsm MakeDataToDsm() {
-		return MakeDataToDsm(data);
-	}
 
-	public Dsm MakeDataToDsm(Data data) {
+	public Dsm makeDataToDsm(Data data) {
 		Dsm dsm = new Dsm(data.countItem());
 		int length = data.countItem();
 		
@@ -439,10 +403,10 @@ public class DataController {
 		}
 		
 		for (int i = 0; i < length; i++) {
-			int depLength = data.getItem(i).getDependLength();
+			int depLength = data.getItem(i).getDependencyLength();
 			for (int j = 0; j < length; j++) {
 				for (int k = 0; k < depLength; k++) {
-					dsm.setDependency(true, i, data.findItemIndex(data.getItem(i).getDepend(k).getName()));
+					dsm.setDependency(true, i, data.findItemIndex(data.getItem(i).getDependencyData(k).getName()));
 				}
 			}
 		}
@@ -450,15 +414,11 @@ public class DataController {
 	}
 
 	/*
-	 * 두 Data 객체의 노드들의 이름들이 같은지를 조사. true면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리
+	 * Dsm데이터와 ClsxData 객체의 노드들의 이름들이 같은지를 조사. true면 서로 같은 dsm 데이터를 갖고 조작한 clsx 트리
 	 */
-	private boolean CheckSameData(Data data) {
-		return CheckSameData(data, this.data);
-	}
-
-	private boolean CheckSameData(Data clsxData, Data dsmData) {
+	private boolean checkSameData(Data clsxData) {
 		int nodeNumber = clsxData.countItem();
-		int dataNumber = dsmData.countItem();
+		int dataNumber = data.countItem();
 		if (nodeNumber != dataNumber) {
 			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
@@ -466,7 +426,7 @@ public class DataController {
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
 			for (int j = 0; j < dataNumber; j++){
-				if (clsxData.getItem(i).isSameName(dsmData.getItem(j).getName())){
+				if (clsxData.getItem(i).isSameName(data.getItem(j).getName())){
 					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).getName());
 					ret = true;
 				}
@@ -478,6 +438,16 @@ public class DataController {
 		}
 		return true;
 	}
+	
+	static class NameDescCompare implements Comparator<Data> {	 
+		/**
+		 * 내림차순(DESC)
+		 */
+		@Override
+		public int compare(Data arg0, Data arg1) {
+			return arg1.getName().compareTo(arg0.getName());
+		} 
+	}
 
 	/*
 	 * 생성자
@@ -486,7 +456,7 @@ public class DataController {
 		data = new Data("root");
 	}
 
-	public Data GetRoot() {
+	public Data getRootData() {
 		return data;
 	}
 }

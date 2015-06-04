@@ -8,18 +8,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import service.DsmService;
-import controller.Partitioner;
+import controller.PartitionController;
 
 public class DsmTest {
 	Dsm dsm;
 	DsmService controller = new DsmService();
-	Partitioner partitioner;
+	PartitionController partitioner;
 
 	@Before
 	public void setup() {
 		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
-		partitioner = new Partitioner();
+		partitioner = new PartitionController();
 		partitioner.setDsm(dsm);
 	}
 

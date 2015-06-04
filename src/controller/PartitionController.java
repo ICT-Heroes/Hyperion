@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import model.Dsm;
 
-public class Partitioner {
+public class PartitionController {
 	private Dsm dsm;
 	private int head, faketail, fakehead, tail;
 	private ArrayList<Integer> heads, tails;

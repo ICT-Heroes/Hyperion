@@ -250,7 +250,7 @@ public final class TitanTreeContainer{
 					if(this.findNodeByName(input) != null){
 						TaskDialogs.error(null, "DSM name must be unique. Try another name.", "");
 					}else{
-						dc.SetName(dm, currentDSMName, input);
+						dc.setName(currentDSMName, input);
 					
 						//변경된 사항을 다시 그린다
 						treeDSM.repaint();
@@ -308,7 +308,7 @@ public final class TitanTreeContainer{
 			DefaultTreeModel model = (DefaultTreeModel)treeDSM.getModel();
 			node.removeFromParent();			
 			model.reload();
-			dc.DeleteItem(data, data.toString());		
+			dc.deleteItem(data, data.toString());		
 			
 			treeDSM.repaint();
 		}else{
@@ -359,8 +359,8 @@ public final class TitanTreeContainer{
 		Data data = (Data)node.getUserObject();
 		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
-		Data root = (Data)s.invoke("getData");
-		dc.MoveUp(root, data.getName());
+		//Data root = (Data)s.invoke("getData");
+		dc.moveUp(data.getName());
 		s.invoke("reloadDSM");
 	}
 	
@@ -373,8 +373,8 @@ public final class TitanTreeContainer{
 		Data data = (Data)node.getUserObject();
 		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
-		Data root = (Data)s.invoke("getData");
-		dc.MoveDown(root, data.getName());
+		//Data root = (Data)s.invoke("getData");
+		dc.moveDown(data.getName());
 		s.invoke("reloadDSM");
 	}
 	/*
@@ -467,7 +467,7 @@ public final class TitanTreeContainer{
 			for(int j =0; j < i; j++){
 				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
 				if(f1.toString().compareTo(f2.toString()) < 0){
-					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).getName());
+					dc.moveUp(((Data)f2.getUserObject()).getName());
 					break;
 				}
 			}

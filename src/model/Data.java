@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DSM과 Clsx정보를 담고 있는 모델 객체
@@ -9,13 +10,13 @@ import java.util.ArrayList;
  */
 public class Data {
 	private String name;
-	private ArrayList<Data> child;
-	private ArrayList<Data> depend;
+	private List<Data> child;
+	private List<Data> dependency;
 
 	public Data(String name){
 		this.name = new String(name);
 		this.child = new ArrayList<Data>();
-		this.depend = new ArrayList<Data>();
+		this.dependency = new ArrayList<Data>();
 	}
 	
 	public Data(){
@@ -25,7 +26,7 @@ public class Data {
 	public Data(Data data){
 		name = new String(data.name);
 		child = new ArrayList<Data>();
-		depend = new ArrayList<Data>();
+		dependency = new ArrayList<Data>();
 		//System.out.println("new Data name : " + name);
 		if(data.child != null){
 			for(int i = 0; i < data.child.size() ; i ++){
@@ -39,21 +40,21 @@ public class Data {
 	}
 	
 	
-	/*
+	/**
 	 * 이름을 통해 Data를 찾는 함수
 	 */
 	public Data findData(String name){
-		Data retData = new Data("null");
-		int length = countData();
-		for(int i = 0 ; i < length ; i ++){
-			if(isSameString(getData(i).name, name)){
-				return getData(i);
+		for(Data childData : child){
+			if(childData.getName().equals("name")){
+				return childData;
 			}
+			return childData.findData(name);
 		}
-		return retData;
+		System.out.println("Can't find Data");
+		return null;
 	}
 	
-	/*
+	/**
 	 * 이름을 통해 Item을 찾는 함수
 	 */
 	public Data findItem(String name){
@@ -82,11 +83,12 @@ public class Data {
 	}
 	
 	/**
-	 * 자신을 포함한 자기 밑의 모든 데이터 중에 몇번째 데이터를 리턴한다.
+	 * 자신을 포함한 자기 밑의 모든 데이터 중에 index번째 데이터를 리턴한다.
 	 */
 	public Data getData(int index){
 		int curIndex = index;
 		if(countData() < index){
+			System.out.println("countData() < index error");
 			return new Data("null");
 		}else{
 			if(curIndex == 0){	return this;	}
@@ -213,24 +215,27 @@ public class Data {
 	/*
 	 * Getter, Setter 
 	 */
-	public Data getChild(int index){				return child.get(index);	}
-	public Data getDepend(int index){				return depend.get(index);	}
+	public List<Data> getChild(){	return child;	}
+	public List<Data> getDependency(){	return dependency; }
+	
+	public Data getChildData(int index){				return child.get(index);	}
+	public Data getDependencyData(int index){				return dependency.get(index);	}
 
 	public int getChildLength(){					return child.size();		}
-	public int getDependLength(){					return depend.size();		}
+	public int getDependencyLength(){					return dependency.size();		}
 	
-	public void addChild(Data data){				child.add(data);			}
-	public void addChild(int index, Data data){		child.add(index, data);		}
-	public void addDepend(Data data){				depend.add(data);			}
-	public void addDepend(int index, Data data){	depend.add(index, data);	}
+	public void addChildData(Data data){				child.add(data);			}
+	public void addChildData(int index, Data data){		child.add(index, data);		}
+	public void addDependencyData(Data data){				dependency.add(data);			}
+	public void addDependencyData(int index, Data data){	dependency.add(index, data);	}
 	
-	public void removeChild(int index){				child.remove(index);		}
-	public void removeChild(Data data){				child.remove(data);			}
-	public void removeDepend(int index){			depend.remove(index);		}
-	public void removeDepend(Data data){			depend.remove(data);		}
+	public void removeChildData(int index){				child.remove(index);		}
+	public void removeChildData(Data data){				child.remove(data);			}
+	public void removeDependencyData(int index){			dependency.remove(index);		}
+	public void removeDependencyData(Data data){			dependency.remove(data);		}
 	
-	public void setChild(int index, Data data){		child.set(index, data);		}
-	public void setDepend(int index, Data data){	depend.set(index, data);	}
+	public void setChildData(int index, Data data){		child.set(index, data);		}
+	public void setDependencyData(int index, Data data){	dependency.set(index, data);	}
 	public String getName() {		return name; 	}
 	public void setName(String name) {		this.name = name;	}
 
