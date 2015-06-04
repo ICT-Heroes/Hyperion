@@ -2,6 +2,7 @@ package test;
 
 import java.io.File;
 
+import model.Clsx;
 import model.Data;
 import model.Dsm;
 
@@ -14,11 +15,11 @@ public class DataTest {
 	public static void main(String argv[]) {
 		DataController dataController = new DataController();
 		File dsmFile = new File("C:\\Users\\hyobin\\Desktop\\titan\\titan\\data dir\\titan\\titan.dsm");
-		File clsxFile = new File("C:\\Users\\hyobin\\Desktop\\titan\\titan\\data dir\\ffff\\titan_ACDC.clsx");
+		File clsxFile = new File("C:\\Users\\hyobin\\Desktop\\titan\\titan\\data dir\\ffff\\titan_DRH+ACDC.clsx");
 		Data dsmData = dataController.loadDsm(dsmFile);
 		Data clsxData = dataController.loadClsx(clsxFile);
-		System.out.println(dsmData.getItemCount());
-		System.out.println(clsxData.getItemCount());
+		//System.out.println(dsmData.getItemCount());
+		//System.out.println(clsxData.getItemCount());
 
 		
 		for(int i = 0 ; i < dsmData.getItemCount() ; i++){
@@ -39,31 +40,55 @@ public class DataTest {
 			}
 			//System.out.println(ss);
 		}
+		for(int i = 0 ; i < dsmData.getDataCount() ; i++){
+			System.out.println(dsmData.getData(i).getName());
+		}
+		System.out.println("___________________________________________");
+		int[] bb = new int[5];
+		bb[0] = 3;
+		bb[1] = 5;
+		bb[2] = 7;
+		bb[3] = 9;
+		bb[4] = 11;
 		
-		//Data sum = dd.LoadDsmClsx(dsmFile, clsxFile);
-		//System.out.println("itemcount : " + sum.ItemCount());
+		dataController.createGroup(bb, "fdsafdsa");
+		for(int i = 0 ; i < dsmData.getDataCount() ; i++){
+			System.out.println(dsmData.getData(i).getName());
+		}
+		
+		Data sum = dataController.loadDsmClsx(dsmFile, clsxFile);
+		int[] aa = new int[37] ;
+		for(int i = 0 ; i < 37 ; i ++){
+			aa[i] = i;
+		}
+		
+		
+		
+		/*
+		boolean[][] ret = dataController.getDependArray(dsmData, aa);
+		System.out.println("itemcount : " + dsmData.getDataCount());
 		for(int i = 0 ; i < dsmData.getDataCount() ; i++){
 			//System.out.println(dsmData.GetData(i).getName());
 		}
-		
 		Dsm dsm = dataController.makeDataToDsm(dsmData);
-		System.out.println("number : " + dsm.getNumber());
-		for(int i = 0 ; i < dsm.getNumber() ; i++){
-			//System.out.println("name : " + dsm.getName(i));
-		}
 		
-		for(int i = 0 ; i < dsm.getNumber() ; i++){
+		
+		
+		for(int i = 0 ; i < ret.length ; i++){
+			//System.out.println(sum.getData(aa[i]).getName() + "");
 			String ss = "";
-			for(int j = 0 ; j < dsm.getNumber() ; j++){
-				if(dsm.getDependency(i, j)){
+			for(int j = 0 ; j < ret.length ; j++){
+				//if(dsm.getDependency(i, j)){
+				if(ret[i][j]){
 					ss += " 1";
 				}else{
 					ss += " .";
 				}
-				
 			}
 			System.out.println(ss);
 		}
+		*/
+		
 		
 		
 		//dd.dsmData.GetItem(0);		
@@ -82,8 +107,11 @@ public class DataTest {
 		c.item[0].item[1] = new Clsx("fd");
 
 
-		dc.LoadClsx(c);
-		System.out.println(dc.clsxData.child.get(1).child.size());
+		Data clsxData1 = dataController.loadClsx(c);
+		Clsx makec = dataController.makeDataToClsx(clsxData1);
+		System.out.println(makec.getName());
+		System.out.println(makec.item[0].getName());
+		System.out.println(makec.item[1].getName());
 		*/
 	}
 

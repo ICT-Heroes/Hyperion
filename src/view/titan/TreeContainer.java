@@ -331,7 +331,7 @@ public final class TreeContainer{
 		
 		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		Data root = (Data)s.invoke("getData");
-		dc.deleteItem(root, root.getDataIndex(data));
+		dc.deleteItem(root.getDataIndex(data));
 	}
 	
 	private void popupEvtHandler(MouseEvent e, JPopupMenu popup){
