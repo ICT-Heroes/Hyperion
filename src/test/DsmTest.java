@@ -19,23 +19,46 @@ public class DsmTest {
 	public void setup() {
 		File file = new File("src/res/moka.dsm");
 		dsm = controller.readFromeFile(file);
-		partitioner = new Partitioner();
-		partitioner.setDsm(dsm);
 	}
-
+	
 	@Test
 	public void readDsmTest() {
-		dsm.print();
+		File file = new File("src/res/moka.dsm");
+		dsm = controller.readFromeFile(file);
 	}
 
 	@Test
 	public void partitionTest() {
+		partitioner = new Partitioner();
+		partitioner.setDsm(dsm);
+		
 		partitioner.preProcessing();
-		partitioner.postProcessing();
-		dsm.print();
-		for (int val : partitioner.getSizeList()) {
-			System.out.println(val);
+		partitioner.pathSearching();
+	
+		printDependencies();
+	}
+	
+	public void printDependencies() {
+		for (int i = 0; i < dsm.getNumber(); i++) {
+			for (int j = 0; j < dsm.getNumber(); j++) {
+				if (dsm.getDependency(i, j))
+					System.out.print("O ");
+				else
+					System.out.print("X ");	
+			}
+			System.out.println("");
 		}
+	}
+	
+	public void printNames() {
+		for (int i=0; i<dsm.getNumber(); i++) {
+			System.out.println(dsm.getName(i));
+		}
+	}
+	
+	public void print() {
+		printDependencies();
+		printNames();
 	}
 
 }

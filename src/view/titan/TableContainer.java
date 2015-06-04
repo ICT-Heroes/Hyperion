@@ -1,4 +1,4 @@
-package view.titan;
+  package view.titan;
 
 import java.awt.Component;
 import java.util.Vector;
@@ -10,7 +10,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 
-public final class TitanTableContainer{
+public final class TableContainer{
 	private JScrollPane container;	//�����̳�
 	private JTable tblDSM;				//DSM ���̺�
 	private JTable tblRowHdr;			//Row Header�� ���̺�
@@ -41,7 +41,7 @@ public final class TitanTableContainer{
 		tblDSM.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	
 		
 		//��� ���̺� ����
-		tblRowHdr = new TitanRowNumberTable(tblDSM);
+		tblRowHdr = new RowNumberTable(tblDSM);
 		tblRowHdr.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		
 		container.setViewportView(tblDSM);
@@ -87,13 +87,13 @@ public final class TitanTableContainer{
 	}
 	
 	public void setRowHeaderTxt(String[] o){
-		((TitanRowNumberTable)tblRowHdr).setHeaderName(o);
+		((RowNumberTable)tblRowHdr).setHeaderName(o);
 	}
 	
 	/*
 	 * 반환값 : 토글 이전의 표시 여부를 반환
 	 */
 	public boolean toggleRowHeader(){
-		return ((TitanRowNumberTable)tblRowHdr).toggleShowHeader();
+		return ((RowNumberTable)tblRowHdr).toggleShowHeader();
 	}
 }

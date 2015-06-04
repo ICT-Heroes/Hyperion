@@ -1,6 +1,6 @@
 package main;
 import factory.DataControllerFactory;
-import view.titan.TitanTreeContainer;
+import view.titan.TreeContainer;
 import view.titan.TitanWindow;
 
 public class Main{

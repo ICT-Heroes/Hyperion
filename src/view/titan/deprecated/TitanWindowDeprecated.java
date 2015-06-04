@@ -50,7 +50,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.ListSelectionModel;
 
-import view.titan.TitanRowNumberTable;
+import view.titan.RowNumberTable;
 
 public class TitanWindowDeprecated extends JFrame implements ActionListener{
 
@@ -352,7 +352,7 @@ public class TitanWindowDeprecated extends JFrame implements ActionListener{
 				"New column", "New column", "New column", "New column", "New column"
 			}
 		));
-		JTable tblRowHdr = new TitanRowNumberTable(tblDSMMatrix);
+		JTable tblRowHdr = new RowNumberTable(tblDSMMatrix);
 		scrpanTbl.setRowHeaderView(tblRowHdr);
 		scrpanTbl.setViewportView(tblDSMMatrix);
 		

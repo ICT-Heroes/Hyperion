@@ -1,22 +1,22 @@
-package view.titan;
+  package view.titan;
 
 import java.util.HashMap;
 
-public class TitanUIEventSurrogateManager{
-	static private HashMap<TitanWindow, TitanUIEventSurrogate> surMap = null;
+public class EventSurrogateManager{
+	static private HashMap<TitanWindow, EventSurrogate> surMap = null;
 	static private HashMap<Object, TitanWindow> lnkMap = null;
 	
 	static{
-		surMap = new HashMap<TitanWindow, TitanUIEventSurrogate>();
+		surMap = new HashMap<TitanWindow, EventSurrogate>();
 		lnkMap = new HashMap<Object, TitanWindow>();
 	}
 	
-	static public TitanUIEventSurrogate selectSurrogate(TitanWindow wnd){
+	static public EventSurrogate selectSurrogate(TitanWindow wnd){
 		System.out.println("Surrogate, Titan");
 		return surMap.get(wnd);
 	}
 	
-	static public TitanUIEventSurrogate selectSurrogate(Object obj){
+	static public EventSurrogate selectSurrogate(Object obj){
 		System.out.println("Surrogate, Object");
 		return surMap.get(lnkMap.get(obj));
 	}
@@ -25,7 +25,7 @@ public class TitanUIEventSurrogateManager{
 		if(surMap.containsKey(wnd) == true){
 			return false;
 		}else{
-			surMap.put(wnd, new TitanUIEventSurrogate(wnd));
+			surMap.put(wnd, new EventSurrogate(wnd));
 			return true;
 		}
 	}
