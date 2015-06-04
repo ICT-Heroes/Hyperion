@@ -241,7 +241,7 @@ public class TitanWindow implements ActionListener{
 	 * 새로운 DSM을 생성
 	 */
 	private void addNewDSM(Data parent, String name){
-		dc.AddItem(parent, parent.name, name);
+		dc.AddItem(parent, parent.getName(), name);
 		loadDSMFromData();
 	}
 	
@@ -270,7 +270,7 @@ public class TitanWindow implements ActionListener{
 					
 					int lastIdx = 0;
 					for(int i = lastNewDSMIndex; i < rowCount + lastNewDSMIndex; i++){
-						dc.AddItem(this.currentData, this.currentData.name, _entity + (i + 1));
+						dc.AddItem(this.currentData, this.currentData.getName(), _entity + (i + 1));
 						lastIdx = i;
 					}
 					lastNewDSMIndex = lastIdx + 1;
@@ -300,18 +300,18 @@ public class TitanWindow implements ActionListener{
 		
 		//차일드 아이템 설정
 		Object root = tc.getRoot();
-		for(int i = 0; i < currentData.ItemCount(); i++){
-			tc.insertNode(root, currentData.GetChild(i));
+		for(int i = 0; i < currentData.countItem(); i++){
+			tc.insertNode(root, currentData.getChild(i));
 		}
 		
 		//열 개수 설정
-		tbc.setColumnSize(currentData.GetChildLength());
+		tbc.setColumnSize(currentData.getChildLength());
 		
 		//의존도 정보를 셀에 표시
-		for(int i = 0; i < currentData.ItemCount(); i++){
+		for(int i = 0; i < currentData.countItem(); i++){
 			Vector<String> vc = new Vector<String>();
 			
-			for(int j = 0; j < currentData.ItemCount(); j++){
+			for(int j = 0; j < currentData.countItem(); j++){
 				//대각성분은 .으로 표시
 				if(i == j){
 					vc.add(".");
@@ -321,9 +321,9 @@ public class TitanWindow implements ActionListener{
 			}
 			
 			//DSM 정보를 읽어서 배열에 채운다
-			Data dsmRelation = currentData.GetChild(i);
-			for(int c = 0; c < dsmRelation.GetDependLength(); c++){
-				int idx = tc.findNodeIndex(dsmRelation.GetDepend(c));
+			Data dsmRelation = currentData.getChild(i);
+			for(int c = 0; c < dsmRelation.getDependLength(); c++){
+				int idx = tc.findNodeIndex(dsmRelation.getDepend(c));
 				if(idx != -1)
 					vc.set(idx, "x");
 			}

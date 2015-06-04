@@ -195,7 +195,7 @@ public final class TitanTreeContainer{
 		        	if(e.getClickCount() == 2){
 		        		DefaultMutableTreeNode node = (DefaultMutableTreeNode)selPath.getLastPathComponent();
 		        		if(node.isRoot() == false){
-		        			System.out.println(((Data)node.getUserObject()).name);
+		        			System.out.println(((Data)node.getUserObject()).getName());
 		        			editDSMNodeName((Data)node.getUserObject());
 		        		}
 		            }
@@ -233,7 +233,7 @@ public final class TitanTreeContainer{
 	}
 	
 	private void editDSMNodeName(Data dm){
-		String currentDSMName = dm.name;
+		String currentDSMName = dm.getName();
 		boolean loopFlag = true;
 		while(loopFlag){
 			String input = TaskDialogs.input(null, "Edit DSM name", "Current : " + currentDSMName, "");
@@ -360,7 +360,7 @@ public final class TitanTreeContainer{
 		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.MoveUp(root, data.name);
+		dc.MoveUp(root, data.getName());
 		s.invoke("reloadDSM");
 	}
 	
@@ -374,7 +374,7 @@ public final class TitanTreeContainer{
 		TitanUIEventSurrogate s = TitanUIEventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");
 		Data root = (Data)s.invoke("getData");
-		dc.MoveDown(root, data.name);
+		dc.MoveDown(root, data.getName());
 		s.invoke("reloadDSM");
 	}
 	/*
@@ -428,7 +428,7 @@ public final class TitanTreeContainer{
 		
 		while(e.hasMoreElements()){
 			DefaultMutableTreeNode node = e.nextElement();
-			if(s.equals(((Data)node.getUserObject()).name) == true){
+			if(s.equals(((Data)node.getUserObject()).getName()) == true){
 				return node;
 			}
 		}
@@ -467,7 +467,7 @@ public final class TitanTreeContainer{
 			for(int j =0; j < i; j++){
 				DefaultMutableTreeNode f2 = (DefaultMutableTreeNode)parent.getChildAt(j);
 				if(f1.toString().compareTo(f2.toString()) < 0){
-					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).name);
+					dc.MoveUp((Data)parent.getUserObject(), ((Data)f2.getUserObject()).getName());
 					break;
 				}
 			}

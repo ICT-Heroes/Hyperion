@@ -2,15 +2,20 @@ package model;
 
 import java.util.ArrayList;
 
+/**
+ * DSM과 Clsx정보를 담고 있는 모델 객체
+ * 처음에는 DSM 구조만 담고 있다가 Clsx를 불러올경우
+ * Clsx정보도 읽어서 갖는다.
+ */
 public class Data {
-	public String name;
+	private String name;
 	private ArrayList<Data> child;
 	private ArrayList<Data> depend;
 
 	public Data(String name){
 		this.name = new String(name);
-		child = new ArrayList<Data>();
-		depend = new ArrayList<Data>();
+		this.child = new ArrayList<Data>();
+		this.depend = new ArrayList<Data>();
 	}
 	
 	public Data(){
@@ -37,12 +42,12 @@ public class Data {
 	/*
 	 * 이름을 통해 Data를 찾는 함수
 	 */
-	public Data FindData(String name){
+	public Data findData(String name){
 		Data retData = new Data("null");
-		int length = DataCount();
+		int length = countData();
 		for(int i = 0 ; i < length ; i ++){
-			if(isSameString(GetData(i).name, name)){
-				return GetData(i);
+			if(isSameString(getData(i).name, name)){
+				return getData(i);
 			}
 		}
 		return retData;
@@ -51,12 +56,12 @@ public class Data {
 	/*
 	 * 이름을 통해 Item을 찾는 함수
 	 */
-	public Data FindItem(String name){
+	public Data findItem(String name){
 		Data retData = new Data("null");
-		int length = ItemCount();
+		int length = countItem();
 		for(int i = 0 ; i < length ; i ++){
-			if(isSameString(GetItem(i).name, name)){
-				return GetItem(i);
+			if(isSameString(getItem(i).name, name)){
+				return getItem(i);
 			}
 		}
 		return retData;
@@ -64,62 +69,73 @@ public class Data {
 	
 
 	
-	/*
-	 * 자신을 포함한 자기 밑의 모든 데이터의 갯수를 리턴
-	 * 데이타는 통상적인 노드를 이야기함, 그룹노드와 리프노드 둘 다 포함
+	/**
+	 * 자신을 포함한 자기 밑의 모든 데이터의 갯수를 리턴한다.
+	 * 데이타는 통상적인 노드를 이야기하는데, 그룹노드와 리프노드 둘 다 포함한다.
 	 */
-	public int DataCount(){
+	public int countData(){
 		int length = 0;
 		int ret = 1;
 		if(child != null){	length = child.size();	}
-		for(int i = 0 ; i < length ; i ++){	ret += child.get(i).DataCount();	}
+		for(int i = 0 ; i < length ; i ++){	ret += child.get(i).countData();	}
 		return ret;
 	}
 	
-	/*
-	 * 자신을 포함한 자기 밑의 모든 데이터 중에 몇번째 데이터를 리턴
+	/**
+	 * 자신을 포함한 자기 밑의 모든 데이터 중에 몇번째 데이터를 리턴한다.
 	 */
-	public Data GetData(int index){
+	public Data getData(int index){
 		int curIndex = index;
-		if(DataCount() < index){
+		if(countData() < index){
 			return new Data("null");
 		}else{
 			if(curIndex == 0){	return this;	}
 			curIndex--;
 			for(int i = 0 ; i < child.size() ; i ++){
 				if(curIndex == 0){	return child.get(i);	}
-				curIndex -= child.get(i).DataCount();
+				curIndex -= child.get(i).countData();
 				if(curIndex < 0){
-					curIndex += child.get(i).DataCount();
-					return child.get(i).GetData(curIndex);
+					curIndex += child.get(i).countData();
+					return child.get(i).getData(curIndex);
 				}
 			}
 		}
 		return new Data("");
 	}
 
-	public int FindDataIndex(String name){
-		int length = DataCount();
+	/**
+	 * name에 해당하는 Data의 인덱스값을 반환해준다.
+	 * @param name
+	 * @return Data의 인덱스 번호
+	 */
+	public int findDataIndex(String name){
+		int length = countData();
 		for(int i = 0 ; i < length ; i ++){
-			if(isSameString(GetData(i).name, name)){
+			if(isSameString(getData(i).name, name)){
 				return i;
 			}
 		}
 		return -1;
 	}
 	
-	public int FindItemIndex(String name){
-		int length = ItemCount();
+	/**
+	 * name에 해당하는 Item의 인덱스값을 반환해준다.
+	 * @param name
+	 * @return Item의 인덱스 번호
+	 */
+	public int findItemIndex(String name){
+		int length = countItem();
 		
 		for(int i = 0 ; i < length ; i ++){
-			if(isSameString(GetItem(i).name, name)){
+			if(isSameString(getItem(i).name, name)){
 				return i;
 			}
 		}
 		return -1;
 	}
 	
-	public int FindChildIndex(String name){
+	
+	public int findChildIndex(String name){
 		int index = -1;
 		for(int i = 0 ; i < child.size() ; i ++){
 			if(isSameString(child.get(i).name, name)){
@@ -130,29 +146,29 @@ public class Data {
 		return index;
 	}
 	
-	/*
-	 * 자기 밑의 모든 아이템의 갯수를 리턴
-	 * 아이템은 그룹을 제외한 리프노드를 이야기함(child 가 없는 노드)
+	/**
+	 * 자기 밑의 모든 아이템의 갯수를 리턴한다.
+	 * 아이템은 그룹을 제외한 리프노드를 이야기한다.(child 가 없는 노드)
 	 */
-	public int ItemCount(){
+	public int countItem(){
 		int length = 0;
 		int ret = 0;
 		if(child != null){	length = child.size();	}
 		if(length == 0){	ret = 1;	}
 		else{
 			for(int i = 0 ; i < length ; i ++){
-				ret += child.get(i).ItemCount();
+				ret += child.get(i).countItem();
 			}
 		}
 		return ret;
 	}
 	
-	/* 
-	 * 자기 밑의 모든 아이템 중에 몇번째 데이터를 리턴
+	/** 
+	 * 자기 밑의 모든 아이템 중에 index값에 해당하는 데이터를 리턴해준다.
 	 */
-	public Data GetItem(int index){
+	public Data getItem(int index){
 		int curIndex = index;
-		if(ItemCount() < index){
+		if(countItem() < index){
 			return new Data("null_itemCountLessThenIndex");
 		}else{
 			for(int i = 0 ; i < child.size() ; i ++){
@@ -160,13 +176,13 @@ public class Data {
 					if(child.get(i).child.size() == 0){
 						return child.get(i);
 					}else{
-						return child.get(i).GetItem(0);
+						return child.get(i).getItem(0);
 					}
 				}
-				curIndex -= child.get(i).ItemCount();
+				curIndex -= child.get(i).countItem();
 				if(curIndex < 0){
-					curIndex += child.get(i).ItemCount();
-					return child.get(i).GetItem(curIndex);
+					curIndex += child.get(i).countItem();
+					return child.get(i).getItem(curIndex);
 				}
 			}
 		}
@@ -197,24 +213,25 @@ public class Data {
 	/*
 	 * Getter, Setter 
 	 */
-	public Data GetChild(int index){				return child.get(index);	}
-	public Data GetDepend(int index){				return depend.get(index);	}
+	public Data getChild(int index){				return child.get(index);	}
+	public Data getDepend(int index){				return depend.get(index);	}
 
-	public int GetChildLength(){					return child.size();		}
-	public int GetDependLength(){					return depend.size();		}
+	public int getChildLength(){					return child.size();		}
+	public int getDependLength(){					return depend.size();		}
 	
-	public void AddChild(Data data){				child.add(data);			}
-	public void AddChild(int index, Data data){		child.add(index, data);		}
-	public void AddDepend(Data data){				depend.add(data);			}
-	public void AddDepend(int index, Data data){	depend.add(index, data);	}
+	public void addChild(Data data){				child.add(data);			}
+	public void addChild(int index, Data data){		child.add(index, data);		}
+	public void addDepend(Data data){				depend.add(data);			}
+	public void addDepend(int index, Data data){	depend.add(index, data);	}
 	
-	public void RemoveChild(int index){				child.remove(index);		}
-	public void RemoveChild(Data data){				child.remove(data);			}
-	public void RemoveDepend(int index){			depend.remove(index);		}
-	public void RemoveDepend(Data data){			depend.remove(data);		}
+	public void removeChild(int index){				child.remove(index);		}
+	public void removeChild(Data data){				child.remove(data);			}
+	public void removeDepend(int index){			depend.remove(index);		}
+	public void removeDepend(Data data){			depend.remove(data);		}
 	
-	public void SetChild(int index, Data data){		child.set(index, data);		}
-	public void SetDepend(int index, Data data){	depend.set(index, data);	}
-	
+	public void setChild(int index, Data data){		child.set(index, data);		}
+	public void setDepend(int index, Data data){	depend.set(index, data);	}
+	public String getName() {		return name; 	}
+	public void setName(String name) {		this.name = name;	}
 
 }
