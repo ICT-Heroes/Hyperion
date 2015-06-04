@@ -255,28 +255,28 @@ public class DataController {
 	 * File 을 받으면 Dsm 정보를 읽고 Data로 변환하여 Data 를 리턴
 	 */
 	public Data loadDsm(File file) {
-		Data dsmData;
-		DsmService dsmService = new DsmService();
-		Dsm dsm = dsmService.readFromeFile(file);
+		Data data = new Data("root");
+		Dsm dsm = DsmService.getInstance().readFromeFile(file);
 
 		int nodeNumber = dsm.getNumber();
-		dsmData = new Data("root");
 
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
-			dsmData.addChild(new Data(dsm.getName(i)));
-
+			data.addChild(new Data(dsm.getName(i)));
 		}
 
 		// dependancy 연결
 		for (int i = 0; i < nodeNumber; i++) {
 			for (int j = 0; j < nodeNumber; j++) {
 				if (dsm.getDependency(i, j)) {
-					dsmData.getChild(i).addDepend(dsmData.getChild(j));
+					data.getChild(i).addDepend(data.getChild(j));
 				}
 			}
 		}
-		return dsmData;
+
+		this.data = data;
+
+		return data;
 	}
 
 	public Data loadClsx(File file) {
@@ -309,10 +309,6 @@ public class DataController {
 		return sumData(clsxData, dsmData);
 	}
 
-	public void saveClsx(String filePath) {
-		ClsxService.getInstance().WriteFile(filePath, makeDataToClsx(data));
-	}
-
 	private Data sumData(Data clsxData, Data dsmData) {
 		Data retData = new Data("root");
 		if (checkSameData(clsxData, dsmData)) {
@@ -336,42 +332,50 @@ public class DataController {
 			System.out.println("두 Data가 같은 .dsm을 사용하여 만들어지지 않았습니다");
 			retData.setName("null");
 		}
+
+		this.data = retData;
 		return retData;
 	}
 
 	/**
 	 * Clsx를 Data 로 바꾸는 함수 Dsm 정보는 없고 Clsx 의 트리구조만 갖는 Data가 리턴된다 read 전용
 	 */
-	private Data makeClsxToData(Clsx c) {
-		data = new Data(c.getName());
-		if (c.item != null) {
-			for (int i = 0; i < c.item.length; i++) {
-				data.addChild(makeClsxToData(c.item[i]));
+	public Data makeClsxToData(Clsx clsx) {
+		Data data = new Data();
+		data.setName(clsx.getName());
+		if (clsx.item != null) {
+			for (int i = 0; i < clsx.item.length; i++) {
+				data.addChild(makeClsxToData(clsx.item[i]));
 			}
 		}
 		return data;
 	}
 
+	public void saveClsx(String filePath, Data data) {
+		ClsxService.getInstance().WriteFile(filePath, makeDataToClsx(data));
+	}
+
 	/**
 	 * 데이터를 clsx 로 바꾸는 함수 데이터의 Dsm 정보는 빼고 저장하여 리턴한다. write 전용
 	 */
-	private Clsx makeDataToClsx() {
-		return makeDataToClsx(data);
-	}
 
 	private Clsx makeDataToClsx(Data data) {
-		int length = data.getChildLength();
-
 		Clsx clsx = new Clsx();
-		clsx.setName(data.getName());
-		clsx.item = new Clsx[length];
+		makeClsx(clsx, data);
+		return clsx;
+	}
 
-		if (length != 0) {
-			for (int i = 0; i < length; i++) {
-				clsx.item[i] = makeDataToClsx(data.getChild(i));
+	private Clsx makeClsx(Clsx clsx, Data data) {
+		clsx.setName(data.getName());
+		if (data.getChildLength() != 0) {
+			clsx.item = new Clsx[data.getChildLength()];
+			for (int i = 0; i < data.getChildLength(); i++) {
+				clsx.item[i] = new Clsx();
+			}
+			for (int i = 0; i < data.getChildLength(); i++) {
+				makeClsx(clsx.item[i], data.getChild(i));
 			}
 		}
-
 		return clsx;
 	}
 

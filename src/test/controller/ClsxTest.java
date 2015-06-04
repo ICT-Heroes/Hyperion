@@ -16,7 +16,8 @@ import controller.DataController;
 public class ClsxTest {
 
 	Clsx clsx;
-	File readFile;
+	File readClsxFile;
+	File writeClsxFile;
 	String writeFilePath;
 	DataController dataController;
 
@@ -24,14 +25,14 @@ public class ClsxTest {
 	public void setup() {
 		clsx = new Clsx();
 		dataController = new DataController();
-		readFile = new File("src/res/testReadFile.clsx");
 		writeFilePath = "src/res/testWriteFile.clsx";
-		dataController.loadClsx(readFile);
+		readClsxFile = new File("src/res/testReadFile.clsx");
+		writeClsxFile = new File(writeFilePath);
+		clsx = ClsxService.getInstance().readFile(readClsxFile);
 	}
 
 	@Test
 	public void readClsxTest() {
-		clsx = ClsxService.getInstance().readFile(readFile);
 		// 원하는 데이터가 정확하게 들어갔는가
 		assertThat("root", is(clsx.getName()));
 		assertThat("First Group", is(clsx.item[0].getName()));
@@ -42,7 +43,6 @@ public class ClsxTest {
 
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void readClsxErrorTest() {
-		clsx = ClsxService.getInstance().readFile(readFile);
 		// 인덱스를 벗어난 이상한 데이터가 들어오지 않았는가
 		clsx.item[3].getName();
 		clsx.item[1].item[3].getName();
@@ -52,12 +52,24 @@ public class ClsxTest {
 
 	@Test
 	public void writeClsxTest() {
+		String name[] = new String[4];
+		name[0] = clsx.getName();
+		name[1] = clsx.item[0].getName();
+		name[2] = clsx.item[0].item[0].getName();
+		name[3] = clsx.item[1].getName();
 
-		clsx = ClsxService.getInstance().readFile(readFile);
-		ClsxService.getInstance().WriteFile(writeFilePath + "2", clsx);
+		// clsx정보를 읽어오자마자 반환되는 Data를 즉석에서 바로 넣어줌으로써 테스트를 실시한다.(dsm을 먼저 읽지 않으면
+		// data객체가 최신으로 바뀌지 않기 때문)
+		dataController.saveClsx(writeFilePath,
+				dataController.makeClsxToData(clsx));
 
-		dataController.saveClsx(writeFilePath);
+		// 미리 저장해둔 clsx의 내용과 같은 정보를 가지고 있는지를 테스트 한다.
+		clsx = ClsxService.getInstance().readFile(writeClsxFile);
+
+		assertThat(name[0], is(clsx.getName()));
+		assertThat(name[1], is(clsx.item[0].getName()));
+		assertThat(name[2], is(clsx.item[0].item[0].getName()));
+		assertThat(name[3], is(clsx.item[1].getName()));
 
 	}
-
 }
