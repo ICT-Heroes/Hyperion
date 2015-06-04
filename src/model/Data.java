@@ -182,7 +182,7 @@ public class Data {
 				}
 			}
 		}
-		return new Data("nnnnnnnnn");
+		return new Data("null");
 	}
 	
 	
