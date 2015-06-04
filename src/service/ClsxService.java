@@ -12,37 +12,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class ClsxService {
-	{
-		try {
-			// clsx파일을 읽어온다.
-			File file = new File("src/res/titan_DRH+ACDC.clsx");
-			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
-			Document doc = docBuild.parse(file);
-			doc.getDocumentElement().normalize();
-
-			// clsx 객체를 만든다.
-			Clsx clsxTree = new Clsx();
-
-			// 함수를 통해 트리 구조를 만든다. 처음은 cluster 임으로 root에서부터 시작한다.
-			// rootNode
-			Node node = doc.getFirstChild().getChildNodes().item(1);
-
-			makeNode(clsxTree, node);
-
-		} catch (Exception e) {
-
-		}
-	}
-
 	/**
 	 * readClsxFile
 	 */
-	public Clsx readFile(File file){
+	public Clsx readFile(File file) {
 		Clsx clsx;
 		try {
-			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder docBuild = docBuildFact.newDocumentBuilder();
 			Document doc = docBuild.parse(file);
 			doc.getDocumentElement().normalize();
@@ -53,7 +30,7 @@ public class ClsxService {
 		} catch (Exception e) {
 
 		}
-		
+
 		return null;
 	}
 

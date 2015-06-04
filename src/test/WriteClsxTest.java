@@ -74,7 +74,6 @@ public class WriteClsxTest {
 	 * @param element
 	 */
 	private static void makeWriteNode(Clsx clsx, Element element) {
-
 		if (rightItem(clsx)) {
 			Element item = doc.createElement("item");
 			item.setAttribute("name", clsx.getName());
