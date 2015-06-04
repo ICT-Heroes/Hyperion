@@ -1,22 +1,21 @@
 package controller;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import service.ClsxService;
-import service.DsmService;
 import model.Clsx;
 import model.Data;
 import model.Dsm;
+import service.ClsxService;
+import service.DsmService;
 
 public class DataController {
 
 	public Data data;
-	
-	public void Sort(){
-		
+
+	public void Sort() {
+
 	}
-	
+
 	public void MoveUp(String name) {
 		MoveUp(data, name);
 	}
@@ -322,7 +321,7 @@ public class DataController {
 		// 노드 생성
 		for (int i = 0; i < nodeNumber; i++) {
 			dsmData.AddChild(new Data(dsm.getName(i)));
-			
+
 		}
 
 		// dependancy 연결
@@ -373,9 +372,11 @@ public class DataController {
 
 			int length = retData.ItemCount();
 			for (int i = 0; i < length; i++) {
-				for(int j = 0 ; j < length ; j ++){
-					if(isDepend(dsmData,retData.GetItem(i).name, retData.GetItem(j).name)){
-						SetDependancy(retData, retData.GetItem(i).name, retData.GetItem(j).name);
+				for (int j = 0; j < length; j++) {
+					if (isDepend(dsmData, retData.GetItem(i).name,
+							retData.GetItem(j).name)) {
+						SetDependancy(retData, retData.GetItem(i).name,
+								retData.GetItem(j).name);
 					}
 				}
 			}
@@ -428,21 +429,22 @@ public class DataController {
 	public Dsm MakeDataToDsm(Data data) {
 		Dsm dsm = new Dsm(data.ItemCount());
 		int length = data.ItemCount();
-		
+
 		for (int i = 0; i < length; i++)
 			dsm.addName(data.GetItem(i).name);
-		
+
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
 				dsm.setDependency(false, i, j);
 			}
 		}
-		
+
 		for (int i = 0; i < length; i++) {
 			int depLength = data.GetItem(i).GetDependLength();
 			for (int j = 0; j < length; j++) {
 				for (int k = 0; k < depLength; k++) {
-					dsm.setDependency(true, i, data.FindItemIndex(data.GetItem(i).GetDepend(k).name));
+					dsm.setDependency(true, i, data.FindItemIndex(data.GetItem(
+							i).GetDepend(k).name));
 				}
 			}
 		}
@@ -460,20 +462,21 @@ public class DataController {
 		int nodeNumber = clsxData.ItemCount();
 		int dataNumber = dsmData.ItemCount();
 		if (nodeNumber != dataNumber) {
-			//System.out.println("number : " + nodeNumber + ", " + dataNumber);
+			// System.out.println("number : " + nodeNumber + ", " + dataNumber);
 			return false;
 		}
 		for (int i = 0; i < nodeNumber; i++) {
 			boolean ret = false;
-			for (int j = 0; j < dataNumber; j++){
-				if (clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name)){
-					//System.out.println("name : " + i + ",  " + dsmData.GetItem(j).name);
+			for (int j = 0; j < dataNumber; j++) {
+				if (clsxData.GetItem(i).isSameName(dsmData.GetItem(j).name)) {
+					// System.out.println("name : " + i + ",  " +
+					// dsmData.GetItem(j).name);
 					ret = true;
 				}
 			}
-			if (!ret){
-				//System.out.println("name1 : " + clsxData.GetItem(i).name );
-				//return false;
+			if (!ret) {
+				// System.out.println("name1 : " + clsxData.GetItem(i).name );
+				// return false;
 			}
 		}
 		return true;
