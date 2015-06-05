@@ -272,11 +272,6 @@ public class Data {
 
 	public void addChildData(Data data) {
 		child.add(data);
-		if (data.getChildLength() > 0) {
-			for (int i = 0; i < data.getChildLength(); i++) {
-				this.addChildData(data.getChildData(i));
-			}
-		}
 	}
 
 	public void addChildData(int index, Data data) {

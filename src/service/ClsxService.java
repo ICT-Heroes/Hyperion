@@ -158,7 +158,7 @@ public class ClsxService {
 	 * @return item이면 true, group이면 false
 	 */
 	private static boolean rightItem(Clsx clsx) {
-		if (clsx.getItem().isEmpty() == true) {
+		if (clsx.getItem() == null) {
 			return true;
 		} else
 			return false;
