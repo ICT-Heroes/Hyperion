@@ -39,6 +39,7 @@ public class ClsxTest {
 		assertThat("First Group's First Item", is(clsx.getItem().get(0)
 				.getItem().get(0).getName()));
 		assertThat("Second Group", is(clsx.getItem().get(1).getName()));
+		assertThat("root's First Item", is(clsx.getItem().get(2).getName()));
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)

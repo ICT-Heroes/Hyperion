@@ -61,18 +61,6 @@ public class DataController {
 		}
 	}
 
-	private Data findParent(String name) {
-		int dataIndex = data.findDataIndex(name);
-		for (int i = 1; i <= dataIndex; i++) {
-			Data findParentData = data.findData(data.getData(dataIndex - i)
-					.getName());
-			if (!findParentData.findData(name).isSameName("null")) {
-				return findParentData;
-			}
-		}
-		return new Data();
-	}
-
 	private Data findParent(int dataIndex) {
 		Data indexData = data.getData(dataIndex);
 		for (int i = 1; i <= data.countData(); i++) {

@@ -4,7 +4,6 @@
 <group name="edu.drexel.cs.rise.titan.util.IconFactory">
 <item name="edu.drexel.cs.rise.titan.util.IconFactory" />
 </group>
-<item name="Minsoo's Test Item"/>
 <group name="edu.drexel.cs.rise.titan.Project">
 <group name="edu.drexel.cs.rise.titan.Project">
 <item name="edu.drexel.cs.rise.titan.ProjectListener" />

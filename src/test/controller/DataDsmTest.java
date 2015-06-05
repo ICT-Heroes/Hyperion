@@ -65,7 +65,7 @@ public class DataDsmTest {
 		// DSM 전용 메서드를 만들어야한다.
 		String name = "addItem";
 		dataController.addDsm(name);
-		assertThat(name, is(dataController.data.getChildData(3).getName()));
+		assertThat(name, is(dataController.data.getChildData(4).getName()));
 	}
 
 	@Test

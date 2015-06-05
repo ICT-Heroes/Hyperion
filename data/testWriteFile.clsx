@@ -1,13 +1,14 @@
 <cluster>
 <group name="root">
 <group name="First Group">
-<group name="First Group's First Item"/>
-<group name="First Group's Second Item"/>
+<item name="First Group's First Item"/>
+<item name="First Group's Second Item"/>
 </group>
 <group name="Second Group">
 <group name="Second Group's First Group">
-<group name="Second Group's First Group's First Item"/>
+<item name="Second Group's First Group's First Item"/>
 </group>
 </group>
+<item name="root's First Item"/>
 </group>
 </cluster>
