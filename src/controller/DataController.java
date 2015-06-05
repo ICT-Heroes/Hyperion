@@ -457,16 +457,11 @@ public class DataController {
 	 */
 	private Clsx makeDataToClsx(Data data) {
 		Clsx clsx = new Clsx();
-		makeClsx(clsx, data);
-		return clsx;
-	}
-
-	private Clsx makeClsx(Clsx clsx, Data data) {
 		clsx.setName(data.getName());
 		if (data.getChildLength() != 0) {
 			clsx.setItem(new ArrayList<>());
 			for (int i = 0; i < data.getChildLength(); i++) {
-				makeClsx(clsx.getItem().get(i), data.getChildData(i));
+				clsx.addItem(makeDataToClsx(data.getChildData(i)));
 			}
 		}
 		return clsx;

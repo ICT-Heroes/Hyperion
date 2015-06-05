@@ -1,10 +1,10 @@
 package main;
-import factory.DataControllerFactory;
-import view.titan.TreeContainer;
-import view.titan.TitanWindow;
 
-public class Main{
-	public static void main(String[] args){
+import view.titan.TitanWindow;
+import factory.DataControllerFactory;
+
+public class Main {
+	public static void main(String[] args) {
 		TitanWindow wnd = new TitanWindow();
 		wnd.setDataController(DataControllerFactory.getInstance());
 		wnd.attachMenuBar();
