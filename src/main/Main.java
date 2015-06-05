@@ -1,11 +1,12 @@
 package main;
 
-import view.titan.TitanWindow;
+
+import view.hyperion.HyperionWindow;
 import factory.DataControllerFactory;
 
 public class Main {
 	public static void main(String[] args) {
-		TitanWindow wnd = new TitanWindow();
+		HyperionWindow wnd = new HyperionWindow();
 		wnd.setDataController(DataControllerFactory.getInstance());
 		wnd.attachMenuBar();
 		wnd.attachToolBar();

@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -31,7 +28,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import view.titan.deprecated.TitanWindowDeprecated;
 import model.Data;
 
 import com.ezware.dialog.task.TaskDialogs;
@@ -153,7 +149,7 @@ public class TreeContainer{
 		tbarTree.addSeparator(new Dimension(2, 20));
 		
 		tbarTree.add(UIHelper.buildImgButton("Group", evtObj, HyperionWindow.class.getResource("/res/group.png")));
-		tbarTree.add(UIHelper.buildImgButton("Ungroup", evtObj, HyperionWindow.class.getResource("/res/ungroup.png")));
+		tbarTree.add(UIHelper.buildImgButton("UnGroup", evtObj, HyperionWindow.class.getResource("/res/ungroup.png")));
 		tbarTree.addSeparator(new Dimension(2, 20));
 		
 		tbarTree.add(UIHelper.buildImgButton("Move Up", evtObj, HyperionWindow.class.getResource("/res/up.png")));
@@ -211,7 +207,8 @@ public class TreeContainer{
 		//팝업 메뉴 설정
 		mnuTree.add(UIHelper.buildMenuItem("Rename", evtObj));
 		mnuTree.add(UIHelper.buildMenuItem("Duplicate", evtObj));
-		mnuTree.add(UIHelper.buildMenuItem("Fork", evtObj));		
+		mnuTree.add(UIHelper.buildMenuItem("Fork", evtObj));
+		mnuTree.add(UIHelper.buildMenuItem("Sort", evtObj));		
 	}
 	
 	
@@ -432,6 +429,7 @@ public class TreeContainer{
 	void uiToolbarUnGroup(ActionEvent ae){
 		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
 		DataController dc = (DataController)s.invoke("getDC");		
+		System.out.print(dc.getRootData().getDataIndex(getSelectedNode()));
 		dc.deleteGroup(dc.getRootData().getDataIndex(getSelectedNode()));
 		s.invoke("reloadDSM");
 	}

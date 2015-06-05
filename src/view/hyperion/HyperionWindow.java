@@ -135,7 +135,7 @@ public class HyperionWindow{
 			case "About":
 				uiMnuAbout(ae);
 				break;
-			case "Partition":
+			case "Partitioning":
 				uiPartitioning(ae);
 				break;
 			}
@@ -236,9 +236,6 @@ public class HyperionWindow{
 				HyperionWindow.class.getResource("/res/save-clsx.png")));
 		toolBar.add(UIHelper.buildImgButton("Save Clustering As...", evtObj,
 				HyperionWindow.class.getResource("/res/save-clsx-as.png")));
-		
-		toolBar.add(UIHelper.buildImgButton("Partition", evtObj,
-				HyperionWindow.class.getResource("/res/save-clsx-as.png")));
 	}
 
 	/**
@@ -277,6 +274,9 @@ public class HyperionWindow{
 		mnuTmp = UIHelper.buildMenu("View", 'V');
 		mnuBar.add(mnuTmp);
 		mnuTmp.add(UIHelper.buildMenuItem("Redraw", evtObj, KeyEvent.VK_F5, 0));
+		mnuTmp.add(new JSeparator());
+		
+		mnuTmp.add(UIHelper.buildMenuItem("Partitioning", evtObj, KeyEvent.VK_F8, 0));
 		mnuTmp.add(new JSeparator());
 
 		mnuTmp.add(UIHelper.buildMenuItem("Show Row Lables", evtObj,
@@ -485,7 +485,7 @@ public class HyperionWindow{
 	 * @param ae
 	 */
 	void uiMnuSaveClustering(ActionEvent ae){
-		JOptionPane.showMessageDialog(frame, "Unimplemented Service.");
+		dcon.saveClsx(clsxFile.toString(), dcon.getRootData());
 	}
 
 	/**
@@ -499,6 +499,7 @@ public class HyperionWindow{
 		jfc.setFileFilter(flt);
 		if(jfc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION){
 			File clsxAs = jfc.getSelectedFile();
+			dcon.saveClsx(clsxAs.toString()+".clsx", dcon.getRootData());
 		}
 	}
 
@@ -590,10 +591,7 @@ public class HyperionWindow{
 	 * 파티셔닝 테스트 메서드
 	 * @param ae
 	 */
-	void uiPartitioning(ActionEvent ae){
-		
-		//disable buttons...
-		
+	void uiPartitioning(ActionEvent ae){		
 		if(partition == false){
 			parDSM = DsmService.getInstance().readFromeFile(dsmFile);
 			
@@ -603,22 +601,23 @@ public class HyperionWindow{
 			pc.preProcessing();
 			pc.pathSearching();
 			partition = true;
+			
+			for (int i = 0; i < parDSM.getNumber(); i++) {
+				System.out.println(parDSM.getName(i));
+				for (int j = 0; j < parDSM.getNumber(); j++) {
+					if (parDSM.getDependency(i, j))
+						System.out.print("O ");
+					else
+						System.out.print("X ");
+				}
+				System.out.println("");
+			}
+			uiMnuRedraw(null);
+			treeContainer.uiExpandRoot();
+			UIHelper.BuildWarnDlg("Partition", "Partitioning is complete.", "");
 		}else{
 			partition = false;
 		}
-
-		for (int i = 0; i < parDSM.getNumber(); i++) {
-			System.out.println(parDSM.getName(i));
-			for (int j = 0; j < parDSM.getNumber(); j++) {
-				if (parDSM.getDependency(i, j))
-					System.out.print("O ");
-				else
-					System.out.print("X ");
-			}
-			System.out.println("");
-		}
-		//partitioner.printDependencies();
-		
 	}
 	
 	/*
