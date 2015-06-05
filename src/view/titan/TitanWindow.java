@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -426,8 +427,7 @@ public class TitanWindow implements ActionListener {
 				}
 			}
 			for (int c = 0; c < dts[k].getDependencyLength(); c++) {
-				int idx = treeContainer.findNodeIndex(dts[k]
-						.getDependencyData(c));
+				int idx = treeContainer.findNodeIndex(dts[k].getDependencyData(c));
 				if (idx != -1)
 					vc.set(idx, "x");
 			}
@@ -507,17 +507,6 @@ public class TitanWindow implements ActionListener {
 
 		boolean maps[][] = dc.getDependArray(dtsIdxs);
 
-		for (int i = 0; i < maps.length; i++) {
-			for (int j = 0; j < maps[i].length; j++) {
-				if (maps[i][j] == true) {
-					// System.out.print("1");
-				} else {
-					// System.out.print("0");
-				}
-			}
-			// System.out.println();
-		}
-
 		String[] rowHdrNames = new String[dts.length];
 		int i = 0;
 
@@ -538,7 +527,7 @@ public class TitanWindow implements ActionListener {
 			rowHdrNames[i++] = dts[k].getName();
 			tbl.addNewRow(vc);
 		}
-
+		Color zero = new Color(255, 255, 255);
 		Color skyblue = new Color(102, 204, 255);
 		Color redone0 = new Color(102, 255, 204);
 		Color redone1 = new Color(255, 204, 102);
@@ -546,81 +535,59 @@ public class TitanWindow implements ActionListener {
 		Color redone3 = new Color(100, 240, 90);
 		Color redone4 = new Color(0, 40, 90);
 
-		Color[] cmap = new Color[] { skyblue, redone0, redone1, redone2,
+		Color[] cmap = new Color[] {zero, zero ,skyblue, redone0, redone1, redone2,
 				redone3, redone4 };
 		// 보여지는 노드를 가져옴
 		DefaultMutableTreeNode[] nodes = treeContainer.getVisibleTreeAllNodes();
 		int nCount = nodes.length;
 		Color color[][] = new Color[nCount][nCount];
+		int matrix[][] = new int[nCount][nCount];
+		
 
 		TreeContainer tc = treeContainer;
-		int childCounter = 0;
-		int childLength = 0;
-		for (int c = 0; c < nodes.length; c++) {
-			// 자식의 수를 본다
 
-			// 기본 영역 크기
-			int regionCount = 1;
-
-			if (tc.getVisibleChildNodeCount(nodes[c]) > 1) {
-				// regionCount = recurGetMaxDepth(nodes[c],
-				// tc.getLevel(nodes[c]));
-				regionCount = tc.getVisibleNodeCount(nodes[c]);
-
-				childLength = tc.getVisibleChildNodeCount(nodes[c]) - 1;
-				System.out.println("child length : " + childLength);
-
-				fillColor(color, c, regionCount,
-						cmap[tc.getLevel(nodes[c]) - 1]);
-			} else {
-				// 표시되고 있는 차일드가 없는 경우
-
-				// 이 때, depth가 2이상인 자식노드인 경우
-				if (tc.getLevel(nodes[c]) > 1) {
-					childCounter++;
-
-					// 부모노드의 인덱스를 얻어옴
-					int parentNodeIndex = findParentNodeIndex(nodes, c);
-
-					// 상대거리 계산
-					int relDist = c - parentNodeIndex;
-
-					// 거기에 색칠
-					// color[relDist-1][relDist-1] =
-					// cmap[tc.getLevel(nodes[c])-1];
-					System.out.println("자식노드입니다, 부모노드 인덱스 : " + parentNodeIndex
-							+ ", 나와의 상대거리 " + (c - parentNodeIndex));
-				} else {
-					// color[c-childLength][c-childLength] =
-					// cmap[tc.getLevel(nodes[c])-1];
-				}
-				childLength = 0;
+		ArrayList<GroupIndex> gi = new ArrayList<GroupIndex>();
+		int indexLength = dtsIdxs.length;
+		int dataLength = parent.countData();
+		int wholeMatrix[][] = new int[dataLength][dataLength];
+		
+		for(int d = 0 ; d < nCount ; d ++){
+			for(int e = 0 ; e < nCount ; e ++){
+				matrix[d][e] = 0;
 			}
 		}
 
-		/*
-		 * for(int c = 0; c < nodes.length; c++){ int level =
-		 * treeContainer.getLevel(nodes[c]); int visibleChildCount =
-		 * treeContainer.getVisibleChildNodeCount(nodes[c]); if(level == 1){
-		 * //color[c][c] = cmap[level-1]; //색칠하기 if(visibleChildCount == 0)
-		 * visibleChildCount++; fillColor(color, c, visibleChildCount,
-		 * cmap[level-1]); }else if(level > 1){
-		 * 
-		 * //현재 작업중인 레벨보다 한단계 높은 노드가 나올때까지 역순으로 탐색 int k = c; while(k!=-1){ int
-		 * q = treeContainer.getLevel(nodes[k]); int r = level - 1;
-		 * if(treeContainer.getLevel(nodes[k]) == level -1){ break; } k--; } int
-		 * nRow = k; System.out.println("My Level " + level + ", Parent Level "
-		 * + treeContainer.getLevel(nodes[k]) + ", parent : " +
-		 * nodes[k].getUserObject() + ", " + nodes[c].getUserObject()); int
-		 * childs = treeContainer.getVisibleChildNodeCount(nodes[nRow]);
-		 * 
-		 * //자식이 리프노드인지 확인 for(int a = 0; a < childs; a++){ //리프노드면 부모의 색으로 색칠
-		 * if(nodes[c].isLeaf()){ //color[nRow+a][nRow+a] = cmap[level-2]; }
-		 * //리프노드가 아니면 새 수준으로 색칠 else{ //color[nRow+a][nRow+a] = cmap[level-1];
-		 * } } }else{ //자식이 없으면 자기 번호에만 색칠 color[c][c] = skyblue; }
-		 * 
-		 * }
-		 */
+		for (int c = 0; c < dataLength; c++) {
+			if(parent.getData(c).getChildLength() != 0){
+				GroupIndex newgi = new GroupIndex();
+				newgi.start = c;
+				newgi.end = c + parent.getData(c).countData() - 1;
+				gi.add(newgi);
+			}
+		}
+		
+		
+		for(int c = 0 ; c < gi.size() ; c++){
+			System.out.println("start : " + gi.get(c).start + ", end : " + gi.get(c).end);
+		}
+
+		//fillColor(color, 3, 5, cmap[depth[1]]);
+	
+		for(int d = 0 ; d < gi.size() ; d++){
+			fillMatrix(wholeMatrix, gi.get(d).start, gi.get(d).end);
+		}
+		
+		wholeMatrix = removeMatrix(wholeMatrix, dtsIdxs[indexLength-1]+1, wholeMatrix.length);
+		for(int d = 0 ; d < indexLength-1 ; d++){
+			wholeMatrix = removeMatrix(wholeMatrix, dtsIdxs[indexLength-d-2]+1, dtsIdxs[indexLength-d-1]-1);
+		}
+		wholeMatrix = removeMatrix(wholeMatrix, 0, dtsIdxs[0]-1);
+		
+		for(int c = 0 ; c < nCount ; c++){
+			for(int d = 0 ; d < nCount ; d++){
+				color[c][d] = cmap[wholeMatrix[c][d]];
+			}
+		}
 
 		if (this.isClusterLoad)
 			tblContainer.setColorMap(color);
@@ -628,11 +595,37 @@ public class TitanWindow implements ActionListener {
 		tbl.setRowHeaderTxt(rowHdrNames);
 		tbl.setColumnSizePref();
 	}
-
-	public void fillColor(Color[][] map, int nBegin, int nCount, Color clr) {
-		for (int i = nBegin; i < nBegin + nCount; i++) {
-			for (int j = nBegin; j < nBegin + nCount; j++) {
-				map[i][j] = clr;
+	
+	private int[][] removeMatrix(int [][] map, int start, int end){
+		int[][] ret = new int[map.length-(end-start)][map.length-(end-start)];
+		for(int i = 0 ; i < start ; i++){
+			for(int j = 0 ; j < start ; j++){
+				ret[i][j] = map[i][j];
+			}
+		}
+		for(int i = end+1 ; i < map.length ; i++){
+			for(int j = 0 ; j < start ; j++){
+				ret[i-end+start-1][j] = map[i][j];
+			}
+		}
+		for(int i = 0 ; i < start ; i++){
+			for(int j = end+1; j < map.length ; j++){
+				ret[i][j-end+start-1] = map[i][j];
+			}
+		}
+		for(int i = end+1 ; i < map.length ; i++){
+			for(int j = end+1 ; j < map.length ; j++){
+				ret[i-end+start-1][j-end+start-1] = map[i][j];
+			}
+		}
+		
+		return ret;
+	}
+	
+	private void fillMatrix(int[][] map, int nBegin, int nCount){
+		for (int i = nBegin; i <= nCount; i++) {
+			for (int j = nBegin; j <= nCount; j++) {
+				map[i][j] ++;
 			}
 		}
 	}
@@ -912,4 +905,13 @@ public class TitanWindow implements ActionListener {
 		 */
 	}
 
+}
+
+class GroupIndex{
+	int start;
+	int end;
+	public GroupIndex(){
+		start = 0;
+		end = 0;
+	}
 }
