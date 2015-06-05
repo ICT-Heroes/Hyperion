@@ -256,8 +256,8 @@ public class HyperionWindow{
 		mnuTmp = UIHelper.buildMenu("File", 'F');
 		mnuBar.add(mnuTmp);
 
-		//mnuTmp.add(UIHelper.buildMenuItem("New DSM", evtObj, KeyEvent.VK_N, InputEvent.CTRL_MASK));
-		//mnuTmp.add(new JSeparator());
+		mnuTmp.add(UIHelper.buildMenuItem("New DSM", evtObj, KeyEvent.VK_N, InputEvent.CTRL_MASK));
+		mnuTmp.add(new JSeparator());
 
 		mnuTmp.add(UIHelper.buildMenuItem("Open DSM", evtObj, KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));

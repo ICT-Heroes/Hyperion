@@ -157,7 +157,7 @@ public class TreeContainer{
 		tbarTree.add(UIHelper.buildImgButton("Sort", evtObj, HyperionWindow.class.getResource("/res/sort.png")));
 		tbarTree.addSeparator(new Dimension(2, 20));
 		
-		//tbarTree.add(UIHelper.buildImgButton("Add New DSM Row", evtObj, HyperionWindow.class.getResource("/res/newrow.png")));
+		tbarTree.add(UIHelper.buildImgButton("Add New DSM Row", evtObj, HyperionWindow.class.getResource("/res/newrow.png")));
 		tbarTree.add(UIHelper.buildImgButton("Rename", evtObj, HyperionWindow.class.getResource("/res/rename.png")));
 		tbarTree.add(UIHelper.buildImgButton("Delete", evtObj, HyperionWindow.class.getResource("/res/delete.png")));
 		
