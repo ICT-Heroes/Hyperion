@@ -50,7 +50,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.ListSelectionModel;
 
-import view.titan.RowNumberTable;
+import view.hyperion.RowNumberTable;
 
 public class TitanWindowDeprecated extends JFrame implements ActionListener{
 
