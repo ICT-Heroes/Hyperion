@@ -1,5 +1,6 @@
   package view.titan;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
@@ -210,7 +211,7 @@ public class RowNumberTable extends JTable 	implements ChangeListener, PropertyC
 				rdr.setText(row + " " + hdrName[row]);
 			}else{
 				rdr.setText(Integer.toString(row));
-			}	
+			}
 			return rdr;
 			
 			/*

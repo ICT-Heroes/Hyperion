@@ -73,7 +73,7 @@ public class UIHelper{
 	static public void BuildWarnDlg(String title, String text, String instruction, StandardCommand... cmds){
 		TaskDialog dlg = buildDlg(title, text, instruction, StandardIcon.WARNING);
 		
-		if(cmds == null){
+		if(cmds == null || cmds.length == 0){
 			dlg.setCommands(StandardCommand.OK);
 		}else{
 			dlg.setCommands(cmds);

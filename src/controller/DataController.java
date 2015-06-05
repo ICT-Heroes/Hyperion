@@ -572,6 +572,11 @@ public class DataController {
 		return ret;
 	}
 
+	public void setName(int index, String name) {
+		Data findData = data.getData(index);
+		findData.setName(name);
+	}
+
 	/**
 	 * 생성자
 	 */
