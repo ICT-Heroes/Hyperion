@@ -6,23 +6,20 @@ import java.util.Collections;
 import model.Dsm;
 
 /**
- * @author Hajin 
- * DSM을 읽고 Partitioning을 수행하는 클래스
+ * @author DSM을 읽고 Partitioning을 수행하는 클래스
  * 
  */
-public class Partitioner {
+public class PartitionController {
 	/**
 	 * Partitioning에 사용될 dsm
 	 */
 	private Dsm dsm;
 	/**
-	 * 관심 영역의 첫 번째 인덱스
-	 * pre-processing을 수행한 후에는 body 영역의 첫 번째 인덱스  
+	 * 관심 영역의 첫 번째 인덱스 pre-processing을 수행한 후에는 body 영역의 첫 번째 인덱스
 	 */
 	private int head;
 	/**
-	 * 관심 영역의 마지막 인덱스
-	 * pre-processing을 수행한 후에는 body 영역의 마지막 인덱스+1
+	 * 관심 영역의 마지막 인덱스 pre-processing을 수행한 후에는 body 영역의 마지막 인덱스+1
 	 */
 	private int tail;
 	/**
@@ -47,8 +44,9 @@ public class Partitioner {
 
 	/**
 	 * Partitioning을 수행할 DSM 모델을 설정
+	 * 
 	 * @param dsm
-	 * 파일을 로드한 Dsm 객체
+	 *            파일을 로드한 Dsm 객체
 	 */
 	public void setDsm(Dsm dsm) {
 		this.dsm = dsm;
@@ -77,7 +75,8 @@ public class Partitioner {
 
 	/**
 	 * Partitioning을 수행하기 위한 전처리 과정. <br>
-	 * head와 tail을 하나씩 증가, 감소 시키면서 dependency가 존재하지 않는 행, 열을 차례대로 위쪽, 왼쪽으로 이동시킨다.
+	 * head와 tail을 하나씩 증가, 감소 시키면서 dependency가 존재하지 않는 행, 열을 차례대로 위쪽, 왼쪽으로
+	 * 이동시킨다.
 	 */
 	public void preProcessing() {
 		head = 0;
@@ -156,7 +155,7 @@ public class Partitioner {
 
 	/**
 	 * <b> Path Searching Algorithm </b><br>
-	 * 이 메소드를 수행하기 전에 head와 tail사이에 dependency가 없는 행, 열은 존재하면 안된다. 
+	 * 이 메소드를 수행하기 전에 head와 tail사이에 dependency가 없는 행, 열은 존재하면 안된다.
 	 */
 	public void pathSearching() {
 		abody = new ArrayList<Integer>();
@@ -189,41 +188,48 @@ public class Partitioner {
 		}
 
 	}
-	
+
 	/**
 	 * a와 b 노드의 순서를 바꾼다.
-	 * @param a 노드 a
-	 * @param b 노드 b
+	 * 
+	 * @param a
+	 *            노드 a
+	 * @param b
+	 *            노드 b
 	 */
 	public void changeOrder(int a, int b) {
 		// (a,a)와 (b,b) 성분을 바꾼다.
 		swapElement(a, a, b, b);
-		
+
 		// (a,b)와 (b,a) 성분을 바꾼다.
 		swapElement(a, b, b, a);
-		
+
 		// 나머지 행과 열을 바꾼다.
 		for (int i = 0; i < dsm.getNumber(); i++) {
-			if (i == a || i == b) 
+			if (i == a || i == b)
 				continue;
-			
+
 			swapElement(a, i, b, i);
-			
+
 			swapElement(i, a, i, b);
 		}
-		
+
 		Collections.swap(dsm.getNames(), a, b);
 	}
-	
+
 	/**
 	 * (a1, b1)과 (a2, b2) 성분을 바꾼다.
-	 * @param a1 첫 번째 노드의 행
-	 * @param b1 첫 번째 노드의 열
-	 * @param a2 두 번째 노드의 행
-	 * @param b2 두 번째 노드의 열
+	 * 
+	 * @param a1
+	 *            첫 번째 노드의 행
+	 * @param b1
+	 *            첫 번째 노드의 열
+	 * @param a2
+	 *            두 번째 노드의 행
+	 * @param b2
+	 *            두 번째 노드의 열
 	 */
-	private void swapElement(int a1, int b1, int a2, int b2)
-	{
+	private void swapElement(int a1, int b1, int a2, int b2) {
 		boolean val1 = dsm.getDependency(a1, b1);
 		boolean val2 = dsm.getDependency(a2, b2);
 		dsm.setDependency(val2, a1, b1);

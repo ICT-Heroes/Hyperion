@@ -1,6 +1,7 @@
 package service;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -117,13 +118,12 @@ public class ClsxService {
 	 *            node에서 꺼내온 하위 nodeList
 	 */
 	private void makeNextNode(Clsx clsx, NodeList nodeList) {
-		clsx.item = new Clsx[nodeList.getLength() / 2];
+		clsx.setItem(new ArrayList<>());
 		for (int k = 0; k < nodeList.getLength() / 2; k++) {
-			clsx.item[k] = new Clsx();
+			clsx.getItem().add(new Clsx());
 		}
 		for (int i = 0; i < nodeList.getLength() / 2; i++) {
-
-			makeNode(clsx.item[i], nodeList.item(i * 2 + 1));
+			makeNode(clsx.getItem().get(i), nodeList.item(2 * i + 1));
 		}
 	}
 
@@ -144,8 +144,8 @@ public class ClsxService {
 			Element group = doc.createElement("group");
 			group.setAttribute("name", clsx.getName());
 			element.appendChild(group);
-			for (int i = 0; i < clsx.item.length; i++) {
-				makeWriteNode(clsx.item[i], group);
+			for (int i = 0; i < clsx.getItem().size(); i++) {
+				makeWriteNode(clsx.getItem().get(i), group);
 			}
 		}
 	}
@@ -157,8 +157,8 @@ public class ClsxService {
 	 *            확인할 clsx
 	 * @return item이면 true, group이면 false
 	 */
-	private boolean rightItem(Clsx clsx) {
-		if (clsx.item == null) {
+	private static boolean rightItem(Clsx clsx) {
+		if (clsx.getItem() == null) {
 			return true;
 		} else
 			return false;
