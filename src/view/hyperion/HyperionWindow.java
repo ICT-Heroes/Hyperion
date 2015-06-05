@@ -290,7 +290,8 @@ public class HyperionWindow{
 
 	/**
 	 * 프레임의 종료 명령이 전달된 경우 닫기 동작에 대한 행동을 설정하는 메서드
-	 */
+	 * @param action parameter
+	 */ 	 
 	public void setCloseAction(int action) {
 		defCloseAction = action;
 		frame.setDefaultCloseOperation(defCloseAction);
@@ -625,7 +626,7 @@ public class HyperionWindow{
 	 */
 	/**
 	 * Window 타이틀 세트
-	 * @param title
+	 * @param title String
 	 */
 	public void setTitle(String title){
 		frame.setTitle(title);
@@ -633,7 +634,7 @@ public class HyperionWindow{
 
 	/**
 	 * Window 가시성 설정
-	 * @param isVisible
+	 * @param isVisible boolean parameter
 	 */
 	public void setVisible(boolean isVisible){
 		frame.setVisible(isVisible);
@@ -648,7 +649,7 @@ public class HyperionWindow{
 	
 	/**
 	 * 데이터 컨트롤러 설정
-	 * @param dc
+	 * @param DataController dc
 	 */
 	public void setDataController(DataController dc){
 		dcon = dc;

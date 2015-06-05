@@ -2,6 +2,9 @@ controller
 factory
 main
 model
+service
 test.controller
 test.factory
-view.titan
+test.service
+view.hyperion
+view.titan.deprecated
