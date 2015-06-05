@@ -17,12 +17,12 @@ public class Partitioner {
 	private Dsm dsm;
 	/**
 	 * 관심 영역의 첫 번째 인덱스
-	 * pre-proccessing을 수행한 후에는 body 영역의 첫 번째 인덱스  
+	 * pre-processing을 수행한 후에는 body 영역의 첫 번째 인덱스  
 	 */
 	private int head;
 	/**
 	 * 관심 영역의 마지막 인덱스
-	 * pre-proccessing을 수행한 후에는 body 영역의 마지막 인덱스+1
+	 * pre-processing을 수행한 후에는 body 영역의 마지막 인덱스+1
 	 */
 	private int tail;
 	/**

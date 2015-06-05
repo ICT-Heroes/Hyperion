@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Scanner;
 
 import model.Dsm;
@@ -26,7 +25,6 @@ public class DsmService {
 	}
 
 	public DsmService() {
-
 	}
 
 	/**
@@ -77,19 +75,42 @@ public class DsmService {
 	}
 
 	/**
+	 * 파일을 읽어와 dsm 형식에 맞게 parsing 한 뒤 정해진 경로에 저장한다.
 	 * 
+	 * @param filePath
+	 *            파일 이름과 확장자를 포함한 절대 경로.
+	 * @param dsm
+	 *            저장할 dsm 파일
 	 */
-	public void writeFile() {
+	public void WriteFile(String filePath, Dsm dsm) {
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(
-					"src/res/out.txt"));
+			BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
+			int number = dsm.getNumber();
+
+			out.write(number + "");
+			out.newLine();
+
+			for (int i = 0; i < number; i++) {
+				for (int j = 0; j < number; j++) {
+					if (dsm.getDependency(i, j)) {
+						out.write("1 ");
+					} else {
+						out.write("0 ");
+					}
+				}
+				out.newLine();
+			}
+
+			for (String name : dsm.getNames()) {
+				out.write(name);
+				out.newLine();
+			}
 
 			out.close();
 
-		} catch (IOException e) {
-			// TODO: handle exception
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
 
+	}
 }
