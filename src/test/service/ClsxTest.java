@@ -25,8 +25,8 @@ public class ClsxTest {
 	public void setup() {
 		clsx = new Clsx();
 		dataController = new DataController();
-		writeFilePath = "src/res/testWriteFile.clsx";
-		readClsxFile = new File("src/res/testReadFile.clsx");
+		writeFilePath = "data/testWriteFile.clsx";
+		readClsxFile = new File("data/testReadFile.clsx");
 		writeClsxFile = new File(writeFilePath);
 		clsx = ClsxService.getInstance().readFile(readClsxFile);
 	}

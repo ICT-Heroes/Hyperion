@@ -18,27 +18,28 @@ public class DsmTest {
 
 	@Before
 	public void setup() {
-		File file = new File("src/res/moka.dsm");
+		File file = new File("data/test.dsm");
 		dsm = service.readFromeFile(file);
 	}
 
 	@Test
 	public void readDsmTest() {
-
+		// 이름 정보
+		assertThat("First Group's First Item", is(dsm.getName(0)));
+		assertThat("First Group's Second Item", is(dsm.getName(1)));
+		// dependency 정보
+		assertThat(false, is(dsm.getDependency(0, 2)));
+		assertThat(true, is(dsm.getDependency(0, 1)));
 	}
 
 	@Test
 	public void writeDsmTest() {
-		String path = "src/res/titan.dsm";
-		File file = new File(path);
-		Dsm dsmOriginal = service.readFromeFile(file);
-
-		String path2 = "src/res/writetest.dsm";
-		service.WriteFile(path2, dsmOriginal);
-		File file2 = new File(path2);
+		// write가 정상 작동한다는 전제조건 하에
+		String writePath = "src/res/writetest.dsm";
+		service.WriteFile(writePath, dsm);
+		File file2 = new File(writePath);
 		Dsm dsmTest = service.readFromeFile(file2);
-
-		assertThat(dsmOriginal.equals(dsmTest), is(true));
+		assertThat(dsm.equals(dsmTest), is(true));
 	}
 
 }

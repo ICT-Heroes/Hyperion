@@ -14,9 +14,9 @@ import service.DsmService;
 public class DataController {
 	public Data data;
 
-	public void sort(String name) {
-		Data parent = findParent(name);
-		Collections.sort(parent.getChildData(), new NameDescCompare());
+	public void sort(int index) {
+		Data newData = data.getData(index);
+		Collections.sort(newData.getChildData(), new NameDescCompare());
 	}
 
 	public void moveUp(Data leafData) {
@@ -339,16 +339,19 @@ public class DataController {
 	 */
 	public Data duplicate(int DataIndex) {
 		Data exData = data.getData(DataIndex);
-		Data newData = new Data(exData, "root");
-
-		int length = exData.getItemCount();
-		if (length > 0) {
-			for (int i = 0; i < length; i++) {
-				for (int j = 0; j < length; j++) {
-					if (isDependent(data.getDataIndex(exData.getItem(i)),
-							data.getDataIndex(exData.getItem(j)))) {
-						setDependency(newData.getDataIndex(newData.getItem(i)),
-								newData.getDataIndex(newData.getItem(j)));
+		Data newData = new Data("root");
+		newData.addChildData(exData);
+		if (exData.getChildLength() > 0) {
+			int length = exData.getItemCount();
+			if (length > 0) {
+				for (int i = 0; i < length; i++) {
+					for (int j = 0; j < length; j++) {
+						if (isDependent(data.getDataIndex(exData.getItem(i)),
+								data.getDataIndex(exData.getItem(j)))) {
+							setDependency(
+									newData.getDataIndex(newData.getItem(i)),
+									newData.getDataIndex(newData.getItem(j)));
+						}
 					}
 				}
 			}
@@ -533,7 +536,7 @@ public class DataController {
 		 */
 		@Override
 		public int compare(Data arg0, Data arg1) {
-			return arg1.getName().compareTo(arg0.getName());
+			return arg0.getName().compareTo(arg1.getName());
 		}
 	}
 
