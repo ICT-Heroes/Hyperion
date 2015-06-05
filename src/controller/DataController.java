@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 import model.Clsx;
 import model.Data;
@@ -96,7 +97,7 @@ public class DataController {
 		}
 	}
 
-	private void setDependency(int dataIndex, int dependDataIndex,
+	private void setDependency(Data data, int dataIndex, int dependDataIndex,
 			boolean depend) {
 		Data item, depItem;
 		item = data.getData(dataIndex);
@@ -406,8 +407,8 @@ public class DataController {
 					if (isDependforItem(
 							dsmData.getItemIndex(retData.getItem(i).getName()),
 							dsmData.getItemIndex(retData.getItem(j).getName()))) {
-						setDependency(retData.getDataIndex(retData.getItem(i)),
-								retData.getDataIndex(retData.getItem(j)), true);
+						setDependency(retData, retData.getDataIndex(retData.getItem(i)),
+							retData.getDataIndex(retData.getItem(j)), true);
 					}
 				}
 			}
