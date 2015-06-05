@@ -38,6 +38,7 @@ import com.ezware.dialog.task.TaskDialogs;
 
 import controller.DataController;
 import controller.PartitionController;
+import factory.DataControllerFactory;
 
 /**
  * 타이탄 윈도우
@@ -118,6 +119,12 @@ public class HyperionWindow{
 				break;
 			case "Save Clustering As...":
 				uiMnuSaveClusteringAs(ae);
+				break;
+			case "Save DSM":
+				uiMnuSaveDSM(ae);
+				break;
+			case "Save DSM As...":
+				//uiMnuSaveDSMAs(ae);
 				break;
 			case "Exit":
 				uiMnuExit(ae);
@@ -249,9 +256,8 @@ public class HyperionWindow{
 		mnuTmp = UIHelper.buildMenu("File", 'F');
 		mnuBar.add(mnuTmp);
 
-		mnuTmp.add(UIHelper.buildMenuItem("New DSM", evtObj, KeyEvent.VK_N,
-				InputEvent.CTRL_MASK));
-		mnuTmp.add(new JSeparator());
+		//mnuTmp.add(UIHelper.buildMenuItem("New DSM", evtObj, KeyEvent.VK_N, InputEvent.CTRL_MASK));
+		//mnuTmp.add(new JSeparator());
 
 		mnuTmp.add(UIHelper.buildMenuItem("Open DSM", evtObj, KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
@@ -290,8 +296,7 @@ public class HyperionWindow{
 
 	/**
 	 * 프레임의 종료 명령이 전달된 경우 닫기 동작에 대한 행동을 설정하는 메서드
-	 * @param action parameter
-	 */ 	 
+	 */
 	public void setCloseAction(int action) {
 		defCloseAction = action;
 		frame.setDefaultCloseOperation(defCloseAction);
@@ -440,6 +445,7 @@ public class HyperionWindow{
 		
 		if(jfc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION){
 			dsmFile = jfc.getSelectedFile();
+			dcon = DataControllerFactory.getInstance();
 			dcon.loadDsm(dsmFile);
 			loadData();
 			isClusterLoad = false;
@@ -502,6 +508,10 @@ public class HyperionWindow{
 			File clsxAs = jfc.getSelectedFile();
 			dcon.saveClsx(clsxAs.toString()+".clsx", dcon.getRootData());
 		}
+	}
+	
+	void uiMnuSaveDSM(ActionEvent ae){
+		//dcon.
 	}
 
 	/**
@@ -626,7 +636,7 @@ public class HyperionWindow{
 	 */
 	/**
 	 * Window 타이틀 세트
-	 * @param title String
+	 * @param title
 	 */
 	public void setTitle(String title){
 		frame.setTitle(title);
@@ -634,7 +644,7 @@ public class HyperionWindow{
 
 	/**
 	 * Window 가시성 설정
-	 * @param isVisible boolean parameter
+	 * @param isVisible
 	 */
 	public void setVisible(boolean isVisible){
 		frame.setVisible(isVisible);
@@ -649,7 +659,7 @@ public class HyperionWindow{
 	
 	/**
 	 * 데이터 컨트롤러 설정
-	 * @param DataController dc
+	 * @param dc
 	 */
 	public void setDataController(DataController dc){
 		dcon = dc;
@@ -767,7 +777,7 @@ public class HyperionWindow{
 	      tbl.setRowHeaderTxt(rowHdrNames);
 	      tbl.setColumnSizePref();
 	}
-	void buildTable(TableContainer tbl, Data parent) {
+	void buildTable(TableContainer tbl, Data parent) {try{
 		
 		 if(partition){
 				buildPartitonTable(tbl);
@@ -877,6 +887,9 @@ public class HyperionWindow{
 
 	      tbl.setRowHeaderTxt(rowHdrNames);
 	      tbl.setColumnSizePref();
+	}catch(Exception e){
+		e.printStackTrace();
+	}
 	   }
 		   
 	   private int[][] removeMatrix(int [][] map, int start, int end){

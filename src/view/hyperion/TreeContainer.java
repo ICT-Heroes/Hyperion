@@ -157,7 +157,7 @@ public class TreeContainer{
 		tbarTree.add(UIHelper.buildImgButton("Sort", evtObj, HyperionWindow.class.getResource("/res/sort.png")));
 		tbarTree.addSeparator(new Dimension(2, 20));
 		
-		tbarTree.add(UIHelper.buildImgButton("Add New DSM Row", evtObj, HyperionWindow.class.getResource("/res/newrow.png")));
+		//tbarTree.add(UIHelper.buildImgButton("Add New DSM Row", evtObj, HyperionWindow.class.getResource("/res/newrow.png")));
 		tbarTree.add(UIHelper.buildImgButton("Rename", evtObj, HyperionWindow.class.getResource("/res/rename.png")));
 		tbarTree.add(UIHelper.buildImgButton("Delete", evtObj, HyperionWindow.class.getResource("/res/delete.png")));
 		
@@ -428,8 +428,7 @@ public class TreeContainer{
 	 */
 	void uiToolbarUnGroup(ActionEvent ae){
 		EventSurrogate s = EventSurrogateManager.selectSurrogate(this);
-		DataController dc = (DataController)s.invoke("getDC");		
-		System.out.print(dc.getRootData().getDataIndex(getSelectedNode()));
+		DataController dc = (DataController)s.invoke("getDC");
 		dc.deleteGroup(dc.getRootData().getDataIndex(getSelectedNode()));
 		s.invoke("reloadDSM");
 	}
