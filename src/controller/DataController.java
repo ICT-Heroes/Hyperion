@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
 
 import model.Clsx;
 import model.Data;
@@ -280,6 +279,10 @@ public class DataController {
 		}
 	}
 
+	public void saveDSM(String filePath, Data data) {
+		DsmService.getInstance().WriteFile(filePath, makeDataToDsm(data));
+	}
+
 	/**
 	 * 같은 부모를 가진 노드들 끼리만 결합할 수 있다. 연속성이 없어도 되는 함수
 	 * 
@@ -407,8 +410,9 @@ public class DataController {
 					if (isDependforItem(
 							dsmData.getItemIndex(retData.getItem(i).getName()),
 							dsmData.getItemIndex(retData.getItem(j).getName()))) {
-						setDependency(retData, retData.getDataIndex(retData.getItem(i)),
-							retData.getDataIndex(retData.getItem(j)), true);
+						setDependency(retData,
+								retData.getDataIndex(retData.getItem(i)),
+								retData.getDataIndex(retData.getItem(j)), true);
 					}
 				}
 			}
